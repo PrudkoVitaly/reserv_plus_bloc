@@ -7,8 +7,8 @@ class PinRepositoryImpl implements PinRepository {
 
   @override
   Future<PinValidationResult> validatePin(String pin) async {
-    // Имитация задержки сети
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Убираем задержку для мгновенной анимации
+    // await Future.delayed(const Duration(milliseconds: 500));
 
     if (pin == _correctPin) {
       return const PinValidationResult(
@@ -35,9 +35,10 @@ class PinRepositoryImpl implements PinRepository {
     await Future.delayed(const Duration(seconds: 2));
 
     // В реальном приложении здесь будет вызов биометрической аутентификации
+    // Пока что имитируем, что биометрия может быть неуспешной
     return const PinValidationResult(
-      isValid: true,
-      shouldUseBiometrics: true,
+      isValid: false,
+      errorMessage: 'Биометрическая аутентификация не удалась',
     );
   }
 }

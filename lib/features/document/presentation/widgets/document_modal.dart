@@ -49,7 +49,9 @@ class _DocumentModalState extends State<DocumentModal> {
   Widget _buildModalContent(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height,
-      color: Colors.black.withOpacity(0.5), // Полупрозрачный фон
+      color: Colors.black
+          .withOpacity(0.5), // Полностью затемненный фон на весь экран
+      width: MediaQuery.of(context).size.width,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
@@ -58,7 +60,7 @@ class _DocumentModalState extends State<DocumentModal> {
             _isContainerVisible = false;
           });
           // Затем закрываем модальное окно после анимации
-          Future.delayed(const Duration(milliseconds: 800), () {
+          Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
               // Сбрасываем состояние контейнера
               setState(() {
@@ -72,251 +74,220 @@ class _DocumentModalState extends State<DocumentModal> {
         },
         child: Stack(
           children: [
-            // Затемняющий фон
-            if (_isContainerVisible)
-              AnimatedOpacity(
-                alwaysIncludeSemantics: true,
-                duration: const Duration(milliseconds: 900),
-                opacity: 0.5,
-                child: Container(
-                  color: Colors.black,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-              ),
             // Анимация для контейнера
             AnimatedPositioned(
-              duration: const Duration(milliseconds: 800),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               bottom: _isContainerVisible
-                  ? 50
-                  : -600, // Контейнер опускается вниз экрана
+                  ? 0
+                  : -600, // Контейнер появляется снизу и доходит до самого низа
               left: 0,
               right: 0,
-              child: AnimatedScale(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                scale: _isContainerVisible
-                    ? 1.0
-                    : 1.0, // Контейнер немного сжимается при скрытии
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    // Ничего не делаем при клике на контейнер
-                  },
-                  onPanStart: (details) {
-                    // Начинаем отслеживание перетаскивания
-                    print('Pan started');
-                  },
-                  onPanUpdate: (details) {
-                    // Обрабатываем вертикальное перетаскивание вниз
-                    print('Pan update - delta: ${details.delta.dy}');
-                    if (details.delta.dy > 0) {
-                      // Перетаскивание вниз - можно добавить визуальную обратную связь
-                      print('Swiping down');
-                    }
-                  },
-                  onPanEnd: (details) {
-                    // Проверяем, достаточно ли быстро перетащили вниз
-                    print('Velocity: ${details.velocity.pixelsPerSecond.dy}');
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  // Ничего не делаем при клике на контейнер
+                },
+                onPanStart: (details) {
+                  // Начинаем отслеживание перетаскивания
+                  print('Pan started');
+                },
+                onPanUpdate: (details) {
+                  // Обрабатываем вертикальное перетаскивание вниз
+                  print('Pan update - delta: ${details.delta.dy}');
+                  if (details.delta.dy > 0) {
+                    // Перетаскивание вниз - можно добавить визуальную обратную связь
+                    print('Swiping down');
+                  }
+                },
+                onPanEnd: (details) {
+                  // Проверяем, достаточно ли быстро перетащили вниз
+                  print('Velocity: ${details.velocity.pixelsPerSecond.dy}');
 
-                    if (details.velocity.pixelsPerSecond.dy > 100) {
-                      // Свайп вниз - закрываем контейнер
-                      print('Closing container due to swipe down');
-                      setState(() {
-                        _isContainerVisible = false;
-                      });
-                      Future.delayed(const Duration(milliseconds: 800), () {
-                        if (mounted) {
-                          context
-                              .read<DocumentBloc>()
-                              .add(const DocumentToggleModal(false));
-                        }
-                      });
-                    }
-                  },
-                  // Container with menu items
-                  child: Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: 5,
-                          width: 45,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                  if (details.velocity.pixelsPerSecond.dy > 100) {
+                    // Свайп вниз - закрываем контейнер
+                    print('Closing container due to swipe down');
+                    setState(() {
+                      _isContainerVisible = false;
+                    });
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      if (mounted) {
+                        context
+                            .read<DocumentBloc>()
+                            .add(const DocumentToggleModal(false));
+                      }
+                    });
+                  }
+                },
+                // Container with menu items
+                child: Container(
+                  margin: const EdgeInsets.all(16), // Возвращаем отступы
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 5,
+                        width: 45,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        const SizedBox(height: 20),
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.info_outline,
-                          title: "Переглянути документ",
-                          onTap: () {
-                            // Сначала скрываем контейнер с анимацией
-                            setState(() {
-                              _isContainerVisible = false;
-                            });
-                            // Затем закрываем модальное окно после анимации
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              if (mounted) {
-                                // Сбрасываем состояние контейнера
-                                setState(() {
-                                  _isContainerVisible = false;
-                                });
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentToggleModal(false));
-                                // Здесь можно добавить навигацию к полному просмотру документа
-                              }
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.download_outlined,
-                          title: "Завантажити PDF",
-                          onTap: () {
-                            // Сначала скрываем контейнер с анимацией
-                            setState(() {
-                              _isContainerVisible = false;
-                            });
-                            // Затем закрываем модальное окно после анимации
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              if (mounted) {
-                                // Сбрасываем состояние контейнера
-                                setState(() {
-                                  _isContainerVisible = false;
-                                });
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentDownloadPdf());
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentToggleModal(false));
-                              }
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.refresh,
-                          title: "Оновити документ",
-                          onTap: () {
-                            // Сначала скрываем контейнер с анимацией
-                            setState(() {
-                              _isContainerVisible = false;
-                            });
-                            // Затем закрываем модальное окно после анимации
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              if (mounted) {
-                                // Сбрасываем состояние контейнера
-                                setState(() {
-                                  _isContainerVisible = false;
-                                });
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentUpdateData());
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentToggleModal(false));
-                              }
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.add_circle_outline,
-                          title: "Розширені дані з реєстру",
-                          onTap: () {
-                            // Сначала скрываем контейнер с анимацией
-                            setState(() {
-                              _isContainerVisible = false;
-                            });
-                            // Затем закрываем модальное окно после анимации
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              if (mounted) {
-                                // Сбрасываем состояние контейнера
-                                setState(() {
-                                  _isContainerVisible = false;
-                                });
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentToggleModal(false));
-                                // Здесь можно добавить навигацию к расширенным данным
-                              }
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.medical_services_outlined,
-                          title: "Направлення на ВЛК",
-                          onTap: () {
-                            // Сначала скрываем контейнер с анимацией
-                            setState(() {
-                              _isContainerVisible = false;
-                            });
-                            // Затем закрываем модальное окно после анимации
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              if (mounted) {
-                                // Сбрасываем состояние контейнера
-                                setState(() {
-                                  _isContainerVisible = false;
-                                });
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentToggleModal(false));
-                                // Здесь можно добавить навигацию к направлению на ВЛК
-                              }
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMenuItem(
-                          context,
-                          icon: Icons.edit_outlined,
-                          title: "Уточнити контактні дані",
-                          onTap: () {
-                            // Сначала скрываем контейнер с анимацией
-                            setState(() {
-                              _isContainerVisible = false;
-                            });
-                            // Затем закрываем модальное окно после анимации
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              if (mounted) {
-                                // Сбрасываем состояние контейнера
-                                setState(() {
-                                  _isContainerVisible = false;
-                                });
-                                context
-                                    .read<DocumentBloc>()
-                                    .add(const DocumentToggleModal(false));
-                                // Здесь можно добавить навигацию к редактированию контактов
-                              }
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.info_outline,
+                        title: "Переглянути документ",
+                        onTap: () {
+                          // Сначала скрываем контейнер с анимацией
+                          setState(() {
+                            _isContainerVisible = false;
+                          });
+                          // Затем закрываем модальное окно после анимации
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              // Сбрасываем состояние контейнера
+                              setState(() {
+                                _isContainerVisible = false;
+                              });
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentToggleModal(false));
+                              // Здесь можно добавить навигацию к полному просмотру документа
+                            }
+                          });
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.download_outlined,
+                        title: "Завантажити PDF",
+                        onTap: () {
+                          // Сначала скрываем контейнер с анимацией
+                          setState(() {
+                            _isContainerVisible = false;
+                          });
+                          // Затем закрываем модальное окно после анимации
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              // Сбрасываем состояние контейнера
+                              setState(() {
+                                _isContainerVisible = false;
+                              });
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentDownloadPdf());
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentToggleModal(false));
+                            }
+                          });
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.refresh,
+                        title: "Оновити документ",
+                        onTap: () {
+                          // Сначала скрываем контейнер с анимацией
+                          setState(() {
+                            _isContainerVisible = false;
+                          });
+                          // Затем закрываем модальное окно после анимации
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              // Сбрасываем состояние контейнера
+                              setState(() {
+                                _isContainerVisible = false;
+                              });
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentUpdateData());
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentToggleModal(false));
+                            }
+                          });
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.add_circle_outline,
+                        title: "Розширені дані з реєстру",
+                        onTap: () {
+                          // Сначала скрываем контейнер с анимацией
+                          setState(() {
+                            _isContainerVisible = false;
+                          });
+                          // Затем закрываем модальное окно после анимации
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              // Сбрасываем состояние контейнера
+                              setState(() {
+                                _isContainerVisible = false;
+                              });
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentToggleModal(false));
+                              // Здесь можно добавить навигацию к расширенным данным
+                            }
+                          });
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.medical_services_outlined,
+                        title: "Направлення на ВЛК",
+                        onTap: () {
+                          // Сначала скрываем контейнер с анимацией
+                          setState(() {
+                            _isContainerVisible = false;
+                          });
+                          // Затем закрываем модальное окно после анимации
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              // Сбрасываем состояние контейнера
+                              setState(() {
+                                _isContainerVisible = false;
+                              });
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentToggleModal(false));
+                              // Здесь можно добавить навигацию к направлению на ВЛК
+                            }
+                          });
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Icons.edit_outlined,
+                        title: "Уточнити контактні дані",
+                        onTap: () {
+                          // Сначала скрываем контейнер с анимацией
+                          setState(() {
+                            _isContainerVisible = false;
+                          });
+                          // Затем закрываем модальное окно после анимации
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              // Сбрасываем состояние контейнера
+                              setState(() {
+                                _isContainerVisible = false;
+                              });
+                              context
+                                  .read<DocumentBloc>()
+                                  .add(const DocumentToggleModal(false));
+                              // Здесь можно добавить навигацию к редактированию контактов
+                            }
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -337,7 +308,7 @@ class _DocumentModalState extends State<DocumentModal> {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         child: Row(
           children: [
             Icon(
@@ -350,7 +321,7 @@ class _DocumentModalState extends State<DocumentModal> {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
                   color: Colors.black,
                 ),

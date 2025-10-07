@@ -4,7 +4,7 @@ import 'package:marquee/marquee.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../bloc/document_state.dart';
-import '../widgets/document_modal.dart';
+import '../utils/modal_utils.dart';
 
 class DocumentPage extends StatefulWidget {
   const DocumentPage({super.key});
@@ -129,31 +129,19 @@ class _DocumentPageState extends State<DocumentPage>
   }
 
   Widget _buildDocumentContent(DocumentLoaded state, Size size) {
-    return GestureDetector(
-      onTap: () {
-        if (state.isModalVisible) {
-          context.read<DocumentBloc>().add(const DocumentHideModal());
-        }
-      },
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 50),
-                  _buildHeader(),
-                  const SizedBox(height: 30),
-                  _buildDocumentCard(state, size),
-                ],
-              ),
-            ),
-          ),
-          if (state.isModalVisible) const DocumentModal(),
-        ],
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 50),
+            _buildHeader(),
+            const SizedBox(height: 30),
+            _buildDocumentCard(state, size),
+          ],
+        ),
       ),
     );
   }
@@ -396,7 +384,7 @@ class _DocumentPageState extends State<DocumentPage>
                     padding: const EdgeInsets.all(8),
                   ),
                   onPressed: () {
-                    context.read<DocumentBloc>().add(const DocumentShowModal());
+                    ModalUtils.showDocumentModal(context);
                   },
                   child: Image.asset("images/three_dots.png", width: 28),
                 ),

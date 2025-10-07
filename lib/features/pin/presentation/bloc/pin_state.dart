@@ -69,3 +69,19 @@ class PinBiometricsAvailable extends PinState {
 class PinBiometricsAuthenticating extends PinState {
   const PinBiometricsAuthenticating();
 }
+
+class PinShaking extends PinState {
+  final List<String> enteredPin;
+  final bool isBiometricsAvailable;
+  final bool isBiometricsModalVisible;
+
+  const PinShaking({
+    required this.enteredPin,
+    this.isBiometricsAvailable = false,
+    this.isBiometricsModalVisible = false,
+  });
+
+  @override
+  List<Object?> get props =>
+      [enteredPin, isBiometricsAvailable, isBiometricsModalVisible];
+}

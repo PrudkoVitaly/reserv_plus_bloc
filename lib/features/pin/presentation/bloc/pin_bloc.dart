@@ -52,7 +52,7 @@ class PinBloc extends Bloc<PinEvent, PinState> {
 
   void _onDeletePressed(PinDeletePressed event, Emitter<PinState> emit) {
     if (_enteredPin.isNotEmpty) {
-      _enteredPin.removeLast();
+      _enteredPin.clear();
       emit(PinEntering(
         enteredPin: List.from(_enteredPin),
         isBiometricsAvailable: state is PinInitial
@@ -106,25 +106,8 @@ class PinBloc extends Bloc<PinEvent, PinState> {
       isBiometricsModalVisible: true,
     ));
 
-    // Имитация задержки для показа модального окна
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    final result = await _repository.authenticateWithBiometrics();
-
-    if (result.isValid) {
-      emit(const PinSuccess());
-    } else {
-      emit(PinError(
-        message: result.errorMessage ?? 'Ошибка биометрической аутентификации',
-        enteredPin: List.from(_enteredPin),
-        isBiometricsAvailable: state is PinInitial
-            ? (state as PinInitial).isBiometricsAvailable
-            : state is PinEntering
-                ? (state as PinEntering).isBiometricsAvailable
-                : false,
-        isBiometricsModalVisible: false,
-      ));
-    }
+    // Модальное окно остается открытым до ручного закрытия через кнопку "Скасувати"
+    // Никакого автоматического закрытия!
   }
 
   void _onBiometricsCancelled(
