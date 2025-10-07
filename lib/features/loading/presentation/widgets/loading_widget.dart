@@ -38,13 +38,11 @@ class LoadingWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              color: const Color.fromRGBO(253, 135, 12, 1),
+              color: Colors.purple,
               strokeWidth: 4,
-              backgroundColor: Colors.black26,
+              backgroundColor: null,
               value: state.progress,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.black),
-              strokeAlign: 1,
-              strokeCap: StrokeCap.round,
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.purple),
             ),
             const SizedBox(height: 20),
             const Text(

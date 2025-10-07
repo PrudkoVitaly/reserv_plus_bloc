@@ -24,15 +24,13 @@ class CircleProgressIndicator extends StatelessWidget {
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       body: Center(
         child: CircularProgressIndicator(
-          color: color ?? const Color.fromRGBO(253, 135, 12, 1),
+          color: color ?? Colors.purple,
           strokeWidth: strokeWidth ?? 4,
-          backgroundColor: backgroundColor ?? Colors.black26,
+          backgroundColor: backgroundColor,
           value: value,
           valueColor: AlwaysStoppedAnimation<Color>(
-            valueColor ?? Colors.black,
+            valueColor ?? Colors.purple,
           ),
-          strokeAlign: 1,
-          strokeCap: strokeCap ?? StrokeCap.round,
         ),
       ),
     );
