@@ -15,11 +15,38 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
+
   @override
   void initState() {
     super.initState();
     // Инициализируем BLoC
     context.read<MainBloc>().add(const MainInitialized());
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    _opacityAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _startAnimation() {
+    _animationController.reset();
+    _animationController.forward();
   }
 
   @override
@@ -89,158 +116,200 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _buildBottomNavigationBar(MainLoaded state) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: state.navigationState.isContainerVisible
-          ? const Color.fromRGBO(106, 105, 94, 1)
-          : Colors.white,
-      currentIndex: state.navigationState.selectedIndex,
-      onTap: (index) {
-        context.read<MainBloc>().add(MainNavigationChanged(index));
-      },
-      items: [
-        BottomNavigationBarItem(
-          icon: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              context.read<MainBloc>().add(const MainNavigationChanged(0));
-            },
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: state.navigationState.selectedIndex == 0
-                        ? Colors.grey[200]
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: state.navigationState.selectedIndex == 0
-                      ? const Icon(
-                          Icons.work,
-                          size: 24,
-                          color: Colors.black,
-                        )
-                      : const Icon(
-                          Icons.work_outline,
-                          size: 24,
-                          color: Colors.grey,
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Динамическая высота - 8% от высоты экрана (минимум 60, максимум 80)
+    final navBarHeight = (screenHeight * 0.08).clamp(80.0, 80.0);
+
+    // Динамический размер иконок - 5% от ширины экрана
+    final iconSize = (screenWidth * 0.05).clamp(24.0, 24.0);
+
+    // Динамический размер текста - 3% от ширины экрана
+    final textSize = (screenWidth * 0.03).clamp(12.0, 14.0);
+
+    return SizedBox(
+      height: navBarHeight,
+      child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: state.navigationState.isContainerVisible
+            ? const Color.fromRGBO(106, 105, 94, 1)
+            : Colors.white,
+        currentIndex: state.navigationState.selectedIndex,
+        elevation: 0,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          context.read<MainBloc>().add(MainNavigationChanged(index));
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _startAnimation();
+                context.read<MainBloc>().add(const MainNavigationChanged(0));
+              },
+              child: Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: _opacityAnimation,
+                    builder: (context, child) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: state.navigationState.selectedIndex == 0
+                              ? Colors.grey[300]
+                                  ?.withOpacity(_opacityAnimation.value)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                ),
-                const Text(
-                  "Вакансії",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
+                        child: state.navigationState.selectedIndex == 0
+                            ? Icon(
+                                Icons.work,
+                                size: iconSize,
+                                color: Colors.black,
+                              )
+                            : Icon(
+                                Icons.work_outline,
+                                size: iconSize,
+                                color: Colors.grey,
+                              ),
+                      );
+                    },
                   ),
-                ),
-              ],
+                  Text(
+                    "Вакансії",
+                    style: TextStyle(
+                      fontSize: textSize,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              context.read<MainBloc>().add(const MainNavigationChanged(1));
-            },
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: state.navigationState.selectedIndex == 1
-                        ? Colors.grey[200]
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: state.navigationState.selectedIndex == 1
-                      ? const Icon(
-                          Icons.insert_drive_file,
-                          size: 24,
-                          color: Colors.black,
-                        )
-                      : Icon(
-                          Icons.insert_drive_file_outlined,
-                          size: 24,
+          BottomNavigationBarItem(
+            icon: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _startAnimation();
+                context.read<MainBloc>().add(const MainNavigationChanged(1));
+              },
+              child: Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: _opacityAnimation,
+                    builder: (context, child) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 2),
+                        decoration: BoxDecoration(
                           color: state.navigationState.selectedIndex == 1
-                              ? Colors.black
-                              : Colors.grey,
+                              ? Colors.grey[300]
+                                  ?.withOpacity(_opacityAnimation.value)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                ),
-                const Text(
-                  "Документ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
+                        child: state.navigationState.selectedIndex == 1
+                            ? Icon(
+                                Icons.insert_drive_file,
+                                size: iconSize,
+                                color: Colors.black,
+                              )
+                            : Icon(
+                                Icons.insert_drive_file_outlined,
+                                size: iconSize,
+                                color: state.navigationState.selectedIndex == 1
+                                    ? Colors.black
+                                    : Colors.grey,
+                              ),
+                      );
+                    },
                   ),
-                ),
-              ],
+                  Text(
+                    "Документ",
+                    style: TextStyle(
+                      fontSize: textSize,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              context.read<MainBloc>().add(const MainNavigationChanged(2));
-            },
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: state.navigationState.selectedIndex == 2
-                            ? Colors.grey[200]
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: state.navigationState.selectedIndex == 2
-                          ? const Icon(
-                              Icons.menu,
-                              size: 24,
-                              color: Colors.black,
-                            )
-                          : const Icon(
-                              Icons.menu_outlined,
-                              size: 24,
-                              color: Colors.grey,
+          BottomNavigationBarItem(
+            icon: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _startAnimation();
+                context.read<MainBloc>().add(const MainNavigationChanged(2));
+              },
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Column(
+                    children: [
+                      AnimatedBuilder(
+                        animation: _opacityAnimation,
+                        builder: (context, child) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: state.navigationState.selectedIndex == 2
+                                  ? Colors.grey[300]
+                                      ?.withOpacity(_opacityAnimation.value)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                    ),
-                    const Text(
-                      "Меню",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
+                            child: state.navigationState.selectedIndex == 2
+                                ? Icon(
+                                    Icons.menu,
+                                    size: iconSize,
+                                    color: Colors.black,
+                                  )
+                                : Icon(
+                                    Icons.menu_outlined,
+                                    size: iconSize,
+                                    color: Colors.grey,
+                                  ),
+                          );
+                        },
+                      ),
+                      Text(
+                        "Меню",
+                        style: TextStyle(
+                          fontSize: textSize,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (state.navigationState.hasNotifications)
+                    const Positioned(
+                      right: 7,
+                      top: 1,
+                      child: CircleAvatar(
+                        radius: 4,
+                        backgroundColor: Colors.red,
                       ),
                     ),
-                  ],
-                ),
-                if (state.navigationState.hasNotifications)
-                  const Positioned(
-                    right: 7,
-                    top: 1,
-                    child: CircleAvatar(
-                      radius: 4,
-                      backgroundColor: Colors.red,
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
+            label: '',
           ),
-          label: '',
-        ),
-      ],
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+        ],
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+      ),
     );
   }
 }

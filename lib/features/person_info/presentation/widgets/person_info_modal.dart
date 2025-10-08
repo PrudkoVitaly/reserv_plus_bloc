@@ -550,7 +550,7 @@ class _PersonInfoModalState extends State<PersonInfoModal> {
                     ),
                     textAlign: TextAlign.left,
                   ),
-                  const SizedBox(width: 50),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
                   Text(
                     personInfo.dataUpdateDate,
                     style: const TextStyle(

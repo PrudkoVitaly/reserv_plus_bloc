@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
 import '../bloc/vacancies_bloc.dart';
 import '../bloc/vacancies_event.dart';
 
@@ -7,7 +8,8 @@ class VacanciesOnboardingView extends StatefulWidget {
   const VacanciesOnboardingView({super.key});
 
   @override
-  State<VacanciesOnboardingView> createState() => _VacanciesOnboardingViewState();
+  State<VacanciesOnboardingView> createState() =>
+      _VacanciesOnboardingViewState();
 }
 
 class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
@@ -23,105 +25,119 @@ class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 60),
+                const SizedBox(height: 50),
                 const Text(
                   'Вакансії',
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: 30,
                     color: Colors.black,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-            const SizedBox(height: 30),
-            const Text(
-              'Тут знаходяться актуальні посади\nдля служби в українському\nвійську, надані у співпраці з\nплатформою Lobby X.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Це найбільший перелік\nпропозицій, який допоможе\nзнайти ту, що підходить саме\nвам. Обирайте варіанти,\nподавайте заявки у кілька кліків і\nочікуйте відповіді від бригади',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-                height: 1.4,
-              ),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Checkbox(
-                  value: _dontShowAgain,
-                  onChanged: (value) {
-                    setState(() {
-                      _dontShowAgain = value ?? false;
-                    });
-                    context.read<VacanciesBloc>().add(
-                      const VacanciesDontShowAgainToggled(),
-                    );
-                  },
-                  activeColor: const Color.fromRGBO(253, 135, 12, 1),
-                  checkColor: Colors.black,
-                ),
+                const SizedBox(height: 18),
                 const Text(
-                  'Більше не показувати',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  context.read<VacanciesBloc>().add(
-                    const VacanciesStartPressed(),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: const Text(
-                  'Почати',
+                  'Тут знаходяться актуальні посади\nдля служби в українському\nвійську, надані у співпраці з\nплатформою Lobby X.',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 1,
                     color: Colors.black,
+                    height: 1.2,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-            ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Це найбільший перелік\nпропозицій, який допоможе\nзнайти ту, що підходить саме\nвам. Обирайте варіанти,\nподавайте заявки у кілька кліків і\nочікуйте відповіді від бригади',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                    height: 1.2,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: _dontShowAgain,
+                      onChanged: (value) {
+                        setState(() {
+                          _dontShowAgain = value ?? false;
+                        });
+                        context.read<VacanciesBloc>().add(
+                              const VacanciesDontShowAgainToggled(),
+                            );
+                      },
+                      activeColor: const Color.fromRGBO(253, 135, 12, 1),
+                      checkColor: Colors.black,
+                      side: const BorderSide(color: Colors.black, width: 2),
+                    ),
+                    const Text(
+                      'Більше не показувати',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<VacanciesBloc>().add(
+                            const VacanciesStartPressed(),
+                          );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text(
+                      'Почати',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
               ],
             ),
           ),
           Positioned(
-            top: 20,
-            right: 20,
-            child: Container(
-              width: 25,
-              height: 25,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-              child: const Center(
-                child: Text(
-                  '?',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+            top: 16,
+            right: 34,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SupportPage(),
+                  ),
+                );
+              },
+              child: Container(
+                width: 25,
+                height: 25,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+                child: const Center(
+                  child: Text(
+                    '?',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
