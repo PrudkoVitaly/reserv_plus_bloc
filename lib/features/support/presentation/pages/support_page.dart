@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reserv_plus/features/support/data/repositories/support_repository_impl.dart';
 import '../bloc/support_bloc.dart';
 import '../bloc/support_event.dart';
 import '../bloc/support_state.dart';
@@ -10,164 +11,242 @@ class SupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SupportBloc()..add(const SupportInitialized()),
+      create: (context) => SupportBloc(
+        repository: SupportRepositoryImpl(),
+      )..add(const SupportInitialized()),
       child: const SupportView(),
     );
   }
 }
 
-class SupportView extends StatelessWidget {
+class SupportView extends StatefulWidget {
   const SupportView({super.key});
 
   @override
+  State<SupportView> createState() => _SupportViewState();
+}
+
+class _SupportViewState extends State<SupportView>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+  bool _showSuccessIcon = false;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Анимация для иконки успеха (1.2 секунды)
+    // 0.2 сек появление + 0.8 сек задержка + 0.2 сек исчезновение
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    
+    // Анимация масштаба: быстрое появление, задержка 0.8 сек, быстрое исчезновение
+    _scaleAnimation = TweenSequence<double>([
+      // Быстрое появление из центра (0 -> 1) за 0.2 секунды
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 16.7, // 0.2 сек из 1.2
+      ),
+      // Держим размер (1 -> 1) 0.8 секунды
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.0),
+        weight: 66.6, // 0.8 сек из 1.2
+      ),
+      // Быстрое уменьшение к центру (1 -> 0) за 0.2 секунды
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 16.7, // 0.2 сек из 1.2
+      ),
+    ]).animate(_animationController);
+    
+    // Анимация прозрачности: быстрое появление и исчезновение
+    _opacityAnimation = TweenSequence<double>([
+      // Быстрое появление (0 -> 1) за 0.15 секунды
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: 1.0),
+        weight: 12.5, // 0.15 сек из 1.2
+      ),
+      // Держим прозрачность (1 -> 1) 0.9 секунды
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.0),
+        weight: 75.0, // 0.9 сек из 1.2
+      ),
+      // Быстрое исчезновение (1 -> 0) за 0.15 секунды
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 0.0),
+        weight: 12.5, // 0.15 сек из 1.2
+      ),
+    ]).animate(_animationController);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _onCopyDeviceNumber() {
+    // Показываем иконку и запускаем анимацию
+    setState(() {
+      _showSuccessIcon = true;
+    });
+    
+    _animationController.forward().then((_) {
+      // После завершения анимации скрываем иконку
+      setState(() {
+        _showSuccessIcon = false;
+      });
+      _animationController.reset();
+    });
+    
+    // Отправляем событие в BLoC
+    context.read<SupportBloc>().add(const SupportCopyDeviceNumber());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<SupportBloc, SupportState>(
-      listener: (context, state) {
-        if (state is SupportNumberCopied) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else if (state is SupportViberOpened) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Посилання на сайт Viber скопійовано в буфер обміну'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else if (state is SupportError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
-      child: Scaffold(
-        backgroundColor:
-            const Color.fromRGBO(226, 223, 204, 1), // Светло-бежевый фон
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+    return Scaffold(
+      backgroundColor:
+          const Color.fromRGBO(226, 223, 204, 1), // Светло-бежевый фон
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+            size: 26,
           ),
-          title: const Text(
-            'Служба підтримки',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Основной текст
-              const Text(
-                'Напишіть у чат-бот, якщо у вас виникли проблеми або питання. Працюємо цілодобово.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  height: 1.5,
-                ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 22.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Служба підтримки',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
               ),
-
-              const SizedBox(height: 30),
-
-              // Viber кнопка
-              GestureDetector(
-                onTap: () {
-                  context.read<SupportBloc>().add(const SupportOpenViber());
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF665CAC), // Viber цвет
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.phone,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      const Text(
-                        'Viber',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Напишіть у чат-бот, якщо у вас виникли проблеми або питання. Працюємо цілодобово.',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                height: 1.2,
+                fontWeight: FontWeight.w500,
               ),
-
-              const SizedBox(height: 20),
-
-              // Кнопка копирования номера
-              GestureDetector(
-                onTap: () {
-                  context
-                      .read<SupportBloc>()
-                      .add(const SupportCopyDeviceNumber());
-                },
+            ),
+            const SizedBox(height: 30),
+            GestureDetector(
+              onTap: () {
+                context.read<SupportBloc>().add(const SupportOpenViber());
+              },
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Row(
                   children: [
-                    Container(
+                    Image.asset(
+                      "images/viber.png",
                       width: 24,
                       height: 24,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Icon(
-                        Icons.copy,
-                        color: Colors.white,
-                        size: 16,
-                      ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     const Text(
-                      'Копіювати номер пристрою',
+                      'Viber',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16,
+                        fontSize: 17,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+            Divider(
+              color: Colors.black.withOpacity(0.1),
+              thickness: 1,
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: _onCopyDeviceNumber, // Используем наш метод
+              child: Row(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.copy,
+                      color: Colors.black,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Копіювати номер пристрою',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  
+                  // Анимированная иконка успеха
+                  if (_showSuccessIcon)
+                    AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _opacityAnimation.value,
+                          child: Transform.scale(
+                            scale: _scaleAnimation.value,
+                            child: Container(
+                              width: 18,
+                              height: 18,
+                              margin: const EdgeInsets.only(left: 12),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFF6B35), // Оранжевый цвет
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

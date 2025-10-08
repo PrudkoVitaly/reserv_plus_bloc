@@ -1,10 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/services.dart';
+import '../../domain/repositories/support_repository.dart';
 import 'support_event.dart';
 import 'support_state.dart';
 
 class SupportBloc extends Bloc<SupportEvent, SupportState> {
-  SupportBloc() : super(const SupportInitial()) {
+  final SupportRepository _repository;
+  SupportBloc({
+    required SupportRepository repository,
+  })  : _repository = repository,
+        super(const SupportInitial()) {
     on<SupportInitialized>(_onInitialized);
     on<SupportCopyDeviceNumber>(_onCopyDeviceNumber);
     on<SupportOpenViber>(_onOpenViber);
@@ -24,20 +28,18 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
     emit(const SupportCopyingNumber());
 
     try {
-      // Здесь можно получить реальный номер устройства
-      const deviceNumber = '123456789'; // Заглушка
+      final deviceNumber = await _repository.getDeviceNumber();
 
-      await Clipboard.setData(ClipboardData(text: deviceNumber));
+      await _repository.copyToClipboard(deviceNumber);
 
       emit(const SupportNumberCopied(
         message: 'Номер пристрою скопійовано',
       ));
 
-      // Через 2 секунды возвращаемся к обычному состоянию
       await Future.delayed(const Duration(seconds: 2));
       emit(const SupportLoaded());
     } catch (e) {
-      emit(SupportError(message: 'Помилка копіювання: ${e.toString()}'));
+      emit(SupportError(message: e.toString()));
     }
   }
 
@@ -48,15 +50,17 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
     emit(const SupportOpeningViber());
 
     try {
-      const viberUrl = 'https://www.viber.com/ru/';
+      final viberUrl = await _repository.getViberUrl();
 
-      // Копируем ссылку в буфер обмена
-      await Clipboard.setData(ClipboardData(text: viberUrl));
+      await _repository.openUrl(viberUrl);
+
       emit(const SupportViberOpened());
+
       await Future.delayed(const Duration(seconds: 1));
       emit(const SupportLoaded());
     } catch (e) {
-      emit(SupportError(message: 'Помилка відкриття Viber: ${e.toString()}'));
+      // 6. При ошибке эмитим состояние ошибки
+      emit(SupportError(message: e.toString()));
     }
   }
 }
