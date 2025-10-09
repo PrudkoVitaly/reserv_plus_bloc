@@ -4,6 +4,7 @@ import 'package:marquee/marquee.dart';
 import '../bloc/person_info_bloc.dart';
 import '../bloc/person_info_event.dart';
 import '../bloc/person_info_state.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import '../../domain/entities/person_info.dart';
 
 class PersonInfoModal extends StatefulWidget {
@@ -40,13 +41,8 @@ class _PersonInfoModalState extends State<PersonInfoModal> {
   Widget _buildLoadingState() {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.grey.shade700,
-          strokeWidth: 4,
-          backgroundColor: null,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade700),
-        ),
+      body: DelayedLoadingIndicator(
+        color: Colors.grey.shade700,
       ),
     );
   }

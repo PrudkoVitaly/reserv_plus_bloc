@@ -15,9 +15,6 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   @override
   Future<DocumentData> getDocumentData() async {
-    // Имитация загрузки данных документа
-    await Future.delayed(const Duration(milliseconds: 500));
-
     // Загружаем сохраненное время последнего обновления
     final prefs = await SharedPreferences.getInstance();
     final savedTimestamp = prefs.getString(_lastUpdatedKey);

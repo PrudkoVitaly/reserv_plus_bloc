@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
+import 'package:intl/intl.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../bloc/document_state.dart';
 import '../utils/modal_utils.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 
 class DocumentPage extends StatefulWidget {
   const DocumentPage({super.key});
@@ -25,7 +27,7 @@ class _DocumentPageState extends State<DocumentPage>
 
     // Инициализация контроллера анимации
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
 
@@ -66,6 +68,20 @@ class _DocumentPageState extends State<DocumentPage>
     super.dispose();
   }
 
+  /// Извлекает дату из строки и добавляет 1 год (элегантный подход с intl)
+  String _getDateWithAddedYear(String dateString) {
+    final dateMatch = RegExp(r'\d{2}\.\d{2}\.\d{4}').firstMatch(dateString);
+    if (dateMatch == null) return dateString;
+
+    try {
+      final date = DateFormat('dd.MM.yyyy').parse(dateMatch.group(0)!);
+      final datePlusYear = DateTime(date.year + 1, date.month, date.day);
+      return DateFormat('dd.MM.yyyy').format(datePlusYear);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -94,20 +110,16 @@ class _DocumentPageState extends State<DocumentPage>
         body: BlocBuilder<DocumentBloc, DocumentState>(
           builder: (context, state) {
             if (state is DocumentLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.black,
-                  strokeWidth: 4,
-                ),
-              );
+              // Показываем индикатор только если загрузка длится > 200ms
+              return const DelayedLoadingIndicator();
             } else if (state is DocumentUpdating) {
               return const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(
-                      color: Colors.black,
-                      strokeWidth: 4,
+                    DelayedLoadingIndicator(
+                      delay: Duration(
+                          milliseconds: 0), // Показываем сразу для обновления
                     ),
                     SizedBox(height: 20),
                     Text('Оновлення документу...'),
@@ -137,12 +149,8 @@ class _DocumentPageState extends State<DocumentPage>
             } else if (state is DocumentLoaded) {
               return _buildDocumentContent(state, size);
             } else {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.grey,
-                  strokeWidth: 4,
-                ),
-              );
+              // DocumentInitial - показываем индикатор с задержкой
+              return const DelayedLoadingIndicator();
             }
           },
         ),
@@ -403,12 +411,12 @@ class _DocumentPageState extends State<DocumentPage>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
                     shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                   ),
                   onPressed: () {
                     ModalUtils.showDocumentModal(context);
                   },
-                  child: Image.asset("images/three_dots.png", width: 28),
+                  child: Image.asset("images/three_dots.png", width: 24),
                 ),
               ],
             ),
@@ -419,6 +427,8 @@ class _DocumentPageState extends State<DocumentPage>
   }
 
   Widget _buildBackCard(DocumentLoaded state, Size size) {
+    final displayDate = _getDateWithAddedYear(state.data.formattedLastUpdated);
+
     return Container(
       width: double.infinity,
       height: size.height * 0.7,
@@ -436,7 +446,7 @@ class _DocumentPageState extends State<DocumentPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Код дійсний до ${state.data.validityDate}",
+              "Код дійсний до $displayDate",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,

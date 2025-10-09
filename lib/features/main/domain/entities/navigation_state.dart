@@ -6,7 +6,7 @@ class NavigationState extends Equatable {
   final bool hasNotifications;
 
   const NavigationState({
-    this.selectedIndex = 1,
+    this.selectedIndex = -1,
     this.isContainerVisible = false,
     this.hasNotifications = false,
   });

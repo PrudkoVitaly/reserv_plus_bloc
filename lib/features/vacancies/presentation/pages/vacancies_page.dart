@@ -6,6 +6,7 @@ import '../bloc/vacancies_state.dart';
 import '../widgets/vacancies_onboarding_view.dart';
 import '../widgets/vacancies_list_view.dart';
 import '../../data/repositories/vacancies_repository_impl.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 
 class VacanciesPage extends StatelessWidget {
   const VacanciesPage({super.key});
@@ -31,11 +32,8 @@ class VacanciesView extends StatelessWidget {
       body: BlocBuilder<VacanciesBloc, VacanciesState>(
         builder: (context, state) {
           if (state is VacanciesLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF666666),
-                strokeWidth: 4,
-              ),
+            return const DelayedLoadingIndicator(
+              color: Color(0xFF666666),
             );
           } else if (state is VacanciesLoaded) {
             if (state.showOnboarding) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 
 class CircleProgressIndicator extends StatelessWidget {
   final Color? color;
@@ -22,16 +23,10 @@ class CircleProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: Center(
-        child: CircularProgressIndicator(
-          color: color ?? Colors.purple,
-          strokeWidth: strokeWidth ?? 4,
-          backgroundColor: backgroundColor,
-          value: value,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            valueColor ?? Colors.purple,
-          ),
-        ),
+      body: DelayedLoadingIndicator(
+        color: color ?? Colors.purple,
+        strokeWidth: strokeWidth ?? 4,
+        delay: const Duration(milliseconds: 0), // Показываем сразу
       ),
     );
   }

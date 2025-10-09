@@ -59,7 +59,6 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
       await Future.delayed(const Duration(seconds: 1));
       emit(const SupportLoaded());
     } catch (e) {
-      // 6. При ошибке эмитим состояние ошибки
       emit(SupportError(message: e.toString()));
     }
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:animations/animations.dart';
 import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
 import '../bloc/vacancies_bloc.dart';
 import '../bloc/vacancies_event.dart';
@@ -14,6 +15,25 @@ class VacanciesOnboardingView extends StatefulWidget {
 
 class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
   bool _dontShowAgain = false;
+
+  void _navigateToSupport() {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const SupportPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SharedAxisTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            transitionType: SharedAxisTransitionType.horizontal,
+            fillColor: Colors.transparent,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,13 +136,7 @@ class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
             top: 16,
             right: 34,
             child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SupportPage(),
-                  ),
-                );
-              },
+              onTap: _navigateToSupport,
               child: Container(
                 width: 25,
                 height: 25,

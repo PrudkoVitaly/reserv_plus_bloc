@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/support/data/repositories/support_repository_impl.dart';
 import '../bloc/support_bloc.dart';
 import '../bloc/support_event.dart';
-import '../bloc/support_state.dart';
 
 class SupportPage extends StatelessWidget {
   const SupportPage({super.key});
@@ -36,48 +35,41 @@ class _SupportViewState extends State<SupportView>
   @override
   void initState() {
     super.initState();
-    
-    // Анимация для иконки успеха (1.2 секунды)
-    // 0.2 сек появление + 0.8 сек задержка + 0.2 сек исчезновение
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    
+
     // Анимация масштаба: быстрое появление, задержка 0.8 сек, быстрое исчезновение
     _scaleAnimation = TweenSequence<double>([
-      // Быстрое появление из центра (0 -> 1) за 0.2 секунды
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.0, end: 1.0)
             .chain(CurveTween(curve: Curves.easeOut)),
         weight: 16.7, // 0.2 сек из 1.2
       ),
-      // Держим размер (1 -> 1) 0.8 секунды
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 1.0),
         weight: 66.6, // 0.8 сек из 1.2
       ),
-      // Быстрое уменьшение к центру (1 -> 0) за 0.2 секунды
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 0.0)
             .chain(CurveTween(curve: Curves.easeIn)),
         weight: 16.7, // 0.2 сек из 1.2
       ),
     ]).animate(_animationController);
-    
+
     // Анимация прозрачности: быстрое появление и исчезновение
     _opacityAnimation = TweenSequence<double>([
-      // Быстрое появление (0 -> 1) за 0.15 секунды
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.0, end: 1.0),
         weight: 12.5, // 0.15 сек из 1.2
       ),
-      // Держим прозрачность (1 -> 1) 0.9 секунды
+      // Держим прозрачность (1 -> 1) 0.9 секунд
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 1.0),
         weight: 75.0, // 0.9 сек из 1.2
       ),
-      // Быстрое исчезновение (1 -> 0) за 0.15 секунды
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 0.0),
         weight: 12.5, // 0.15 сек из 1.2
@@ -92,19 +84,17 @@ class _SupportViewState extends State<SupportView>
   }
 
   void _onCopyDeviceNumber() {
-    // Показываем иконку и запускаем анимацию
     setState(() {
       _showSuccessIcon = true;
     });
-    
+
     _animationController.forward().then((_) {
-      // После завершения анимации скрываем иконку
       setState(() {
         _showSuccessIcon = false;
       });
       _animationController.reset();
     });
-    
+
     // Отправляем событие в BLoC
     context.read<SupportBloc>().add(const SupportCopyDeviceNumber());
   }
@@ -112,8 +102,7 @@ class _SupportViewState extends State<SupportView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          const Color.fromRGBO(226, 223, 204, 1), // Светло-бежевый фон
+      backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -191,7 +180,7 @@ class _SupportViewState extends State<SupportView>
             ),
             const SizedBox(height: 16),
             GestureDetector(
-              onTap: _onCopyDeviceNumber, // Используем наш метод
+              onTap: _onCopyDeviceNumber,
               child: Row(
                 children: [
                   Container(
@@ -215,7 +204,7 @@ class _SupportViewState extends State<SupportView>
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  
+
                   // Анимированная иконка успеха
                   if (_showSuccessIcon)
                     AnimatedBuilder(
@@ -230,7 +219,7 @@ class _SupportViewState extends State<SupportView>
                               height: 18,
                               margin: const EdgeInsets.only(left: 12),
                               decoration: const BoxDecoration(
-                                color: Color(0xFFFF6B35), // Оранжевый цвет
+                                color: Color(0xFFFF6B35),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(

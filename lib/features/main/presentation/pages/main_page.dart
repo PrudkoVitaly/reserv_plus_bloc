@@ -6,6 +6,7 @@ import '../bloc/main_state.dart';
 import 'vacancies_screen.dart';
 import 'default_main_screen.dart';
 import 'menu_screen.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -36,6 +37,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       parent: _animationController,
       curve: Curves.easeOut,
     ));
+
+    // Запускаем анимацию для кнопки "Документ" при первой загрузке
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startAnimation();
+    });
   }
 
   @override
@@ -55,9 +61,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       builder: (context, state) {
         if (state is MainLoading) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: DelayedLoadingIndicator(),
           );
         } else if (state is MainError) {
           return Scaffold(
@@ -90,9 +94,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           return _buildMainContent(state);
         } else {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: DelayedLoadingIndicator(),
           );
         }
       },
@@ -101,15 +103,45 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Widget _buildMainContent(MainLoaded state) {
     final screens = [
-      const VacanciesScreen(),
-      const DefaultMainScreen(),
-      const MenuScreen(),
+      const VacanciesScreen(key: ValueKey('vacancies')),
+      const DefaultMainScreen(key: ValueKey('document')),
+      const MenuScreen(key: ValueKey('menu')),
     ];
 
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
-        child: screens[state.navigationState.selectedIndex],
+        switchInCurve: Curves.easeInOut,
+        switchOutCurve: Curves.easeInOut,
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          // Новая страница въезжает справа
+          final offsetAnimation = Tween<Offset>(
+            begin: const Offset(1.0, 0.0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ));
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+        layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+          return Stack(
+            children: <Widget>[
+              // Предыдущие страницы остаются на месте
+              ...previousChildren,
+              // Новая страница накладывается сверху
+              if (currentChild != null) currentChild,
+            ],
+          );
+        },
+        child: state.navigationState.selectedIndex == -1
+            ? const DefaultMainScreen(key: ValueKey('document'))
+            : screens[state.navigationState.selectedIndex],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(state),
     );
@@ -135,7 +167,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         backgroundColor: state.navigationState.isContainerVisible
             ? const Color.fromRGBO(106, 105, 94, 1)
             : Colors.white,
-        currentIndex: state.navigationState.selectedIndex,
+        currentIndex: state.navigationState.selectedIndex == -1
+            ? 1
+            : state.navigationState.selectedIndex.clamp(0, 2),
         elevation: 0,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
@@ -208,13 +242,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 18, vertical: 2),
                         decoration: BoxDecoration(
-                          color: state.navigationState.selectedIndex == 1
+                          color: (state.navigationState.selectedIndex == 1 ||
+                                  state.navigationState.selectedIndex == -1)
                               ? Colors.grey[300]
                                   ?.withOpacity(_opacityAnimation.value)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: state.navigationState.selectedIndex == 1
+                        child: (state.navigationState.selectedIndex == 1 ||
+                                state.navigationState.selectedIndex == -1)
                             ? Icon(
                                 Icons.insert_drive_file,
                                 size: iconSize,
@@ -223,9 +259,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             : Icon(
                                 Icons.insert_drive_file_outlined,
                                 size: iconSize,
-                                color: state.navigationState.selectedIndex == 1
-                                    ? Colors.black
-                                    : Colors.grey,
+                                color: Colors.grey,
                               ),
                       );
                     },
@@ -293,12 +327,21 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     ],
                   ),
                   if (state.navigationState.hasNotifications)
-                    const Positioned(
-                      right: 7,
-                      top: 1,
-                      child: CircleAvatar(
-                        radius: 4,
-                        backgroundColor: Colors.red,
+                    Positioned(
+                      right: 18,
+                      top: 4,
+                      child: Container(
+                        width: 11,
+                        height: 11,
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const CircleAvatar(
+                          radius: 4,
+                          backgroundColor: Colors.red,
+                        ),
                       ),
                     ),
                 ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/loading_bloc.dart';
 import '../bloc/loading_state.dart';
@@ -23,13 +24,10 @@ class LoadingOverlay extends StatelessWidget {
             if (state is LoadingInProgress && showOverlay)
               Container(
                 color: Colors.black.withOpacity(0.5),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.purple,
-                    strokeWidth: 4,
-                    backgroundColor: null,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
-                  ),
+                child: const DelayedLoadingIndicator(
+                  color: Colors.purple,
+                  delay:
+                      Duration(milliseconds: 0), // Показываем сразу для overlay
                 ),
               ),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/loading_bloc.dart';
 import '../bloc/loading_state.dart';
@@ -37,12 +38,11 @@ class LoadingWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const DelayedLoadingIndicator(
               color: Colors.purple,
-              strokeWidth: 4,
-              backgroundColor: null,
-              value: state.progress,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.purple),
+              delay: Duration(
+                  milliseconds:
+                      0), // Показываем сразу для явного экрана загрузки
             ),
             const SizedBox(height: 20),
             const Text(
