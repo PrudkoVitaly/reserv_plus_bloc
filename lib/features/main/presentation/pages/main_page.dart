@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:animations/animations.dart';
 import '../bloc/main_bloc.dart';
 import '../bloc/main_event.dart';
 import '../bloc/main_state.dart';
@@ -110,33 +111,30 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        switchInCurve: Curves.easeInOut,
-        switchOutCurve: Curves.easeInOut,
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          // Новая страница въезжает справа
-          final offsetAnimation = Tween<Offset>(
-            begin: const Offset(1.0, 0.0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
+      body: PageTransitionSwitcher(
+        duration: const Duration(milliseconds: 700),
+        reverse: false,
+        transitionBuilder: (
+          Widget child,
+          Animation<double> primaryAnimation,
+          Animation<double> secondaryAnimation,
+        ) {
+          // Применяем кастомную кривую для более заметного эффекта
+          final curvedPrimaryAnimation = CurvedAnimation(
+            parent: primaryAnimation,
             curve: Curves.easeInOut,
-          ));
-
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
           );
-        },
-        layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-          return Stack(
-            children: <Widget>[
-              // Предыдущие страницы остаются на месте
-              ...previousChildren,
-              // Новая страница накладывается сверху
-              if (currentChild != null) currentChild,
-            ],
+          final curvedSecondaryAnimation = CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: Curves.easeInOut,
+          );
+
+          return SharedAxisTransition(
+            animation: curvedPrimaryAnimation,
+            secondaryAnimation: curvedSecondaryAnimation,
+            transitionType: SharedAxisTransitionType.horizontal,
+            fillColor: const Color.fromRGBO(226, 223, 204, 1),
+            child: child,
           );
         },
         child: state.navigationState.selectedIndex == -1
