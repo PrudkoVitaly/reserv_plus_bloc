@@ -11,11 +11,9 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
     return true;
   }
 
-
   @override
-  Future<void> toggleDontShowAgain() async {
+  Future<void> setDontShowAgain(bool value) async {
     final prefs = await SharedPreferences.getInstance();
-    final currentValue = prefs.getBool(_dontShowAgainKey) ?? false;
-    await prefs.setBool(_dontShowAgainKey, !currentValue);
+    await prefs.setBool(_dontShowAgainKey, value);
   }
 }

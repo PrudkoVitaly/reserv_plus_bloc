@@ -75,31 +75,41 @@ class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
                   ),
                 ),
                 const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                      value: _dontShowAgain,
-                      onChanged: (value) {
-                        setState(() {
-                          _dontShowAgain = value ?? false;
-                        });
-                        context.read<VacanciesBloc>().add(
-                              const VacanciesDontShowAgainToggled(),
-                            );
-                      },
-                      activeColor: const Color.fromRGBO(253, 135, 12, 1),
-                      checkColor: Colors.black,
-                      side: const BorderSide(color: Colors.black, width: 2),
-                    ),
-                    const Text(
-                      'Більше не показувати',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _dontShowAgain = !_dontShowAgain;
+                    });
+                    context.read<VacanciesBloc>().add(
+                          VacanciesSetDontShowAgain(_dontShowAgain),
+                        );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Checkbox(
+                        value: _dontShowAgain,
+                        onChanged: (value) {
+                          setState(() {
+                            _dontShowAgain = value ?? false;
+                          });
+                          context.read<VacanciesBloc>().add(
+                                VacanciesSetDontShowAgain(_dontShowAgain),
+                              );
+                        },
+                        activeColor: const Color.fromRGBO(253, 135, 12, 1),
+                        checkColor: Colors.black,
+                        side: const BorderSide(color: Colors.black, width: 2),
                       ),
-                    ),
-                  ],
+                      const Text(
+                        'Більше не показувати',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(

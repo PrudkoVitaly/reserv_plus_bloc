@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/document_repository.dart';
+import '../../data/services/document_share_service.dart';
+import '../../data/services/document_pdf_generator.dart';
 import 'document_event.dart';
 import 'document_state.dart';
 
@@ -15,7 +17,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     on<DocumentHideModal>(_onHideModal);
     on<DocumentToggleModal>(_onToggleModal);
     on<DocumentUpdateData>(_onUpdateData);
-    on<DocumentDownloadPdf>(_onDownloadPdf);
+    on<DocumentShareDocument>(_onShareDocument);
     on<DocumentCorrectDataOnline>(_onCorrectDataOnline);
     on<DocumentShowFullInfo>(_onShowFullInfo);
   }
@@ -82,11 +84,30 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     }
   }
 
-  void _onDownloadPdf(
-      DocumentDownloadPdf event, Emitter<DocumentState> emit) async {
+  void _onShareDocument(
+      DocumentShareDocument event, Emitter<DocumentState> emit) async {
     try {
-      await _repository.downloadPdf();
-      // Здесь можно показать уведомление об успешном скачивании
+      if (state is DocumentLoaded) {
+        final currentState = state as DocumentLoaded;
+        final data = currentState.data;
+        
+        // Генерируем PDF файл
+        final pdfFile = await DocumentPdfGenerator.generatePdf(
+          fullName: data.fullName,
+          birthDate: data.birthDate,
+          status: data.status,
+          validityDate: data.validityDate,
+          qrCode: data.qrCode,
+          lastUpdated: data.formattedLastUpdated,
+        );
+        
+        // Делимся PDF файлом через системный Share Sheet
+        await DocumentShareService.shareFile(
+          filePath: pdfFile.path,
+          text: 'Військово-обліковий документ',
+          subject: 'Мій документ',
+        );
+      }
     } catch (e) {
       emit(DocumentError(e.toString()));
     }

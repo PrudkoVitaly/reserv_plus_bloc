@@ -15,7 +15,6 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
   double _dragStartY = 0.0;
   double _dragCurrentY = 0.0;
   double _dragOffset = 0.0;
-  bool _isDragging = false;
 
   void _closeModal() {
     Navigator.of(context).pop();
@@ -23,7 +22,6 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
 
   void _handleDragStart(DragStartDetails details) {
     _dragStartY = details.globalPosition.dy;
-    _isDragging = true;
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
@@ -38,7 +36,6 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    _isDragging = false;
     double dragDistance = _dragCurrentY - _dragStartY;
     double velocity = details.primaryVelocity ?? 0;
 
@@ -111,12 +108,12 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                         ),
                         _buildMenuItem(
                           context,
-                          icon: Icons.download_outlined,
+                          icon: Icons.upload_file_outlined,
                           title: "Завантажити PDF",
                           onTap: () {
                             context
                                 .read<DocumentBloc>()
-                                .add(const DocumentDownloadPdf());
+                                .add(const DocumentShareDocument());
                             _closeModal();
                           },
                         ),

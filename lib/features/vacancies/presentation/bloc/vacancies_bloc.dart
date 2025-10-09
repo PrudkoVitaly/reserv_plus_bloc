@@ -11,7 +11,7 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
         super(const VacanciesInitial()) {
     on<VacanciesInitialized>(_onInitialized);
     on<VacanciesStartPressed>(_onStartPressed);
-    on<VacanciesDontShowAgainToggled>(_onDontShowAgainToggled);
+    on<VacanciesSetDontShowAgain>(_onSetDontShowAgain);
     on<VacanciesPageOpened>(_onPageOpened);
   }
 
@@ -36,10 +36,10 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
     }
   }
 
-  void _onDontShowAgainToggled(
-      VacanciesDontShowAgainToggled event, Emitter<VacanciesState> emit) async {
+  void _onSetDontShowAgain(
+      VacanciesSetDontShowAgain event, Emitter<VacanciesState> emit) async {
     if (state is VacanciesLoaded) {
-      await _repository.toggleDontShowAgain();
+      await _repository.setDontShowAgain(event.value);
     }
   }
 

@@ -15,8 +15,12 @@ class VacanciesStartPressed extends VacanciesEvent {
   const VacanciesStartPressed();
 }
 
-class VacanciesDontShowAgainToggled extends VacanciesEvent {
-  const VacanciesDontShowAgainToggled();
+class VacanciesSetDontShowAgain extends VacanciesEvent {
+  final bool value;
+  const VacanciesSetDontShowAgain(this.value);
+  
+  @override
+  List<Object?> get props => [value];
 }
 
 class VacanciesPageOpened extends VacanciesEvent {

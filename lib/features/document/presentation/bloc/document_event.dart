@@ -27,8 +27,8 @@ class DocumentUpdateData extends DocumentEvent {
   const DocumentUpdateData();
 }
 
-class DocumentDownloadPdf extends DocumentEvent {
-  const DocumentDownloadPdf();
+class DocumentShareDocument extends DocumentEvent {
+  const DocumentShareDocument();
 }
 
 class DocumentCorrectDataOnline extends DocumentEvent {

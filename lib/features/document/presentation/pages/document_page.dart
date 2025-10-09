@@ -91,16 +91,16 @@ class _DocumentPageState extends State<DocumentPage>
         if (state is DocumentLoaded) {
           if (state.isFlipping) {
             if (state.isFrontVisible) {
-              _controller.forward();
-            } else {
               _controller.reverse();
+            } else {
+              _controller.forward();
             }
           } else {
             // Синхронизируем контроллер с текущим состоянием
             if (state.isFrontVisible && _controller.value > 0.5) {
-              _controller.forward();
-            } else if (!state.isFrontVisible && _controller.value < 0.5) {
               _controller.reverse();
+            } else if (!state.isFrontVisible && _controller.value < 0.5) {
+              _controller.forward();
             }
           }
         }

@@ -58,6 +58,22 @@ dependencies:
   
   # Для продвинутых анимаций переходов между страницами
   animations: ^2.0.11
+  
+  # Для системного Share Sheet
+  share_plus: ^7.2.1
+  
+  # Для генерации PDF документов
+  pdf: ^3.10.7
+  
+  # Для генерации QR-кодов
+  qr: ^3.0.1
+  image: ^4.1.7
+  
+  # Для поддержки шрифтов в PDF
+  google_fonts: ^6.1.0
+  
+  # Для работы с файловой системой
+  path_provider: ^2.1.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

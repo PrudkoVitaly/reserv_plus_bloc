@@ -165,8 +165,8 @@ class _DocumentModalState extends State<DocumentModal> {
                       ),
                       _buildMenuItem(
                         context,
-                        icon: Icons.download_outlined,
-                        title: "Завантажити PDF",
+                        icon: Icons.share,
+                        title: "Поділитися документом",
                         onTap: () {
                           // Сначала скрываем контейнер с анимацией
                           setState(() {
@@ -181,7 +181,7 @@ class _DocumentModalState extends State<DocumentModal> {
                               });
                               context
                                   .read<DocumentBloc>()
-                                  .add(const DocumentDownloadPdf());
+                                  .add(const DocumentShareDocument());
                               context
                                   .read<DocumentBloc>()
                                   .add(const DocumentToggleModal(false));

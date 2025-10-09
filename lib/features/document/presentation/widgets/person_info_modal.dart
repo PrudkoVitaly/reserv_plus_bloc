@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/person_info_bloc.dart';
 import '../bloc/person_info_state.dart';
+import '../bloc/document_bloc.dart';
+import '../bloc/document_state.dart';
 import 'document_header.dart';
 import 'document_info_section.dart';
 import 'contact_info_section.dart';
@@ -43,7 +45,16 @@ class PersonInfoModal extends StatelessWidget {
                 controller: scrollController,
                 child: Column(
                   children: [
-                    DocumentHeader(currentDate: DateTime.now()),
+                    BlocBuilder<DocumentBloc, DocumentState>(
+                      builder: (context, documentState) {
+                        if (documentState is DocumentLoaded) {
+                          return DocumentHeader(
+                            currentDate: documentState.data.lastUpdated,
+                          );
+                        }
+                        return DocumentHeader(currentDate: DateTime.now());
+                      },
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
