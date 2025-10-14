@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'features/splash/presentation/bloc/splash_bloc.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 import 'features/splash/data/repositories/splash_repository_impl.dart';
@@ -16,13 +18,24 @@ import 'features/loading/presentation/bloc/loading_bloc.dart';
 import 'features/loading/data/repositories/loading_repository_impl.dart';
 import 'features/request_sent/presentation/bloc/request_sent_bloc.dart';
 import 'features/request_sent/data/repositories/request_sent_repository_impl.dart';
+import 'features/biometric/presentation/bloc/biometric_bloc.dart';
+import 'features/biometric/data/services/biometric_auth_service.dart';
+import 'features/biometric/data/repositories/biometric_repository_impl.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // Инициализируем WidgetsBinding
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Получаем SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(MyApp(prefs: prefs));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SharedPreferences prefs;
+
+  const MyApp({super.key, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +77,17 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => RequestSentBloc(
             repository: RequestSentRepositoryImpl(),
+          ),
+        ),
+        // BiometricBloc
+        BlocProvider(
+          create: (context) => BiometricBloc(
+            repository: BiometricRepositoryImpl(
+              biometricAuthService: BiometricAuthService(
+                localAuth: LocalAuthentication(),
+              ),
+              sharedPreferences: prefs,
+            ),
           ),
         ),
       ],

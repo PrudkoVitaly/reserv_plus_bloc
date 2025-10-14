@@ -50,8 +50,23 @@ class PinBloc extends Bloc<PinEvent, PinState> {
     }
   }
 
-  void _onDeletePressed(PinDeletePressed event, Emitter<PinState> emit) {
+  void _onDeletePressed(PinDeletePressed event, Emitter<PinState> emit) async {
     if (_enteredPin.isNotEmpty) {
+      // Сначала показываем анимацию дрожания
+      emit(PinShaking(
+        enteredPin: List.from(_enteredPin),
+        isBiometricsAvailable: state is PinInitial
+            ? (state as PinInitial).isBiometricsAvailable
+            : state is PinEntering
+                ? (state as PinEntering).isBiometricsAvailable
+                : false,
+        isBiometricsModalVisible: false,
+      ));
+
+      // Ждем завершения анимации
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      // Затем очищаем PIN
       _enteredPin.clear();
       emit(PinEntering(
         enteredPin: List.from(_enteredPin),

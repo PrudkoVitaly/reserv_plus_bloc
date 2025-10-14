@@ -149,8 +149,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Динамическая высота - 8% от высоты экрана (минимум 60, максимум 80)
-    final navBarHeight = (screenHeight * 0.08).clamp(80.0, 80.0);
+    // Динамическая высота - 10% от высоты экрана (минимум 90, максимум 100)
+    final navBarHeight = (screenHeight * 0.10).clamp(90.0, 100.0);
 
     // Динамический размер иконок - 5% от ширины экрана
     final iconSize = (screenWidth * 0.05).clamp(24.0, 24.0);

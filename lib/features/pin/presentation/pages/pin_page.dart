@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marquee/marquee.dart';
+import 'package:reserv_plus/features/forgot_pin/presentation/pages/forgot_pin_page.dart';
 import 'package:reserv_plus/features/registry/presentation/pages/registry_page.dart';
+import 'package:reserv_plus/features/biometric/presentation/bloc/biometric_bloc.dart';
+import 'package:reserv_plus/features/biometric/presentation/bloc/biometric_event.dart';
+import 'package:reserv_plus/features/biometric/presentation/bloc/biometric_state.dart';
 import '../bloc/pin_bloc.dart';
 import '../bloc/pin_event.dart';
 import '../bloc/pin_state.dart';
@@ -21,8 +25,16 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // // Возвращаем обычный режим при возврате на PIN экран
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
     // Запускаем инициализацию BLoC
     context.read<PinBloc>().add(const PinStarted());
+
+    // Автоматически показываем системный диалог биометрии при загрузке
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showSystemBiometricDialog(context);
+    });
 
     // Инициализация анимации дрожи
     _shakeController = AnimationController(
@@ -73,229 +85,137 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    return BlocListener<PinBloc, PinState>(
+    return BlocListener<BiometricBloc, BiometricState>(
       listener: (context, state) {
-        if (state is PinSuccess) {
+        if (state is BiometricAuthenticationSuccess) {
+          // Переходим на главный экран при успешной аутентификации
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const RegistryPage(),
-            ),
+            MaterialPageRoute(builder: (_) => const RegistryPage()),
           );
-        } else if (state is PinError) {
-          // Запускаем анимацию дрожи один раз при ошибке
-          _shakeController.reset();
-          _shakeController.forward();
-          context.read<PinBloc>().add(const PinReset());
         }
+        // При отмене биометрии просто остаемся на экране PIN
+        // Пользователь может ввести код вручную
       },
-      child: BlocBuilder<PinBloc, PinState>(builder: (context, state) {
-        bool isContainerVisible = false;
-        int pinLength = 0;
-        bool isBiometricsAvailable = false;
+      child: BlocListener<PinBloc, PinState>(
+        listener: (context, state) {
+          if (state is PinSuccess) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const RegistryPage(),
+              ),
+            );
+          } else if (state is PinError) {
+            // Запускаем анимацию дрожи один раз при ошибке
+            _shakeController.reset();
+            _shakeController.forward();
+            context.read<PinBloc>().add(const PinReset());
+          } else if (state is PinShaking) {
+            // Запускаем анимацию дрожи при удалении
+            _shakeController.reset();
+            _shakeController.forward();
+          }
+        },
+        child: BlocBuilder<PinBloc, PinState>(builder: (context, state) {
+          int pinLength = 0;
+          bool isBiometricsAvailable = false;
 
-        if (state is PinInitial) {
-          isContainerVisible = state.isBiometricsModalVisible;
-          isBiometricsAvailable = state.isBiometricsAvailable;
-        } else if (state is PinEntering) {
-          isContainerVisible = state.isBiometricsModalVisible;
-          pinLength = state.enteredPin.length;
-          isBiometricsAvailable = state.isBiometricsAvailable;
-        } else if (state is PinValidating) {
-          pinLength = 4; // Показываем все 4 точки при валидации
-          isBiometricsAvailable = false;
-        } else if (state is PinError) {
-          isContainerVisible = state.isBiometricsModalVisible;
-          pinLength = state.enteredPin.length;
-          isBiometricsAvailable = state.isBiometricsAvailable;
-        }
+          if (state is PinInitial) {
+            isBiometricsAvailable = state.isBiometricsAvailable;
+          } else if (state is PinEntering) {
+            pinLength = state.enteredPin.length;
+            isBiometricsAvailable = state.isBiometricsAvailable;
+          } else if (state is PinValidating) {
+            pinLength = 4; // Показываем все 4 точки при валидации
+            isBiometricsAvailable = false;
+          } else if (state is PinError) {
+            pinLength = state.enteredPin.length;
+            isBiometricsAvailable = state.isBiometricsAvailable;
+          } else if (state is PinShaking) {
+            pinLength = 0; // При удалении точки сразу исчезают
+            isBiometricsAvailable = state.isBiometricsAvailable;
+          }
 
-        return GestureDetector(
-          onTap: () {
-            if (isContainerVisible) {
-              context.read<PinBloc>().add(const PinBiometricsCancelled());
-            }
-          },
-          child: Stack(
-            children: [
-              Scaffold(
-                backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-                appBar: PreferredSize(
-                  preferredSize: const Size.fromHeight(20),
-                  child: AppBar(
-                    backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
+          return GestureDetector(
+            child: Stack(
+              children: [
+                Scaffold(
+                  backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
+                  appBar: PreferredSize(
+                    preferredSize: const Size.fromHeight(20),
+                    child: AppBar(
+                      backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
+                    ),
                   ),
-                ),
-                body: Column(
-                  children: [
-                    const Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: const Text(
-                          'Код для входу',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
+                  body: Column(
+                    children: [
+                      const Padding(
+                        padding: const EdgeInsets.only(left: 30),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: const Text(
+                            'Код для входу',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 100),
-                    AnimatedBuilder(
-                      animation: _shakeAnimation,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(_shakeAnimation.value, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              4, // Assuming PIN length is 4
-                              (index) => Container(
-                                margin: const EdgeInsets.all(12),
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: index < pinLength
-                                      ? Colors.black
-                                      : Colors.white,
-                                  shape: BoxShape.circle,
+                      const SizedBox(height: 100),
+                      AnimatedBuilder(
+                        animation: _shakeAnimation,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(_shakeAnimation.value, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                4, // Assuming PIN length is 4
+                                (index) => Container(
+                                  margin: const EdgeInsets.all(12),
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: index < pinLength
+                                        ? Colors.black
+                                        : Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 100),
-                    _buildNumberPad(context, isBiometricsAvailable),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30),
-                      child: GestureDetector(
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Восстановление кода')),
                           );
                         },
-                        child: const Text(
-                          'Не пам\'ятаю код для входу',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                      ),
+                      const SizedBox(height: 100),
+                      _buildNumberPad(context, isBiometricsAvailable),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const ForgotPinPage(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Не пам\'ятаю код для входу',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isContainerVisible)
-                AnimatedOpacity(
-                  alwaysIncludeSemantics: true,
-                  duration: const Duration(milliseconds: 900),
-                  opacity: 0.5,
-                  child: Container(
-                    color: Colors.black,
-                    width: double.infinity,
-                    height: double.infinity,
+                    ],
                   ),
                 ),
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                bottom: isContainerVisible ? 0 : -400,
-                left: 0,
-                right: 0,
-                child: AnimatedScale(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  scale: isContainerVisible ? 1.0 : 1.0,
-                  child: Container(
-                    margin: const EdgeInsets.all(6),
-                    padding: const EdgeInsets.all(20),
-                    height: size.height * 0.4,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 40,
-                          alignment: Alignment.center,
-                          child: Marquee(
-                            text: "Вхід за біометричними даними",
-                            fadingEdgeStartFraction: 0.2,
-                            fadingEdgeEndFraction: 0.2,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              decoration: TextDecoration.none,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            scrollAxis: Axis.horizontal,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            blankSpace: 100.0,
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromRGBO(35, 34, 30, 1),
-                          ),
-                          child: const Icon(
-                            Icons.fingerprint,
-                            size: 50,
-                            color: Color.fromRGBO(70, 164, 164, 1.0),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "Прикоснитесь к сканеру отпечатков пальцев.",
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: _getAdaptiveFontSize(context, 12),
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[600],
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                        const Spacer(),
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: TextButton(
-                            onPressed: () {
-                              context
-                                  .read<PinBloc>()
-                                  .add(const PinBiometricsCancelled());
-                            },
-                            child: const Text(
-                              "Скасувати",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: Color.fromRGBO(70, 164, 164, 1.0),
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -327,7 +247,8 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
                       setState(() {
                         _pressedButton = null;
                       });
-                      context.read<PinBloc>().add(const PinBiometricsPressed());
+                      // Показываем системный диалог биометрии
+                      _showSystemBiometricDialog(context);
                     }
                   : null,
               onTapCancel: isBiometricsAvailable
@@ -441,5 +362,13 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  /// Показать системный диалог биометрии Android
+  void _showSystemBiometricDialog(BuildContext context) {
+    // Прямо вызываем BiometricBloc для системного диалога
+    context.read<BiometricBloc>().add(
+          const BiometricAuthenticationRequested(),
+        );
   }
 }

@@ -74,6 +74,11 @@ dependencies:
   
   # Для работы с файловой системой
   path_provider: ^2.1.1
+  
+  # Для биометрической аутентификации
+  local_auth: ^2.3.0
+  local_auth_android: ^1.0.45
+  local_auth_ios: ^1.1.7
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
