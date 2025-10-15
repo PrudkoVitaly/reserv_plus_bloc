@@ -116,22 +116,43 @@ class _RegistryViewState extends State<RegistryView>
                       ],
                     ),
                     const Spacer(),
-                    Flexible(
-                      child: Text(
-                        "Сканувати \nдокумент",
-                        style: TextStyle(
-                          height: 1,
-                          fontSize: isSmallScreen ? 14.0 : 16.0,
-                          fontWeight: FontWeight.w500,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            "Сканувати \nдокумент",
+                            style: TextStyle(
+                              height: 1,
+                              fontSize: isSmallScreen ? 14.0 : 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
                         ),
-                        textAlign: TextAlign.right,
-                      ),
+                        const SizedBox(width: 6),
+                        Image.asset(
+                          "images/qr.png",
+                          width: isSmallScreen ? 25.0 : 30.0,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                    Image.asset(
-                      "images/qr.png",
-                      width: isSmallScreen ? 25.0 : 30.0,
-                    ),
+                    // Flexible(
+                    //   child: Text(
+                    //     "Сканувати \nдокумент",
+                    //     style: TextStyle(
+                    //       height: 1,
+                    //       fontSize: isSmallScreen ? 14.0 : 16.0,
+                    //       fontWeight: FontWeight.w500,
+                    //     ),
+                    //     textAlign: TextAlign.right,
+                    //   ),
+                    // ),
+                    // const SizedBox(width: 6),
+                    // Image.asset(
+                    //   "images/qr.png",
+                    //   width: isSmallScreen ? 25.0 : 30.0,
+                    // ),
                   ],
                 ),
                 SizedBox(height: isSmallScreen ? 5.0 : 10.0),
@@ -280,7 +301,7 @@ class _RegistryViewState extends State<RegistryView>
     final screenWidth = MediaQuery.of(context).size.width;
 
     // Динамическая высота - 10% от высоты экрана (минимум 90, максимум 100)
-    final navBarHeight = (screenHeight * 0.10).clamp(90.0, 100.0);
+    final navBarHeight = (screenHeight * 0.10).clamp(80.0, 100.0);
 
     // Динамический размер иконок - 5% от ширины экрана
     final iconSize = (screenWidth * 0.05).clamp(24.0, 24.0);

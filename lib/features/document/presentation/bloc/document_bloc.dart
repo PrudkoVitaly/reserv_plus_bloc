@@ -20,6 +20,10 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     on<DocumentShareDocument>(_onShareDocument);
     on<DocumentCorrectDataOnline>(_onCorrectDataOnline);
     on<DocumentShowFullInfo>(_onShowFullInfo);
+    // Добавить новые обработчики для сканирования QR
+    on<ScanMilitaryDocumentQREvent>(_onScanMilitaryDocumentQR);
+    on<ScanPaperSummonsQREvent>(_onScanPaperSummonsQR);
+    on<ScanReferralQREvent>(_onScanReferralQR);
   }
 
   void _onLoadData(DocumentLoadData event, Emitter<DocumentState> emit) async {
@@ -90,7 +94,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       if (state is DocumentLoaded) {
         final currentState = state as DocumentLoaded;
         final data = currentState.data;
-        
+
         // Генерируем PDF файл
         final pdfFile = await DocumentPdfGenerator.generatePdf(
           fullName: data.fullName,
@@ -100,7 +104,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
           qrCode: data.qrCode,
           lastUpdated: data.formattedLastUpdated,
         );
-        
+
         // Делимся PDF файлом через системный Share Sheet
         await DocumentShareService.shareFile(
           filePath: pdfFile.path,
@@ -134,5 +138,27 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       final currentState = state as DocumentLoaded;
       emit(currentState.copyWith(isModalVisible: event.isVisible));
     }
+  }
+
+  Future<void> _onScanMilitaryDocumentQR(
+    ScanMilitaryDocumentQREvent event,
+    Emitter<DocumentState> emit,
+  ) async {
+    // Эмитим состояние навигации
+    emit(const DocumentNavigateToScanner(scanType: 'military'));
+  }
+
+  Future<void> _onScanPaperSummonsQR(
+    ScanPaperSummonsQREvent event,
+    Emitter<DocumentState> emit,
+  ) async {
+    emit(const DocumentNavigateToScanner(scanType: 'summons'));
+  }
+
+  Future<void> _onScanReferralQR(
+    ScanReferralQREvent event,
+    Emitter<DocumentState> emit,
+  ) async {
+    emit(const DocumentNavigateToScanner(scanType: 'referral'));
   }
 }

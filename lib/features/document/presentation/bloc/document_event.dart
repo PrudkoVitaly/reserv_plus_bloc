@@ -46,3 +46,16 @@ class DocumentToggleModal extends DocumentEvent {
   @override
   List<Object?> get props => [isVisible];
 }
+
+// Добавить новые события для сканирования QR
+class ScanMilitaryDocumentQREvent extends DocumentEvent {
+  const ScanMilitaryDocumentQREvent();
+}
+
+class ScanPaperSummonsQREvent extends DocumentEvent {
+  const ScanPaperSummonsQREvent();
+}
+
+class ScanReferralQREvent extends DocumentEvent {
+  const ScanReferralQREvent();
+}

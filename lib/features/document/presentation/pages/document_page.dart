@@ -7,6 +7,7 @@ import '../bloc/document_event.dart';
 import '../bloc/document_state.dart';
 import '../utils/modal_utils.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/qr_scanner/presentation/pages/qr_scanner_page.dart';
 
 class DocumentPage extends StatefulWidget {
   const DocumentPage({super.key});
@@ -88,6 +89,25 @@ class _DocumentPageState extends State<DocumentPage>
 
     return BlocListener<DocumentBloc, DocumentState>(
       listener: (context, state) {
+        // Навигация к QR сканеру
+        if (state is DocumentNavigateToScanner) {
+          Navigator.of(context)
+              .push(
+            MaterialPageRoute(
+              builder: (context) => const QRScannerPage(),
+            ),
+          )
+              .then((result) {
+            // Обработка результата сканирования
+            if (result != null) {
+              print('Отсканировано: ${result.rawData}');
+              // Здесь можно добавить обработку результата
+            }
+            // Восстанавливаем предыдущее состояние документа
+            context.read<DocumentBloc>().add(const DocumentLoadData());
+          });
+        }
+
         if (state is DocumentLoaded) {
           if (state.isFlipping) {
             if (state.isFrontVisible) {
@@ -177,6 +197,8 @@ class _DocumentPageState extends State<DocumentPage>
   }
 
   Widget _buildHeader() {
+    Size size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.min,
@@ -203,19 +225,31 @@ class _DocumentPageState extends State<DocumentPage>
           ],
         ),
         const Spacer(),
-        const Text(
-          "Сканувати \nдокумент",
-          style: TextStyle(
-            height: 1,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+        GestureDetector(
+          onTap: () {
+            ModalUtils.showDocumentScanOptions(context);
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  "Сканувати \nдокумент",
+                  style: TextStyle(
+                    height: 1,
+                    fontSize: isSmallScreen ? 14.0 : 16.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Image.asset(
+                "images/qr.png",
+                width: isSmallScreen ? 25.0 : 30.0,
+              ),
+            ],
           ),
-          textAlign: TextAlign.left,
-        ),
-        const SizedBox(width: 6),
-        Image.asset(
-          "images/qr.png",
-          width: 30,
         ),
       ],
     );
@@ -256,7 +290,7 @@ class _DocumentPageState extends State<DocumentPage>
   Widget _buildFrontCard(DocumentLoaded state, Size size) {
     return Container(
       width: double.infinity,
-      height: size.height * 0.71,
+      height: size.height * 0.70,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
@@ -339,10 +373,10 @@ class _DocumentPageState extends State<DocumentPage>
               ],
             ),
           ),
-          SizedBox(height: size.height * 0.15),
+          SizedBox(height: size.height * 0.14),
           Container(
             width: double.infinity,
-            height: 44,
+            height: 40,
             alignment: Alignment.center,
             decoration: const BoxDecoration(
               color: Color.fromRGBO(150, 148, 134, 1),

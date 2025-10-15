@@ -64,3 +64,12 @@ class DocumentUpdating extends DocumentState {
   @override
   List<Object?> get props => [data];
 }
+
+class DocumentNavigateToScanner extends DocumentState {
+  final String scanType; // 'military', 'summons', 'referral'
+
+  const DocumentNavigateToScanner({required this.scanType});
+
+  @override
+  List<Object?> get props => [scanType];
+}

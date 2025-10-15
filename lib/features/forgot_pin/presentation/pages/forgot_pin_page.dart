@@ -36,92 +36,101 @@ class ForgotPinView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 34.0),
-        child: Column(
-          children: [
-            const Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Забули код для входу?',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                        height: 1,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'Пройдіть повторну авторизацію у застосунку',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        height: 1,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Кнопка "Авторизуватися"
-            BlocBuilder<ForgotPinBloc, ForgotPinState>(
-                builder: (context, state) {
-              return SizedBox(
-                width: double.infinity,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: state is ForgotPinLoaded
-                      ? () {
-                          context
-                              .read<ForgotPinBloc>()
-                              .add(ForgotPinAuthorizePressed());
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                  ),
-                  child: state is ForgotPinAuthorizationInProgress
-                      ? const DelayedLoadingIndicator()
-                      : const Text(
-                          'Авторизуватися',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400,
-                          ),
+    return BlocListener<ForgotPinBloc, ForgotPinState>(
+      listener: (context, state) {
+        if (state is ForgotPinAuthorizationSuccess) {
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
+        body: Padding(
+          padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 34.0),
+          child: Column(
+            children: [
+              const Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Забули код для входу?',
+                        style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                          height: 1,
                         ),
-                ),
-              );
-            }),
-
-            const SizedBox(height: 16),
-
-            // Кнопка "Скасувати"
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Скасувати',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'Пройдіть повторну авторизацію у застосунку',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          height: 1,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+
+              // Кнопка "Авторизуватися"
+              BlocBuilder<ForgotPinBloc, ForgotPinState>(
+                  builder: (context, state) {
+                return SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: state is ForgotPinLoaded
+                        ? () {
+                            context
+                                .read<ForgotPinBloc>()
+                                .add(ForgotPinAuthorizePressed());
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: state is ForgotPinAuthorizationInProgress
+                        ? const DelayedLoadingIndicator()
+                        : const Text(
+                            'Авторизуватися',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                  ),
+                );
+              }),
+
+              const SizedBox(height: 16),
+
+              // Кнопка "Скасувати"
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Скасувати',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
