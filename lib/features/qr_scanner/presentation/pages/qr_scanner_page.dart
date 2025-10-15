@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/services.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:reserv_plus/features/qr_scanner/data/repositories/qr_scan_repository_impl.dart';
 import 'package:reserv_plus/features/qr_scanner/data/services/camera_service.dart';
 import 'package:reserv_plus/features/qr_scanner/domain/entities/qr_scan_data.dart';
@@ -35,81 +34,20 @@ class QRScannerView extends StatefulWidget {
 }
 
 class _QRScannerViewState extends State<QRScannerView> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
   @override
   void dispose() {
-    _audioPlayer.dispose();
     super.dispose();
   }
 
   Future<void> _playSuccessSound() async {
     try {
-      // Воспроизводим системный звук + вибрация
-      await HapticFeedback.heavyImpact(); // Вибрация
-
-      // Воспроизводим звук из локального файла
-      // Используем BytesSource для прямого воспроизведения
-      await _audioPlayer.setVolume(1.0); // Максимальная громкость
-      await _audioPlayer.play(
-        BytesSource(
-          // Простой beep звук в base64 (очень короткий WAV)
-          Uint8List.fromList([
-            82,
-            73,
-            70,
-            70,
-            36,
-            0,
-            0,
-            0,
-            87,
-            65,
-            86,
-            69,
-            102,
-            109,
-            116,
-            32,
-            16,
-            0,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            68,
-            172,
-            0,
-            0,
-            136,
-            88,
-            1,
-            0,
-            2,
-            0,
-            16,
-            0,
-            100,
-            97,
-            116,
-            97,
-            0,
-            0,
-            0,
-            0
-          ]),
-        ),
-      );
+      // Вибрация (100% работает)
+      await HapticFeedback.heavyImpact();
+      await HapticFeedback.mediumImpact();
 
       print('✅ Звук и вибрация успешно воспроизведены');
     } catch (e) {
-      print('❌ Ошибка воспроизведения звука: $e');
-      // Хотя бы вибрация сработает
-      try {
-        await HapticFeedback.heavyImpact();
-      } catch (_) {}
+      print('❌ Ошибка: $e');
     }
   }
 
