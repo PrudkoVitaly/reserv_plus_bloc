@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
-import 'package:cross_file/cross_file.dart';
 import '../../data/services/extended_data_pdf_generator.dart';
 import '../../domain/entities/extended_data.dart';
 
@@ -15,7 +14,7 @@ class ExtendedDataReceivedPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       body: Padding(
-        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 34.0),
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 26.0),
         child: Column(
           children: [
             Expanded(
@@ -23,85 +22,63 @@ class ExtendedDataReceivedPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Иконка успеха - круг с квадратом и стрелкой
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.grey.withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 3,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward,
-                          size: 40,
-                          color: Colors.black,
-                        ),
+                    SizedBox(
+                      width: 170,
+                      height: 170,
+                      child: Image.asset(
+                        "images/get_data_image.png",
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 30),
                     const Text(
                       'Отримали дані з реєстру',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 32,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
-                        height: 1.2,
+                        height: 1,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     const Text(
                       'Запит можна подавати раз на 24 години',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.black,
-                        height: 1.3,
+                        height: 1,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
                     // Опция скачивания файла
-                    GestureDetector(
-                      onTap: () => _downloadPDF(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(12),
-                          border:
-                              Border.all(color: Colors.orange.withOpacity(0.3)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.download,
-                              color: Colors.black,
-                              size: 24,
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Завантажити файл',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: GestureDetector(
+                          onTap: () => _downloadPDF(context),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                "images/download_image.png",
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 10),
+                              const Text(
+                                'Завантажити файл',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

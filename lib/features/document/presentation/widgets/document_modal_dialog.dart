@@ -4,6 +4,10 @@ import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../../../person_info/presentation/utils/person_info_utils.dart';
 import '../../../extended_data/presentation/pages/extended_data_request_page.dart';
+import '../../../extended_data/presentation/pages/extended_data_review_page.dart';
+import '../../../extended_data/domain/entities/extended_data.dart';
+import '../pages/vlk_unavailable_page.dart';
+import '../../../../shared/utils/navigation_utils.dart';
 
 class DocumentModalDialog extends StatefulWidget {
   const DocumentModalDialog({super.key});
@@ -133,13 +137,21 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           context,
                           icon: Icons.add_circle_outline,
                           title: "Розширені дані з реєстру",
-                          onTap: () {
+                          onTap: () async {
+                            // Получаем root navigator context (главный экран под модалом)
+                            final rootContext =
+                                Navigator.of(context, rootNavigator: true)
+                                    .context;
+
                             _closeModal();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const ExtendedDataRequestPage(),
-                              ),
+
+                            // Маленькая задержка чтобы модал успел уйти вниз
+                            await Future.delayed(
+                                const Duration(milliseconds: 300));
+
+                            NavigationUtils.pushWithHorizontalAnimation(
+                              context: rootContext,
+                              page: const ExtendedDataRequestPage(),
                             );
                           },
                         ),
@@ -147,16 +159,45 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           context,
                           icon: Icons.medical_services_outlined,
                           title: "Направлення на ВЛК",
-                          onTap: () {
+                          onTap: () async {
+                            // Получаем root navigator context (главный экран под модалом)
+                            final rootContext =
+                                Navigator.of(context, rootNavigator: true)
+                                    .context;
+
                             _closeModal();
+
+                            // Маленькая задержка чтобы модал успел уйти вниз
+                            await Future.delayed(
+                                const Duration(milliseconds: 300));
+
+                            NavigationUtils.pushWithHorizontalAnimation(
+                              context: rootContext,
+                              page: const VlkUnavailablePage(),
+                            );
                           },
                         ),
                         _buildMenuItem(
                           context,
                           icon: Icons.edit_outlined,
                           title: "Уточнити контактні дані",
-                          onTap: () {
+                          onTap: () async {
+                            // Получаем root navigator context (главный экран под модалом)
+                            final rootContext =
+                                Navigator.of(context, rootNavigator: true)
+                                    .context;
+
                             _closeModal();
+                            await Future.delayed(
+                                const Duration(milliseconds: 300));
+
+                            // Получаем данные из UserDataService
+                            final extendedData = ExtendedData.fromUserData();
+
+                            NavigationUtils.pushWithHorizontalAnimation(
+                              context: rootContext,
+                              page: ExtendedDataReviewPage(data: extendedData),
+                            );
                           },
                         ),
                       ],

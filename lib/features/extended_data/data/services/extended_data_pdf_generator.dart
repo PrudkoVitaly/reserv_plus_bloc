@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
@@ -77,7 +76,7 @@ class ExtendedDataPdfGenerator {
               ),
               pw.Text(
                 'Сформовано: ${_getCurrentDateTime()}',
-                style: pw.TextStyle(
+                style: const pw.TextStyle(
                   fontSize: 12,
                   color: PdfColors.grey600,
                 ),
@@ -126,7 +125,7 @@ class ExtendedDataPdfGenerator {
           // Основание исключения
           pw.Text(
             'Підстава зняття/виключення: (п. 3 ч. 6 ст. 37) визнані непридатними до військової служби',
-            style: pw.TextStyle(
+            style: const pw.TextStyle(
               fontSize: 12,
               color: PdfColors.grey700,
             ),

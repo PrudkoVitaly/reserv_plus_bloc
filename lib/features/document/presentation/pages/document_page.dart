@@ -100,7 +100,6 @@ class _DocumentPageState extends State<DocumentPage>
               .then((result) {
             // Обработка результата сканирования
             if (result != null) {
-              print('Отсканировано: ${result.rawData}');
               // Здесь можно добавить обработку результата
             }
             // Восстанавливаем предыдущее состояние документа

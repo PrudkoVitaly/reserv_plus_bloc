@@ -90,23 +90,17 @@ class _DocumentModalState extends State<DocumentModal> {
                 },
                 onPanStart: (details) {
                   // Начинаем отслеживание перетаскивания
-                  print('Pan started');
                 },
                 onPanUpdate: (details) {
                   // Обрабатываем вертикальное перетаскивание вниз
-                  print('Pan update - delta: ${details.delta.dy}');
                   if (details.delta.dy > 0) {
                     // Перетаскивание вниз - можно добавить визуальную обратную связь
-                    print('Swiping down');
                   }
                 },
                 onPanEnd: (details) {
                   // Проверяем, достаточно ли быстро перетащили вниз
-                  print('Velocity: ${details.velocity.pixelsPerSecond.dy}');
-
                   if (details.velocity.pixelsPerSecond.dy > 100) {
                     // Свайп вниз - закрываем контейнер
-                    print('Closing container due to swipe down');
                     setState(() {
                       _isContainerVisible = false;
                     });

@@ -6,8 +6,8 @@ import '../bloc/extended_data_bloc.dart';
 import '../bloc/extended_data_event.dart';
 import '../bloc/extended_data_state.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'extended_data_success_page.dart';
-import 'extended_data_review_page.dart';
 
 class ExtendedDataRequestPage extends StatelessWidget {
   const ExtendedDataRequestPage({super.key});
@@ -31,102 +31,133 @@ class ExtendedDataRequestView extends StatelessWidget {
     return BlocListener<ExtendedDataBloc, ExtendedDataState>(
       listener: (context, state) {
         if (state is ExtendedDataReviewScreen) {
-          // Переходим к экрану "Запит надіслано" (как на картинке)
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const ExtendedDataSuccessPage(),
-            ),
-          );
+          // Переходим к экрану "Запит надіслано" с анимацией
+          NavigationUtils.pushWithHorizontalAnimation(
+            context: context,
+            page: const ExtendedDataSuccessPage(),
+          ).then((_) {
+            // Заменяем текущий route после завершения анимации
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
+          });
         }
       },
-      child: Scaffold(
-        backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+      child: BlocBuilder<ExtendedDataBloc, ExtendedDataState>(
+        builder: (context, state) {
+          // Если идет процесс отправки запроса - показываем полноэкранный loading
+          if (state is ExtendedDataRequestInProgress) {
+            return _buildLoadingScreen();
+          }
+
+          // Иначе показываем обычный экран с формой
+          return _buildRequestScreen(context, state);
+        },
+      ),
+    );
+  }
+
+  // Полноэкранный экран загрузки
+  Widget _buildLoadingScreen() {
+    return const Scaffold(
+      backgroundColor: Color.fromRGBO(226, 223, 204, 1),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            DelayedLoadingIndicator(),
+            SizedBox(height: 24),
+            Text(
+              'Надсилаємо запит...',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 34.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Які ваші дані є в реєстрі Оберіг?',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          height: 1.2,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 30),
-                      const Text(
-                        'У реєстрі Оберіг є більше інформації про вас, ніж відображає військово-обліковий документ. Щоб її отримати, достатньо подати запит.',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          height: 1.3,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Це можна робити раз на 24 години.',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          height: 1.3,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
+      ),
+    );
+  }
+
+  // Основной экран с формой запроса
+  Widget _buildRequestScreen(BuildContext context, ExtendedDataState state) {
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 34.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Які ваші дані є в реєстрі Оберіг?',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'У реєстрі Оберіг є більше інформації про вас, ніж відображає військово-обліковий документ. Щоб її отримати, достатньо подати запит.',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                height: 1.2,
+              ),
+              textAlign: TextAlign.left,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Це можна робити раз на 24 години.',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                height: 1.2,
+              ),
+              textAlign: TextAlign.left,
+            ),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: state is ExtendedDataRequestConfirmation
+                    ? () {
+                        context
+                            .read<ExtendedDataBloc>()
+                            .add(const ExtendedDataConfirmRequest());
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                  ),
+                ),
+                child: const Text(
+                  'Надіслати запит',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
-              BlocBuilder<ExtendedDataBloc, ExtendedDataState>(
-                builder: (context, state) {
-                  return SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: state is ExtendedDataRequestConfirmation
-                          ? () {
-                              context
-                                  .read<ExtendedDataBloc>()
-                                  .add(const ExtendedDataConfirmRequest());
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                        ),
-                      ),
-                      child: state is ExtendedDataRequestInProgress
-                          ? const DelayedLoadingIndicator()
-                          : const Text(
-                              'Надіслати запит',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
