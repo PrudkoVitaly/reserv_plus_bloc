@@ -41,13 +41,26 @@ class _QRScannerViewState extends State<QRScannerView> {
 
   Future<void> _playSuccessSound() async {
     try {
-      // Вибрация (100% работает)
+      // Вибрация
       await HapticFeedback.heavyImpact();
       await HapticFeedback.mediumImpact();
 
-      print('✅ Звук и вибрация успешно воспроизведены');
+      // Звук успеха - несколько вариантов
+      await _playBeepSound();
+    } catch (e) {}
+  }
+
+  Future<void> _playBeepSound() async {
+    try {
+      // Попробуем разные системные звуки
+      await SystemSound.play(SystemSoundType.click);
     } catch (e) {
-      print('❌ Ошибка: $e');
+      try {
+        await SystemSound.play(SystemSoundType.alert);
+      } catch (e2) {
+        // Только вибрация
+        await HapticFeedback.heavyImpact();
+      }
     }
   }
 
@@ -60,7 +73,7 @@ class _QRScannerViewState extends State<QRScannerView> {
           // Автоматически закрываем сканер через 2 секунды после успеха
           if (state is QRScannerSuccess) {
             _playSuccessSound();
-            Future.delayed(const Duration(seconds: 2), () {
+            Future.delayed(const Duration(seconds: 3), () {
               if (mounted) {
                 Navigator.of(context).pop(state.result);
               }
@@ -98,7 +111,7 @@ class _QRScannerViewState extends State<QRScannerView> {
     );
   }
 
-  // UI для сканирования - реальная камера с рамкой
+  // UI для сканирования - реальная камера с темно-серым фоном и угловыми маркерами
   Widget _buildScannerUI(BuildContext context) {
     return BlocBuilder<QRScannerBloc, QRScannerState>(
       builder: (context, state) {
@@ -140,63 +153,82 @@ class _QRScannerViewState extends State<QRScannerView> {
               },
             ),
 
-            // Темный overlay сверху
+            // Темно-серый фон с вырезанной областью для сканирования
+            CustomPaint(
+              painter: ScannerOverlayPainter(),
+              size: Size.infinite,
+            ),
+
+            // Заголовок и кнопка закрытия
             Positioned(
-              top: 0,
+              top: 10,
               left: 0,
               right: 0,
               child: Container(
                 height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Сканування',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-              ),
-            ),
-
-            // Кнопка закрытия
-            Positioned(
-              top: 50,
-              right: 20,
-              child: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-            ),
-
-            // Рамка для сканирования
-            Center(
-              child: Container(
-                width: 250,
-                height: 250,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(12),
+                child: Stack(
+                  children: [
+                    // Заголовок по центру всего экрана
+                    const Center(
+                      child: Text(
+                        'Сканування',
+                        style: TextStyle(color: Colors.white, fontSize: 22),
+                      ),
+                    ),
+                    // Кнопка закрытия справа
+                    Positioned(
+                      top: 0,
+                      right: 30,
+                      bottom: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
-            // Инструкция
-            Positioned(
-              bottom: 100,
+            // Инструкция выше рамки
+            const Positioned(
+              top: 100,
               left: 20,
               right: 20,
-              child: Text(
+              child: const Text(
                 'Наведіть рамку на QR-код, який хочете відсканувати.',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
+              ),
+            ),
+
+            // Рамка для сканирования с угловыми маркерами
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width *
+                    0.7, // 70% от ширины экрана
+                height: MediaQuery.of(context).size.width *
+                    0.7, // Квадрат по ширине
+
+                child: Stack(
+                  children: [
+                    // Угловые маркеры
+                    _buildCornerMarker(Alignment.topLeft),
+                    _buildCornerMarker(Alignment.topRight),
+                    _buildCornerMarker(Alignment.bottomLeft),
+                    _buildCornerMarker(Alignment.bottomRight),
+                  ],
+                ),
               ),
             ),
           ],
@@ -205,18 +237,25 @@ class _QRScannerViewState extends State<QRScannerView> {
     );
   }
 
+  // Создание угловых маркеров
+  Widget _buildCornerMarker(Alignment alignment) {
+    return Positioned.fill(
+      child: Align(
+        alignment: alignment,
+        child: CustomPaint(
+          size: const Size(30, 30),
+          painter: CornerMarkerPainter(alignment: alignment),
+        ),
+      ),
+    );
+  }
+
   // UI для успешного сканирования
   Widget _buildSuccessUI(BuildContext context, result) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.green.shade900,
-            Colors.black,
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: const BoxDecoration(
+        color: Color.fromRGBO(226, 223, 204, 1),
       ),
       child: Center(
         child: Column(
@@ -224,14 +263,14 @@ class _QRScannerViewState extends State<QRScannerView> {
           children: [
             // Анимированная галочка
             TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds: 600),
+              duration: const Duration(milliseconds: 500),
               tween: Tween(begin: 0.0, end: 1.0),
               builder: (context, value, child) {
                 return Transform.scale(
                   scale: value,
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle,
-                    color: Colors.green.shade400,
+                    color: Colors.orange,
                     size: 120,
                   ),
                 );
@@ -241,7 +280,7 @@ class _QRScannerViewState extends State<QRScannerView> {
             const Text(
               'QR-код успішно відскановано!',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -253,10 +292,10 @@ class _QRScannerViewState extends State<QRScannerView> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.green.shade400,
+                  color: Colors.orange,
                   width: 2,
                 ),
               ),
@@ -264,14 +303,14 @@ class _QRScannerViewState extends State<QRScannerView> {
                 children: [
                   const Icon(
                     Icons.qr_code_2,
-                    color: Colors.white,
+                    color: Colors.black,
                     size: 48,
                   ),
                   const SizedBox(height: 16),
                   const Text(
                     'Отримані дані:',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.black54,
                       fontSize: 14,
                     ),
                   ),
@@ -281,7 +320,7 @@ class _QRScannerViewState extends State<QRScannerView> {
                         ? '${result.rawData.substring(0, 100)}...'
                         : result.rawData,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
@@ -294,19 +333,12 @@ class _QRScannerViewState extends State<QRScannerView> {
             // Прогресс индикатор автоматического закрытия
             const Column(
               children: [
-                SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white54),
-                  ),
-                ),
+                DelayedLoadingIndicator(),
                 SizedBox(height: 12),
                 Text(
                   'Автоматичне повернення...',
                   style: TextStyle(
-                    color: Colors.white54,
+                    color: Colors.black54,
                     fontSize: 14,
                   ),
                 ),
@@ -340,4 +372,92 @@ class _QRScannerViewState extends State<QRScannerView> {
       ),
     );
   }
+}
+
+// Кастомный painter для создания маски с вырезанной областью сканирования
+class ScannerOverlayPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF2C2C2C).withOpacity(0.6)
+      ..style = PaintingStyle.fill;
+
+    // Создаем путь для всей области
+    final path = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    // Вырезаем прямоугольную область в центре - ДИНАМИЧЕСКИЙ РАЗМЕР
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final scanAreaSize = size.width * 0.7;
+
+    final scanRect = Rect.fromCenter(
+      center: Offset(centerX, centerY),
+      width: scanAreaSize,
+      height: scanAreaSize,
+    );
+
+    // Создаем путь для вырезанной области
+    final scanPath = Path()
+      ..addRRect(RRect.fromRectAndRadius(scanRect, const Radius.circular(12)));
+
+    // Объединяем пути (вычитаем область сканирования)
+    final combinedPath = Path.combine(PathOperation.difference, path, scanPath);
+
+    canvas.drawPath(combinedPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Кастомный painter для L-образных углов
+class CornerMarkerPainter extends CustomPainter {
+  final Alignment alignment;
+
+  CornerMarkerPainter({required this.alignment});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    final cornerRadius = 16.0;
+    final lineLength = 20.0;
+
+    if (alignment == Alignment.topLeft) {
+      // Левый верхний угол - длинный
+      path.moveTo(0, lineLength);
+      path.lineTo(0, cornerRadius);
+      path.quadraticBezierTo(0, 0, cornerRadius, 0);
+      path.lineTo(lineLength, 0);
+    } else if (alignment == Alignment.topRight) {
+      // Правый верхний угол - длинный
+      path.moveTo(size.width - lineLength, 0);
+      path.lineTo(size.width - cornerRadius, 0);
+      path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
+      path.lineTo(size.width, lineLength);
+    } else if (alignment == Alignment.bottomLeft) {
+      // Левый нижний угол - длинный
+      path.moveTo(0, size.height - lineLength);
+      path.lineTo(0, size.height - cornerRadius);
+      path.quadraticBezierTo(0, size.height, cornerRadius, size.height);
+      path.lineTo(lineLength, size.height);
+    } else if (alignment == Alignment.bottomRight) {
+      // Правый нижний угол - длинный
+      path.moveTo(size.width - lineLength, size.height);
+      path.lineTo(size.width - cornerRadius, size.height);
+      path.quadraticBezierTo(
+          size.width, size.height, size.width, size.height - cornerRadius);
+      path.lineTo(size.width, size.height - lineLength);
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

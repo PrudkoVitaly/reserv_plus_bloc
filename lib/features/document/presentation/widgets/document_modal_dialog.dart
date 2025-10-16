@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../../../person_info/presentation/utils/person_info_utils.dart';
+import '../../../extended_data/presentation/pages/extended_data_request_page.dart';
 
 class DocumentModalDialog extends StatefulWidget {
   const DocumentModalDialog({super.key});
@@ -134,6 +135,12 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           title: "Розширені дані з реєстру",
                           onTap: () {
                             _closeModal();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ExtendedDataRequestPage(),
+                              ),
+                            );
                           },
                         ),
                         _buildMenuItem(
