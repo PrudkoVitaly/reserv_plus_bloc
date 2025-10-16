@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/document_data.dart';
 import '../../domain/repositories/document_repository.dart';
+import 'package:reserv_plus/features/shared/services/user_data_service.dart';
 
 class DocumentRepositoryImpl implements DocumentRepository {
   static const String _lastUpdatedKey = 'last_updated_timestamp';
@@ -29,13 +30,15 @@ class DocumentRepositoryImpl implements DocumentRepository {
       await prefs.setString(_lastUpdatedKey, lastUpdated.toIso8601String());
     }
 
+    final userData = UserDataService();
+
     return DocumentData(
-      fullName: "ПРУДКО Валентин Віталійович",
-      firstName: "Валентин",
-      lastName: "ПРУДКО",
-      patronymic: "Віталійович",
-      birthDate: "13.11.1987",
-      status: "Не військовозобов'язаний",
+      fullName: userData.fullName,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      patronymic: userData.patronymic,
+      birthDate: userData.birthDate,
+      status: userData.status,
       validityDate: "27.11.2025",
       qrCode: "images/qr_code.png",
       lastUpdated: lastUpdated,
@@ -55,13 +58,15 @@ class DocumentRepositoryImpl implements DocumentRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_lastUpdatedKey, now.toIso8601String());
 
+    final userData = UserDataService();
+
     return DocumentData(
-      fullName: "ПРУДКО Валентин Віталійович",
-      firstName: "Валентин",
-      lastName: "ПРУДКО",
-      patronymic: "Віталійович",
-      birthDate: "13.11.1987",
-      status: "Не військовозобов'язаний",
+      fullName: userData.fullName,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      patronymic: userData.patronymic,
+      birthDate: userData.birthDate,
+      status: userData.status,
       validityDate: "27.11.2025",
       qrCode: "images/qr_code.png",
       lastUpdated: now,

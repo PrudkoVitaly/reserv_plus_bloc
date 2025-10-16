@@ -372,10 +372,10 @@ class _DocumentPageState extends State<DocumentPage>
               ],
             ),
           ),
-          SizedBox(height: size.height * 0.14),
+          SizedBox(height: size.height * 0.15),
           Container(
             width: double.infinity,
-            height: 40,
+            height: 45,
             alignment: Alignment.center,
             decoration: const BoxDecoration(
               color: Color.fromRGBO(150, 148, 134, 1),

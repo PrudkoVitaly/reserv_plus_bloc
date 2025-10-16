@@ -22,7 +22,7 @@ class DocumentInfoSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "ПРУДКО Валентин",
+                      "МАРЧЕНКО Микола",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
@@ -30,7 +30,7 @@ class DocumentInfoSection extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Віталійович",
+                      "Володимирович",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,

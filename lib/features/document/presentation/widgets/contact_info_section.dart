@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:reserv_plus/features/shared/services/user_data_service.dart';
 
 class ContactInfoSection extends StatelessWidget {
   const ContactInfoSection({super.key});
 
+  String _formatPhone(String phone) {
+    // Форматируем номер телефона в формат +380 95 361 4443
+    if (phone.length >= 12) {
+      return '+${phone.substring(0, 3)} ${phone.substring(3, 5)} ${phone.substring(5, 8)} ${phone.substring(8, 12)}';
+    }
+    return phone;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userData = UserDataService();
+    
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -12,10 +23,10 @@ class ContactInfoSection extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Телефон",
             style: TextStyle(
               fontSize: 18,
@@ -23,42 +34,42 @@ class ContactInfoSection extends StatelessWidget {
               height: 1.1,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            "+38 095 928 7058",
-            style: TextStyle(
+            _formatPhone(userData.phone),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 10),
-          Text(
+          const SizedBox(height: 10),
+          const Text(
             "Email:",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            "PRUDKOVALENTIN@gmail.com",
-            style: TextStyle(
+            userData.email,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 20),
-          Text(
+          const SizedBox(height: 20),
+          const Text(
             "Адреса проживання:",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            "Україна, Дніпропетровська обл.,\nм.Дніпро, пров. Пушкінська, б.10, кв.2",
-            style: TextStyle(
+            userData.address,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),

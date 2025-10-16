@@ -175,7 +175,7 @@ class _PersonInfoModalState extends State<PersonInfoModal> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          const SizedBox(height: 50), // Отступ сверху при скроллинге
+          const SizedBox(height: 4), // Отступ сверху при скроллинге
           _buildPersonCard(personInfo),
           const SizedBox(height: 10),
           _buildExclusionReasonCard(personInfo),
@@ -201,24 +201,24 @@ class _PersonInfoModalState extends State<PersonInfoModal> {
       ),
       child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(20),
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   textAlign: TextAlign.left,
-                  "ПРУДКО Валентин Віталійович",
-                  style: TextStyle(
+                  personInfo.fullName,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w500,
                     height: 1,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
-                  "Виключено",
-                  style: TextStyle(
+                  personInfo.status,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1.1,

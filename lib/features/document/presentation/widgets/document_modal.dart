@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../bloc/document_state.dart';
+import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
+import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_review_page.dart';
 
 class DocumentModal extends StatefulWidget {
   const DocumentModal({super.key});
@@ -276,7 +278,20 @@ class _DocumentModalState extends State<DocumentModal> {
                               context
                                   .read<DocumentBloc>()
                                   .add(const DocumentToggleModal(false));
-                              // Здесь можно добавить навигацию к редактированию контактов
+                              
+                              // Переходим к странице редактирования контактов
+                              Future.delayed(const Duration(milliseconds: 100), () {
+                                if (mounted) {
+                                  // Создаем ExtendedData из UserDataService
+                                  final extendedData = ExtendedData.fromUserData();
+                                  
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ExtendedDataReviewPage(data: extendedData),
+                                    ),
+                                  );
+                                }
+                              });
                             }
                           });
                         },
