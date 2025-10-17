@@ -289,7 +289,7 @@ class _DocumentPageState extends State<DocumentPage>
   Widget _buildFrontCard(DocumentLoaded state, Size size) {
     return Container(
       width: double.infinity,
-      height: size.height * 0.70,
+      height: size.height * 0.71,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(

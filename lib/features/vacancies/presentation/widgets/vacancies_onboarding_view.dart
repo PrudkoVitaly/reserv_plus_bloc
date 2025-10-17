@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animations/animations.dart';
 import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
+import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_categories_page.dart';
 import '../bloc/vacancies_bloc.dart';
 import '../bloc/vacancies_event.dart';
 
@@ -116,9 +117,25 @@ class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      context.read<VacanciesBloc>().add(
-                            const VacanciesStartPressed(),
-                          );
+                      Navigator.of(context).pushReplacement(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const VacancyCategoriesPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return SharedAxisTransition(
+                              animation: animation,
+                              secondaryAnimation: secondaryAnimation,
+                              transitionType:
+                                  SharedAxisTransitionType.horizontal,
+                              fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                              child: child,
+                            );
+                          },
+                          transitionDuration: const Duration(milliseconds: 300),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
