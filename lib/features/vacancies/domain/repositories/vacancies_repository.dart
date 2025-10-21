@@ -13,4 +13,7 @@ abstract class VacanciesRepository {
   Future<void> selectCategory(VacancyCategory category);
   Future<VacancyCategory?> getSelectedCategory();
   Future<List<Vacancy>> getVacanciesForCategory(VacancyCategory category);
+
+  // Методы для всех вакансий
+  Future<List<Vacancy>> getAllVacancies();
 }

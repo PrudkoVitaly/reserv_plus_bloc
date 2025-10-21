@@ -1,3 +1,4 @@
+import 'package:reserv_plus/features/vacancies/data/models/vacancy_data.dart';
 import 'package:reserv_plus/features/vacancies/domain/entities/vacancy.dart';
 import 'package:reserv_plus/features/vacancies/domain/entities/vacancy_category.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,5 +121,12 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
       ..._getDronesVacancies(),
       ..._getPersonalVacancies(),
     ];
+  }
+
+  @override
+  Future<List<Vacancy>> getAllVacancies() async {
+    final allVacancies = VacancyData.getAllVacancies();
+
+    return allVacancies.toList();
   }
 }

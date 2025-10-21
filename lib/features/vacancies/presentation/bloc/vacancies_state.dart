@@ -54,38 +54,30 @@ class VacanciesCategoriesLoaded extends VacanciesState {
   final List<VacancyCategory> categories;
   final VacancyCategory? selectedCategory;
   final bool isHighlighted;
+  final List<Vacancy>? loadedVacancies;
 
   const VacanciesCategoriesLoaded({
     required this.categories,
     this.selectedCategory,
     this.isHighlighted = false,
+    this.loadedVacancies,
   });
 
   VacanciesCategoriesLoaded copyWith({
     List<VacancyCategory>? categories,
     VacancyCategory? selectedCategory,
     bool? isHighlighted,
+    List<Vacancy>? loadedVacancies,
   }) {
     return VacanciesCategoriesLoaded(
       categories: categories ?? this.categories,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       isHighlighted: isHighlighted ?? this.isHighlighted,
+      loadedVacancies: loadedVacancies ?? this.loadedVacancies,
     );
   }
 
   @override
-  List<Object?> get props => [categories, selectedCategory, isHighlighted];
-}
-
-class VacanciesVacanciesLoaded extends VacanciesState {
-  final VacancyCategory selectedCategory;
-  final List<Vacancy> vacancies;
-
-  const VacanciesVacanciesLoaded({
-    required this.selectedCategory,
-    required this.vacancies,
-  });
-
-  @override
-  List<Object?> get props => [selectedCategory, vacancies];
+  List<Object?> get props =>
+      [categories, selectedCategory, isHighlighted, loadedVacancies];
 }

@@ -40,3 +40,7 @@ class VacanciesSelectCategory extends VacanciesEvent {
   @override
   List<Object?> get props => [category];
 }
+
+class VacanciesLoadAllVacancies extends VacanciesEvent {
+  const VacanciesLoadAllVacancies();
+}

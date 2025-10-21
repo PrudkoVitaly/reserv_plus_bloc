@@ -17,6 +17,9 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
     // ОБРАБОТЧИКИ для категорий
     on<VacanciesLoadCategories>(_onLoadCategories);
     on<VacanciesSelectCategory>(_onSelectCategory);
+
+    // ОБРАБОТЧИКИ для вакансий
+    on<VacanciesLoadAllVacancies>(_onLoadAllVacancies);
   }
 
   void _onInitialized(
@@ -38,7 +41,17 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
     emit(const VacanciesCategoriesLoading());
     try {
       final categories = await _repository.getVacancyCategories();
-      emit(VacanciesCategoriesLoaded(categories: categories));
+
+      // Автоматически выбираем вторую категорию "Для вас" при загрузке
+      // Если категорий меньше 2, выбираем первую, если есть
+      final selectedCategory = categories.length > 1
+          ? categories[1]
+          : (categories.isNotEmpty ? categories.first : null);
+
+      emit(VacanciesCategoriesLoaded(
+        categories: categories,
+        selectedCategory: selectedCategory,
+      ));
     } catch (e) {
       emit(VacanciesError(e.toString()));
     }
@@ -70,7 +83,17 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
 
     try {
       final categories = await _repository.getVacancyCategories();
-      emit(VacanciesCategoriesLoaded(categories: categories));
+
+      // Автоматически выбираем вторую категорию "Для вас" при загрузке
+      // Если категорий меньше 2, выбираем первую, если есть
+      final selectedCategory = categories.length > 1
+          ? categories[1]
+          : (categories.isNotEmpty ? categories.first : null);
+
+      emit(VacanciesCategoriesLoaded(
+        categories: categories,
+        selectedCategory: selectedCategory,
+      ));
     } catch (e) {
       emit(VacanciesError(e.toString()));
     }
@@ -80,23 +103,37 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
       VacanciesSelectCategory event, Emitter<VacanciesState> emit) async {
     try {
       await _repository.selectCategory(event.category);
-      // Получаем текущие категории
       final categories = await _repository.getVacancyCategories();
 
-      // Эмитим VacanciesCategoriesLoaded с выбранной категорией и подсветкой
       emit(VacanciesCategoriesLoaded(
         categories: categories,
         selectedCategory: event.category,
         isHighlighted: true,
       ));
 
-      // Через 500ms убираем только подсветку
       await Future.delayed(const Duration(milliseconds: 500));
       emit(VacanciesCategoriesLoaded(
         categories: categories,
-        selectedCategory: event.category, // Оставляем выбранную категорию
-        isHighlighted: false, // Убираем только подсветку
+        selectedCategory: event.category,
+        isHighlighted: false,
       ));
+      add(const VacanciesLoadAllVacancies());
+    } catch (e) {
+      emit(VacanciesError(e.toString()));
+    }
+  }
+
+  void _onLoadAllVacancies(
+      VacanciesLoadAllVacancies event, Emitter<VacanciesState> emit) async {
+    try {
+      // Получаем текущее состояние, чтобы сохранить категории
+      if (state is VacanciesCategoriesLoaded) {
+        final currentState = state as VacanciesCategoriesLoaded;
+        final vacancies = await _repository.getAllVacancies();
+
+        // Обновляем существующее состояние с добавлением вакансий
+        emit(currentState.copyWith(loadedVacancies: vacancies));
+      }
     } catch (e) {
       emit(VacanciesError(e.toString()));
     }

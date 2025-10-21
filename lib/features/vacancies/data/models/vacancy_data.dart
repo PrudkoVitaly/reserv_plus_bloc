@@ -1,0 +1,73 @@
+import 'package:reserv_plus/features/vacancies/domain/entities/vacancy.dart';
+
+class VacancyData {
+  static List<Vacancy> getAllVacancies() {
+    return [
+      Vacancy(
+        id: '1',
+        title: 'Оператор FPV-дронів',
+        description: 'Підрозділ «Black Winter Group» ГУР МОУ',
+        company: 'Black Winter Group',
+        location: 'Київ',
+        salary: 'За домовленістю',
+        experience: '1+ рік',
+        requirements: ['Досвід роботи з дронами', 'Військова підготовка'],
+        benefits: ['Страхування', 'Медичне обслуговування'],
+        categoryId: 'drones',
+        createdAt: DateTime.now(),
+      ),
+      Vacancy(
+        id: '2',
+        title: 'Санітар',
+        description: 'Підрозділ «Black Winter Group» ГУР МОУ',
+        company: 'Black Winter Group',
+        location: 'Київ',
+        salary: 'За домовленістю',
+        experience: '2+ роки',
+        requirements: ['Медична освіта', 'Військова підготовка'],
+        benefits: ['Страхування', 'Медичне обслуговування'],
+        categoryId: 'drones',
+        createdAt: DateTime.now(),
+      ),
+      Vacancy(
+        id: '3',
+        title: 'Сапер',
+        description: '66 окрема механізована бригада',
+        company: '66 Brigade',
+        location: 'Львів',
+        salary: 'За домовленістю',
+        experience: '2+ роки',
+        requirements: ['Військова підготовка', 'Досвід роботи з вибухівкою'],
+        benefits: ['Страхування', 'Медичне обслуговування'],
+        categoryId: 'all',
+        createdAt: DateTime.now(),
+      ),
+      Vacancy(
+        id: '4',
+        title: 'Помічник гранатометника',
+        description: '66 окрема механізована бригада',
+        company: '66 Brigade',
+        location: 'Львів',
+        salary: 'За домовленістю',
+        experience: '1+ рік',
+        requirements: ['Військова підготовка', 'Фізична підготовка'],
+        benefits: ['Страхування', 'Медичне обслуговування'],
+        categoryId: 'all',
+        createdAt: DateTime.now(),
+      ),
+      Vacancy(
+        id: '5',
+        title: 'Кулеметник',
+        description: '66 окрема механізована бригада',
+        company: '66 Brigade',
+        location: 'Львів',
+        salary: 'За домовленістю',
+        experience: '2+ роки',
+        requirements: ['Військова підготовка', 'Фізична підготовка'],
+        benefits: ['Страхування', 'Медичне обслуговування'],
+        categoryId: 'all',
+        createdAt: DateTime.now(),
+      ),
+    ];
+  }
+}
