@@ -15,18 +15,29 @@ class VacancyListWidget extends StatelessWidget {
       padding: EdgeInsets.zero,
       itemCount: vacancies.length,
       itemBuilder: (context, index) {
-        return _buildVacancyCard(vacancies[index]);
+        final isFirstItem = index == 0;
+        final isLastItem = index == vacancies.length - 1;
+        return _buildVacancyCard(
+          vacancies[index],
+          isFirstItem: isFirstItem,
+          isLastItem: isLastItem,
+        );
       },
     );
   }
 
-  Widget _buildVacancyCard(Vacancy vacancy) {
+  Widget _buildVacancyCard(Vacancy vacancy, {bool isFirstItem = false, bool isLastItem = false}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(
+        left: 5,
+        right: 5,
+        top: isFirstItem ? 16 : 0,
+        bottom: isLastItem ? 30 : 8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -37,41 +48,44 @@ class VacancyListWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Иконка
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                'images/${vacancy.company.toLowerCase().replaceAll(' ', '_')}.png',
-                fit: BoxFit.cover,
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              vacancy.iconPath,
+              width: 50,
+              height: 50,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
             ),
           ),
-          const SizedBox(width: 16),
-          // Текст
+          const SizedBox(width: 6),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  vacancy.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Text(
+                    vacancy.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      height: 1,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  vacancy.company,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.only(right: 30),
+                  child: Text(
+                    vacancy.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      height: 1.1,
+                    ),
                   ),
                 ),
               ],

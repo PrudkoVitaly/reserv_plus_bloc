@@ -13,6 +13,7 @@ class Vacancy extends Equatable {
   final String categoryId;
   final DateTime createdAt;
   final bool isActive;
+  final String iconPath;
 
   const Vacancy({
     required this.id,
@@ -27,6 +28,7 @@ class Vacancy extends Equatable {
     required this.categoryId,
     required this.createdAt,
     this.isActive = true,
+    required this.iconPath,
   });
 
   Vacancy copyWith({
@@ -43,7 +45,7 @@ class Vacancy extends Equatable {
     DateTime? createdAt,
     bool? isActive,
   }) {
-    return Vacancy(
+    return Vacancy( 
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -56,6 +58,7 @@ class Vacancy extends Equatable {
       categoryId: categoryId ?? this.categoryId,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
+      iconPath: iconPath ?? this.iconPath,
     );
   }
 
@@ -73,5 +76,6 @@ class Vacancy extends Equatable {
         categoryId,
         createdAt,
         isActive,
+        iconPath,
       ];
 }

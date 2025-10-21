@@ -79,7 +79,7 @@ class VacancyCategoriesView extends StatelessWidget {
       VacancyCategory? selectedCategory,
       bool isHighlighted) {
     return Padding(
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 16),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -122,22 +122,34 @@ class VacancyCategoriesView extends StatelessWidget {
           // Заменяем карточки на табы
           _buildCategoryTabs(
               context, categories, selectedCategory, isHighlighted),
-          const SizedBox(height: 20),
-          // Здесь будет контент выбранной категории
+          const SizedBox(height: 16),
           Expanded(
-            child: PageTransitionSwitcher(
-              duration: const Duration(milliseconds: 900),
-              reverse: false,
-              transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-                return SharedAxisTransition(
-                  animation: primaryAnimation,
-                  secondaryAnimation: secondaryAnimation,
-                  transitionType: SharedAxisTransitionType.horizontal,
-                  fillColor: const Color.fromRGBO(226, 223, 204, 1),
-                  child: child,
-                );
-              },
-              child: _buildSelectedCategoryContent(selectedCategory),
+            child: Stack(
+              children: [
+                PageTransitionSwitcher(
+                  duration: const Duration(milliseconds: 900),
+                  reverse: false,
+                  transitionBuilder:
+                      (child, primaryAnimation, secondaryAnimation) {
+                    return SharedAxisTransition(
+                      animation: primaryAnimation,
+                      secondaryAnimation: secondaryAnimation,
+                      transitionType: SharedAxisTransitionType.horizontal,
+                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                      child: child,
+                    );
+                  },
+                  child: _buildSelectedCategoryContent(selectedCategory),
+                ),
+                // Кнопки фильтра и сортировки только для категории 'all'
+                if (selectedCategory?.id == 'all')
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: _buildFilterSortButtons(),
+                  ),
+              ],
             ),
           )
         ],
@@ -231,7 +243,6 @@ class VacancyCategoriesView extends StatelessWidget {
           height: 1,
           child: Stack(
             children: [
-              // Фоновая полосочка - немного короче
               Center(
                 child: Container(
                   width: constraints.maxWidth * 0.96,
@@ -306,108 +317,130 @@ class VacancyCategoriesView extends StatelessWidget {
   Widget _buildCategorySpecificContent(VacancyCategory category) {
     switch (category.id) {
       case 'drones':
-        return Container(
-          padding:
-              const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              const Text(
-                'На вас чекають',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-              _buildEmblemsGridDroneLine(),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                  ),
-                  child: const Text(
-                    'Змінити хіт подій',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1,
-                      color: Colors.black,
-                    ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Container(
+            padding:
+                const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                const Text(
+                  'На вас чекають',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-            ],
+                _buildEmblemsGridDroneLine(),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text(
+                      'Змінити хіт подій',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       case 'for_you':
-        return Container(
-          padding:
-              const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'На вас чекають',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 10),
-              _buildEmblemsGridForYou(),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                  ),
-                  child: const Text(
-                    'Подивитись вакансії',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1,
-                      color: Colors.black,
-                    ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Container(
+            padding:
+                const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'На вас чекають',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                _buildEmblemsGridForYou(),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text(
+                      'Подивитись вакансії',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       case 'all':
-        return BlocBuilder<VacanciesBloc, VacanciesState>(
-          builder: (context, state) {
-            if (state is VacanciesCategoriesLoaded &&
-                state.loadedVacancies != null) {
-              return VacancyListWidget(vacancies: state.loadedVacancies!);
-            } else {
-              return const Center(
-                child: DelayedLoadingIndicator(),
-              );
-            }
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  top: -16,
+                  left: 0,
+                  right: 0,
+                  height: constraints.maxHeight + 32,
+                  child: BlocBuilder<VacanciesBloc, VacanciesState>(
+                    builder: (context, state) {
+                      if (state is VacanciesCategoriesLoaded &&
+                          state.loadedVacancies != null) {
+                        return VacancyListWidget(
+                            vacancies: state.loadedVacancies!);
+                      } else {
+                        return const Center(
+                          child: DelayedLoadingIndicator(),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            );
           },
         );
       default:
@@ -523,6 +556,73 @@ class VacancyCategoriesView extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Кнопки фильтра и сортировки
+  Widget _buildFilterSortButtons() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          _buildActionButton(
+            icon: Icons.tune,
+            text: 'Фільтр',
+            onTap: () {
+              // TODO: Implement filter functionality
+            },
+          ),
+          const SizedBox(width: 8),
+          _buildActionButton(
+            icon: Icons.sort,
+            text: 'Сортування',
+            onTap: () {
+              // TODO: Implement sort functionality
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 30, 30, 30),
+        borderRadius: BorderRadius.circular(30),
+        
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(30),
+          onTap: onTap,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: Colors.white,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                text,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ),
       ),

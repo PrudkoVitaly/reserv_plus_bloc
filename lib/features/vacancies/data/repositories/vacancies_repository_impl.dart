@@ -93,6 +93,7 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
         benefits: ['Страхування', 'Відпустка'],
         categoryId: 'drones',
         createdAt: DateTime.now(),
+        iconPath: 'images/drone_icon.png',
       ),
     ];
   }
@@ -111,6 +112,21 @@ class VacanciesRepositoryImpl implements VacanciesRepository {
         benefits: ['Повний соцпакет'],
         categoryId: 'for_you',
         createdAt: DateTime.now(),
+        iconPath: 'images/drone_icon.png',
+        ),
+      Vacancy(
+        id: 'personal_2',
+        title: 'Персоналізована вакансія',
+        description: 'Рекомендована на основі вашого профілю',
+        company: 'ЗСУ',
+        location: 'Дніпро',
+        salary: '30000-40000 грн',
+        experience: '2-5 років',
+        requirements: ['Відповідний досвід'],
+        benefits: ['Повний соцпакет'],
+        categoryId: 'for_you',
+        createdAt: DateTime.now(),
+        iconPath: 'images/drone_icon.png',
       ),
     ];
   }
