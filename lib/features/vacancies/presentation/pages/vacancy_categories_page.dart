@@ -7,7 +7,10 @@ import 'package:reserv_plus/features/vacancies/domain/entities/vacancy_category.
 import 'package:reserv_plus/features/vacancies/presentation/bloc/vacancies_bloc.dart';
 import 'package:reserv_plus/features/vacancies/presentation/bloc/vacancies_event.dart';
 import 'package:reserv_plus/features/vacancies/presentation/bloc/vacancies_state.dart';
+import 'package:reserv_plus/features/vacancies/presentation/pages/selection_page.dart';
+import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_filter_page.dart';
 import 'package:reserv_plus/features/vacancies/presentation/widgets/vacancy_list_widget.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
 class VacancyCategoriesPage extends StatelessWidget {
   const VacancyCategoriesPage({super.key});
@@ -139,7 +142,8 @@ class VacancyCategoriesView extends StatelessWidget {
                       child: child,
                     );
                   },
-                  child: _buildSelectedCategoryContent(selectedCategory),
+                  child:
+                      _buildSelectedCategoryContent(selectedCategory, context),
                 ),
                 // Кнопки фильтра и сортировки только для категории 'all'
                 if (selectedCategory?.id == 'all')
@@ -147,7 +151,7 @@ class VacancyCategoriesView extends StatelessWidget {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: _buildFilterSortButtons(),
+                    child: _buildFilterSortButtons(context),
                   ),
               ],
             ),
@@ -277,7 +281,8 @@ class VacancyCategoriesView extends StatelessWidget {
   }
 
   // Контент выбранной категории
-  Widget _buildSelectedCategoryContent(VacancyCategory? selectedCategory) {
+  Widget _buildSelectedCategoryContent(
+      VacancyCategory? selectedCategory, BuildContext context) {
     if (selectedCategory == null) {
       return Container(
         key: const ValueKey('no_selection'),
@@ -309,12 +314,13 @@ class VacancyCategoriesView extends StatelessWidget {
     return SizedBox(
       key: ValueKey('category_${selectedCategory.id}'),
       width: double.infinity,
-      child: _buildCategorySpecificContent(selectedCategory),
+      child: _buildCategorySpecificContent(selectedCategory, context),
     );
   }
 
   // Специфичный контент для каждой категории
-  Widget _buildCategorySpecificContent(VacancyCategory category) {
+  Widget _buildCategorySpecificContent(
+      VacancyCategory category, BuildContext context) {
     switch (category.id) {
       case 'drones':
         return Padding(
@@ -341,7 +347,12 @@ class VacancyCategoriesView extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      NavigationUtils.pushWithHorizontalAnimation(
+                        context: context,
+                        page: const SelectionPage(),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
                       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -391,7 +402,12 @@ class VacancyCategoriesView extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      NavigationUtils.pushWithHorizontalAnimation(
+                        context: context,
+                        page: SelectionPage(),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
                       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -563,7 +579,7 @@ class VacancyCategoriesView extends StatelessWidget {
   }
 
   // Кнопки фильтра и сортировки
-  Widget _buildFilterSortButtons() {
+  Widget _buildFilterSortButtons(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -572,7 +588,10 @@ class VacancyCategoriesView extends StatelessWidget {
             icon: Icons.tune,
             text: 'Фільтр',
             onTap: () {
-              // TODO: Implement filter functionality
+              NavigationUtils.pushWithHorizontalAnimation(
+                context: context,
+                page: VacancyFilterPage(),
+              );
             },
           ),
           const SizedBox(width: 8),
@@ -598,12 +617,10 @@ class VacancyCategoriesView extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 30, 30, 30),
         borderRadius: BorderRadius.circular(30),
-        
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(30),
+        child: GestureDetector(
           onTap: onTap,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -616,7 +633,7 @@ class VacancyCategoriesView extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 text,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
