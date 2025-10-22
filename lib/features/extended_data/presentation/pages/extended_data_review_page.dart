@@ -126,7 +126,7 @@ class ExtendedDataReviewPage extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Color.fromARGB(255, 138, 138, 138)),
+            border: Border.all(color: const Color.fromARGB(255, 138, 138, 138)),
           
           ),
           child: Padding(

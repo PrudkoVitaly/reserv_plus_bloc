@@ -5,7 +5,7 @@ import 'pin_state.dart';
 
 class PinBloc extends Bloc<PinEvent, PinState> {
   final PinRepository _repository;
-  List<String> _enteredPin = [];
+  final List<String> _enteredPin = [];
 
   PinBloc({required PinRepository repository})
       : _repository = repository,

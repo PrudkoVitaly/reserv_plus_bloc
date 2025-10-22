@@ -164,7 +164,7 @@ class _QRScannerViewState extends State<QRScannerView> {
               top: 10,
               left: 0,
               right: 0,
-              child: Container(
+              child: SizedBox(
                 height: 100,
                 child: Stack(
                   children: [
@@ -201,7 +201,7 @@ class _QRScannerViewState extends State<QRScannerView> {
               top: 100,
               left: 20,
               right: 20,
-              child: const Text(
+              child: Text(
                 'Наведіть рамку на QR-код, який хочете відсканувати.',
                 style: TextStyle(
                   color: Colors.white,
@@ -214,7 +214,7 @@ class _QRScannerViewState extends State<QRScannerView> {
 
             // Рамка для сканирования с угловыми маркерами
             Center(
-              child: Container(
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width *
                     0.7, // 70% от ширины экрана
                 height: MediaQuery.of(context).size.width *
@@ -425,8 +425,8 @@ class CornerMarkerPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    final cornerRadius = 16.0;
-    final lineLength = 20.0;
+    const cornerRadius = 16.0;
+    const lineLength = 20.0;
 
     if (alignment == Alignment.topLeft) {
       // Левый верхний угол - длинный

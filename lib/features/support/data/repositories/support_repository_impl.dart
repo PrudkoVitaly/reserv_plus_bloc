@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:reserv_plus/features/support/domain/entities/support_info.dart';
 import 'package:reserv_plus/features/support/domain/repositories/support_repository.dart';
@@ -35,18 +38,28 @@ class SupportRepositoryImpl implements SupportRepository {
   }
 
   @override
-  Future<String> getDeviceNumber() async {
-    if (_cachedDeviceNumber != null) {
-      return _cachedDeviceNumber!;
-    }
-    try {
-      await Future.delayed(const Duration(milliseconds: 100));
-      _cachedDeviceNumber = 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
-      return _cachedDeviceNumber!;
-    } catch (e) {
-      throw Exception('Помилка отримання номера пристрою: $e');
-    }
+Future<String> getDeviceNumber() async {
+  if (_cachedDeviceNumber != null) {
+    return _cachedDeviceNumber!;
   }
+  try {
+    final deviceInfo = DeviceInfoPlugin();
+    
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      _cachedDeviceNumber = androidInfo.id;
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      _cachedDeviceNumber = iosInfo.identifierForVendor ?? 'UNKNOWN';
+    } else {
+      _cachedDeviceNumber = 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
+    }
+    
+    return _cachedDeviceNumber!;
+  } catch (e) {
+    throw Exception('Помилка отримання номера пристрою: $e');
+  }
+}
 
   @override
   Future<String> getViberUrl() async {

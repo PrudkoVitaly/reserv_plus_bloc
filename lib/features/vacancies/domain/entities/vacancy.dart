@@ -58,7 +58,7 @@ class Vacancy extends Equatable {
       categoryId: categoryId ?? this.categoryId,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
-      iconPath: iconPath ?? this.iconPath,
+      iconPath: iconPath ?? iconPath,
     );
   }
 

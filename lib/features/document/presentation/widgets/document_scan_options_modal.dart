@@ -52,7 +52,7 @@ class _DocumentScanOptionsModalState extends State<DocumentScanOptionsModal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 255, 255, 0.01),
+      backgroundColor: const Color.fromRGBO(255, 255, 255, 0.01),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {

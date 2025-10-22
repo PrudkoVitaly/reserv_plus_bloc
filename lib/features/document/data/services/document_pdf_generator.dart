@@ -104,10 +104,10 @@ class DocumentPdfGenerator {
                           width: 3,
                         ),
                         borderRadius: pw.BorderRadius.circular(12),
-                        boxShadow: [
+                        boxShadow: const [
                           pw.BoxShadow(
                             color: PdfColors.grey400,
-                            offset: const PdfPoint(2, 2),
+                            offset: PdfPoint(2, 2),
                             blurRadius: 4,
                           ),
                         ],

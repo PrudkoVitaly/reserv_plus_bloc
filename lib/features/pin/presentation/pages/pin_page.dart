@@ -149,10 +149,10 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
                   body: Column(
                     children: [
                       const Padding(
-                        padding: const EdgeInsets.only(left: 30),
+                        padding: EdgeInsets.only(left: 30),
                         child: Align(
                           alignment: Alignment.topLeft,
-                          child: const Text(
+                          child: Text(
                             'Код для входу',
                             style: TextStyle(
                               fontSize: 30,

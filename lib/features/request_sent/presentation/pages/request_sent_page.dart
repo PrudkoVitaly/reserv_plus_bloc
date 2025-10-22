@@ -35,12 +35,12 @@ class RequestSentPage extends StatelessWidget {
                 ),
                 child: const CircleAvatar(
                   radius: 50,
+                  backgroundColor: Colors.transparent,
                   child: Icon(
                     Icons.check,
                     color: Colors.black,
                     size: 60,
                   ),
-                  backgroundColor: Colors.transparent,
                 ),
               ),
               const SizedBox(height: 40),
