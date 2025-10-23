@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reserv_plus/features/notifications/presentation/pages/notification_page.dart';
 import 'package:reserv_plus/features/shared/services/user_data_service.dart';
 import 'package:reserv_plus/features/support/presentation/bloc/support_bloc.dart';
 import 'package:reserv_plus/features/support/presentation/bloc/support_event.dart';
@@ -165,7 +166,12 @@ class _MenuScreenViewState extends State<MenuScreenView>
         icon: CupertinoIcons.bell,
         title: 'Сповіщення',
         hasNotification: true,
-        onTap: () {},
+        onTap: () {
+          NavigationUtils.pushWithHorizontalAnimation(
+            context: context,
+            page: const NotificationPage(),
+          );
+        },
       ),
       MenuItem(
         icon: CupertinoIcons.question_circle,

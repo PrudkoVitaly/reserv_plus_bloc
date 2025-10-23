@@ -9,6 +9,8 @@ import 'package:reserv_plus/features/vacancies/presentation/bloc/vacancies_event
 import 'package:reserv_plus/features/vacancies/presentation/bloc/vacancies_state.dart';
 import 'package:reserv_plus/features/vacancies/presentation/pages/selection_page.dart';
 import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_filter_page.dart';
+import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_search_page.dart';
+import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_sort_page.dart';
 import 'package:reserv_plus/features/vacancies/presentation/widgets/vacancy_list_widget.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
@@ -26,8 +28,16 @@ class VacancyCategoriesPage extends StatelessWidget {
   }
 }
 
-class VacancyCategoriesView extends StatelessWidget {
+class VacancyCategoriesView extends StatefulWidget {
   const VacancyCategoriesView({super.key});
+
+  @override
+  State<VacancyCategoriesView> createState() => _VacancyCategoriesViewState();
+}
+
+class _VacancyCategoriesViewState extends State<VacancyCategoriesView> {
+  bool _isLoadingForYou = false;
+  bool _isLoadingDrones = false;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +120,10 @@ class VacancyCategoriesView extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    NavigationUtils.pushWithHorizontalAnimation(
+                      context: context,
+                      page: const VacancySearchPage(),
+                    );
                   },
                   icon: const Icon(
                     Icons.search,
@@ -129,22 +142,29 @@ class VacancyCategoriesView extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                PageTransitionSwitcher(
-                  duration: const Duration(milliseconds: 900),
-                  reverse: false,
-                  transitionBuilder:
-                      (child, primaryAnimation, secondaryAnimation) {
-                    return SharedAxisTransition(
-                      animation: primaryAnimation,
-                      secondaryAnimation: secondaryAnimation,
-                      transitionType: SharedAxisTransitionType.horizontal,
-                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
-                      child: child,
-                    );
-                  },
-                  child:
-                      _buildSelectedCategoryContent(selectedCategory, context),
-                ),
+                // Показываем лоадинг или контент
+                if ((selectedCategory?.id == 'for_you' && _isLoadingForYou) ||
+                    (selectedCategory?.id == 'drones' && _isLoadingDrones))
+                  const Center(
+                    child: DelayedLoadingIndicator(),
+                  )
+                else
+                  PageTransitionSwitcher(
+                    duration: const Duration(milliseconds: 900),
+                    reverse: false,
+                    transitionBuilder:
+                        (child, primaryAnimation, secondaryAnimation) {
+                      return SharedAxisTransition(
+                        animation: primaryAnimation,
+                        secondaryAnimation: secondaryAnimation,
+                        transitionType: SharedAxisTransitionType.horizontal,
+                        fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                        child: child,
+                      );
+                    },
+                    child: _buildSelectedCategoryContent(
+                        selectedCategory, context),
+                  ),
                 // Кнопки фильтра и сортировки только для категории 'all'
                 if (selectedCategory?.id == 'all')
                   Positioned(
@@ -176,10 +196,39 @@ class VacancyCategoriesView extends StatelessWidget {
             final shouldHighlight = isSelected && isHighlighted;
             return Expanded(
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  // Сначала переходим на вкладку
                   context
                       .read<VacanciesBloc>()
                       .add(VacanciesSelectCategory(category));
+
+                  // Специальная логика для вкладки "for_you"
+                  if (category.id == 'for_you') {
+                    setState(() {
+                      _isLoadingForYou = true;
+                    });
+
+                    // Показываем лоадинг на 2 секунды
+                    await Future.delayed(const Duration(seconds: 2));
+
+                    setState(() {
+                      _isLoadingForYou = false;
+                    });
+                  }
+
+                  // Специальная логика для вкладки "drones"
+                  if (category.id == 'drones') {
+                    setState(() {
+                      _isLoadingDrones = true;
+                    });
+
+                    // Показываем лоадинг на 2 секунды
+                    await Future.delayed(const Duration(seconds: 2));
+
+                    setState(() {
+                      _isLoadingDrones = false;
+                    });
+                  }
                 },
                 child: Center(
                   child: AnimatedContainer(
@@ -590,7 +639,7 @@ class VacancyCategoriesView extends StatelessWidget {
             onTap: () {
               NavigationUtils.pushWithHorizontalAnimation(
                 context: context,
-                page: VacancyFilterPage(),
+                page: const VacancyFilterPage(),
               );
             },
           ),
@@ -599,7 +648,10 @@ class VacancyCategoriesView extends StatelessWidget {
             icon: Icons.sort,
             text: 'Сортування',
             onTap: () {
-              // TODO: Implement sort functionality
+              NavigationUtils.pushWithHorizontalAnimation(
+                context: context,
+                page: const VacancySortPage(),
+              );
             },
           ),
         ],

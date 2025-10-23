@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_categories_page.dart';
@@ -12,11 +14,29 @@ class VacancyFilterPage extends StatefulWidget {
 
 class _VacancyFilterPageState extends State<VacancyFilterPage> {
   bool isLoading = true;
+  bool isToggleActive = false;
+  late int activeVacancyCount; // ✅ Для активного состояния
+  late int inactiveVacancyCount; // ✅ Для неактивного состояния
 
   @override
   void initState() {
     super.initState();
+    _generateVacancyCounts(); // ✅ Генерировать один раз
     _simulateLoading();
+  }
+
+  void _generateVacancyCounts() {
+    final random = Random(DateTime.now().millisecondsSinceEpoch);
+    // Генерируем оба числа один раз
+    activeVacancyCount = 2100 + random.nextInt(801); // 2100-2900
+    inactiveVacancyCount = 9100 + random.nextInt(801); // 9100-9900
+  }
+
+  void _toggleSwitch() {
+    setState(() {
+      isToggleActive = !isToggleActive;
+      // ✅ НЕ генерируем новые числа!
+    });
   }
 
   void _simulateLoading() async {
@@ -55,34 +75,89 @@ class _VacancyFilterPageState extends State<VacancyFilterPage> {
                     endIndent: 16,
                   ),
                   const SizedBox(height: 20),
-                  _buildToggleRow(),
+                  _buildToggleRow(isToggleActive, _toggleSwitch),
                   const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      NavigationUtils.pushWithVerticalAnimation(
-                        context: context,
-                        page: const VacancyCategoriesPage(),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'Показати 9539 вакансій',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1,
-                        color: Colors.black,
+                      child: Text(
+                        'Показати ${isToggleActive ? activeVacancyCount : inactiveVacancyCount} вакансій',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 1,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
+      ),
+    );
+  }
+
+  Widget _buildToggleRow(bool isToggleActive, VoidCallback onToggle) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      leading: const Icon(
+        Icons.info_outline,
+        size: 30,
+        color: Colors.black,
+      ),
+      title: const Text(
+        'Вакансії для\nпридатних до\nнебойової служби',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          color: Colors.black,
+          height: 1.1,
+        ),
+      ),
+      trailing: GestureDetector(
+        onTap: () {
+          onToggle();
+        },
+        child: Container(
+          width: 52,
+          height: 32,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            color: isToggleActive
+                ? const Color.fromRGBO(253, 135, 12, 1)
+                : const Color.fromARGB(255, 153, 153, 153),
+          ),
+          child: AnimatedAlign(
+            duration: const Duration(milliseconds: 100),
+            alignment:
+                isToggleActive ? Alignment.centerRight : Alignment.centerLeft,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              width: isToggleActive ? 30 : 18,
+              height: isToggleActive ? 30 : 18,
+              margin: isToggleActive
+                  ? const EdgeInsets.all(4)
+                  : const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isToggleActive ? Colors.white : Colors.white,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -122,26 +197,6 @@ Widget _buildFilterRow(String title, String value) {
   );
 }
 
-Widget _buildToggleRow() {
-  return ListTile(
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-    leading: const Icon(Icons.info_outline, size: 30, color: Colors.black),
-    title: const Text(
-      'Вакансії для придатних до небойової служби',
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w400,
-        color: Colors.black,
-        height: 1,
-      ),
-    ),
-    trailing: Switch(
-      value: false,
-      onChanged: (value) {},
-    ),
-  );
-}
-
 Widget _buildFilterHeader(BuildContext context) {
   return Stack(
     alignment: Alignment.center,
@@ -156,8 +211,8 @@ Widget _buildFilterHeader(BuildContext context) {
             icon: const Icon(Icons.arrow_back, size: 28, color: Colors.black),
           ),
           const Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: const Text(
+            padding: EdgeInsets.only(right: 16),
+            child: Text(
               'Очистити',
               style: TextStyle(
                 fontSize: 16,
