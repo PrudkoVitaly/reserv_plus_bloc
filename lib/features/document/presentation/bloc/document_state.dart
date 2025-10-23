@@ -65,6 +65,7 @@ class DocumentUpdating extends DocumentState {
   List<Object?> get props => [data];
 }
 
+
 class DocumentNavigateToScanner extends DocumentState {
   final String scanType; // 'military', 'summons', 'referral'
 

@@ -131,20 +131,6 @@ class _DocumentPageState extends State<DocumentPage>
             if (state is DocumentLoading) {
               // Показываем индикатор только если загрузка длится > 200ms
               return const DelayedLoadingIndicator();
-            } else if (state is DocumentUpdating) {
-              return const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    DelayedLoadingIndicator(
-                      delay: Duration(
-                          milliseconds: 0), // Показываем сразу для обновления
-                    ),
-                    SizedBox(height: 20),
-                    Text('Оновлення документу...'),
-                  ],
-                ),
-              );
             } else if (state is DocumentError) {
               return Center(
                 child: Column(

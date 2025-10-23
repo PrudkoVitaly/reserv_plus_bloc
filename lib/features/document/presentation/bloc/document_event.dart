@@ -27,6 +27,7 @@ class DocumentUpdateData extends DocumentEvent {
   const DocumentUpdateData();
 }
 
+
 class DocumentShareDocument extends DocumentEvent {
   const DocumentShareDocument();
 }

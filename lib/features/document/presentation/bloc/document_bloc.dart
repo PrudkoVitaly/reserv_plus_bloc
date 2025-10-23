@@ -26,6 +26,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     on<ScanReferralQREvent>(_onScanReferralQR);
   }
 
+
   void _onLoadData(DocumentLoadData event, Emitter<DocumentState> emit) async {
     emit(const DocumentLoading());
 

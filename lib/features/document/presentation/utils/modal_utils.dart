@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/document/presentation/widgets/document_scan_options_modal.dart';
+import 'package:reserv_plus/features/document/presentation/widgets/document_update_modal.dart';
 import '../widgets/document_modal_dialog.dart';
 
 class ModalUtils {
@@ -27,6 +28,37 @@ class ModalUtils {
         opaque: false,
         barrierDismissible: true,
         barrierColor: Colors.black.withOpacity(0.5),
+      ),
+    );
+  }
+
+  // Показывает модальное окно для обновления документа
+  static void showDocumentUpdateModal(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const DocumentUpdateModal(),
+        transitionDuration: const Duration(milliseconds: 300),
+        
+        opaque: false,
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Такая же анимация как у других модалов
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.1),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOut,
+              )),
+              child: child,
+            ),
+          );
+        },
       ),
     );
   }

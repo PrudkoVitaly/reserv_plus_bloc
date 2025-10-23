@@ -8,6 +8,7 @@ import '../../../extended_data/presentation/pages/extended_data_review_page.dart
 import '../../../extended_data/domain/entities/extended_data.dart';
 import '../pages/vlk_unavailable_page.dart';
 import '../../../../shared/utils/navigation_utils.dart';
+import '../utils/modal_utils.dart';
 
 class DocumentModalDialog extends StatefulWidget {
   const DocumentModalDialog({super.key});
@@ -127,10 +128,14 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           icon: Icons.refresh,
                           title: "Оновити документ",
                           onTap: () {
-                            context
-                                .read<DocumentBloc>()
-                                .add(const DocumentUpdateData());
+                            // Закрываем текущий модал
                             _closeModal();
+                            // Показываем новый модал с небольшой задержкой
+                            Future.delayed(const Duration(milliseconds: 200), () {
+                              if (context.mounted) {
+                                ModalUtils.showDocumentUpdateModal(context);
+                              }
+                            });
                           },
                         ),
                         _buildMenuItem(
