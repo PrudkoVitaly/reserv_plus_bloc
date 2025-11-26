@@ -2,12 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/document/presentation/bloc/document_bloc.dart';
 import 'package:reserv_plus/features/document/presentation/bloc/document_event.dart';
+import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:reserv_plus/features/notifications/domain/entities/notification.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
 
 class DocumentUpdateModal extends StatelessWidget {
   const DocumentUpdateModal({super.key});
 
   void _onUpdateDocument(BuildContext context) {
+    // 1. Отправляем событие в DocumentBloc (как было)
     context.read<DocumentBloc>().add(const DocumentUpdateData());
+
+    // 2. Создаем новое уведомление
+    final newNotification = NotificationEntity(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: 'Запит на інформацію з реєстру відправлено',
+      subtitle: 'Очікуйте сповіщення про результат обробки запиту',
+      timestamp: DateTime.now(),
+    );
+
+    // 3. Создаем NotificationBloc и добавляем уведомление
+    final notificationBloc = NotificationBloc(
+      repository: NotificationRepositoryImpl(),
+    );
+    notificationBloc.add(NotificationAdd(newNotification));
+    notificationBloc.close(); // Закрываем BLoC после использования
+
+    // 4. Закрываем модальное окно
     Navigator.of(context).pop();
   }
 

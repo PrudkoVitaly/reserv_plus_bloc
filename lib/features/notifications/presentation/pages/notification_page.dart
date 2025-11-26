@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/features/notifications/data/notification_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
 import 'package:reserv_plus/features/notifications/presentation/widgets/notification_card.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final notifications = NotificationData.getAllNotifications();
+    return BlocProvider(
+      create: (context) => NotificationBloc(
+        repository: NotificationRepositoryImpl(),
+      )..add(const NotificationLoadAll()),
+      child: const NotificationPageView(),
+    );
+  }
+}
 
+class NotificationPageView extends StatelessWidget {
+  const NotificationPageView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       body: Padding(
@@ -39,20 +56,46 @@ class NotificationPage extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      top: index == 0 ? 16 : 0,
-                      bottom: 0,
-                    ),
-                    child: NotificationCard(
-                      notification: notifications[index],
-                    ),
-                  );
+              child: BlocBuilder<NotificationBloc, NotificationState>(
+                builder: (context, state) {
+                  if (state is NotificationLoading) {
+                    return const Center(
+                      child: DelayedLoadingIndicator(),
+                    );
+                  }
+
+                  if (state is NotificationError) {
+                    return Center(
+                      child: Text('Помилка: ${state.message}'),
+                    );
+                  }
+
+                  if (state is NotificationLoaded) {
+                    if (state.notifications.isEmpty) {
+                      return const Center(
+                        child: Text('Немає сповіщень'),
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: state.notifications.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            top: index == 0 ? 16 : 0,
+                            bottom: 0,
+                          ),
+                          child: NotificationCard(
+                            notification: state.notifications[index],
+                          ),
+                        );
+                      },
+                    );
+                  }
+
+                  return const SizedBox.shrink();
                 },
               ),
             ),

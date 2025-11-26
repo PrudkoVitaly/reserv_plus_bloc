@@ -1,7 +1,7 @@
 import 'package:reserv_plus/features/notifications/domain/entities/notification.dart';
 
 class NotificationData {
-  static List<NotificationEntity> getAllNotifications() {
+  static List<NotificationEntity> getInitialNotifications() {
     return [
       NotificationEntity(
         id: '1',
