@@ -34,8 +34,6 @@ class BiometricAuthService {
             return BiometricType.fingerprint;
           case local_auth.BiometricType.strong:
             return BiometricType.fingerprint;
-          default:
-            return BiometricType.none;
         }
       }).toList();
     } catch (e) {

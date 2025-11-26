@@ -47,7 +47,9 @@ class _QRScannerViewState extends State<QRScannerView> {
 
       // Звук успеха - несколько вариантов
       await _playBeepSound();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Ошибка воспроизведения звука: $e');
+    }
   }
 
   Future<void> _playBeepSound() async {
@@ -292,7 +294,7 @@ class _QRScannerViewState extends State<QRScannerView> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: Colors.orange,
@@ -379,7 +381,7 @@ class ScannerOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF2C2C2C).withOpacity(0.6)
+      ..color = const Color(0xFF2C2C2C).withValues(alpha: 0.6)
       ..style = PaintingStyle.fill;
 
     // Создаем путь для всей области

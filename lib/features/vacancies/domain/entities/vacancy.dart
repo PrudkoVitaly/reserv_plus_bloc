@@ -44,8 +44,9 @@ class Vacancy extends Equatable {
     String? categoryId,
     DateTime? createdAt,
     bool? isActive,
+    String? iconPath,
   }) {
-    return Vacancy( 
+    return Vacancy(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -58,7 +59,7 @@ class Vacancy extends Equatable {
       categoryId: categoryId ?? this.categoryId,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
-      iconPath: iconPath ?? iconPath,
+      iconPath: iconPath ?? this.iconPath,
     );
   }
 

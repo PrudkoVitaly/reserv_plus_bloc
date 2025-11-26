@@ -127,13 +127,16 @@ class ExtendedDataReceivedPage extends StatelessWidget {
           );
         } else {
           // Если PDF не существует, генерируем новый
+          if (!context.mounted) return;
           await _generateAndSharePDF(context);
         }
       } else {
         // Если путь не передан, генерируем новый PDF
+        if (!context.mounted) return;
         await _generateAndSharePDF(context);
       }
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Помилка: $e'),
@@ -164,6 +167,7 @@ class ExtendedDataReceivedPage extends StatelessWidget {
         text: 'Розширені дані з реєстру',
       );
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Помилка генерації PDF: $e'),

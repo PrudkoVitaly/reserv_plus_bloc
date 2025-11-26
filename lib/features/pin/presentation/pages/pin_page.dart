@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/pages/forgot_pin_page.dart';
 import 'package:reserv_plus/features/registry/presentation/pages/registry_page.dart';
@@ -68,19 +67,6 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
   void dispose() {
     _shakeController.dispose();
     super.dispose();
-  }
-
-  // Функция для расчета адаптивного размера текста
-  double _getAdaptiveFontSize(BuildContext context, double maxSize) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    // Базовый размер на основе меньшей стороны экрана для лучшей адаптивности
-    double baseSize =
-        (screenWidth < screenHeight ? screenWidth : screenHeight) * 0.03;
-
-    // Ограничиваем максимальным размером
-    return baseSize > maxSize ? maxSize : baseSize;
   }
 
   @override
@@ -244,6 +230,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
               onTapUp: isBiometricsAvailable
                   ? (_) async {
                       await Future.delayed(const Duration(milliseconds: 150));
+                      if (!mounted) return;
                       setState(() {
                         _pressedButton = null;
                       });
@@ -285,6 +272,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
               },
               onTapUp: (_) async {
                 await Future.delayed(const Duration(milliseconds: 150));
+                if (!mounted) return;
                 setState(() {
                   _pressedButton = null;
                 });
@@ -338,6 +326,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
         onTapUp: (_) async {
           // Минимальная задержка, чтобы подсветка успела показаться
           await Future.delayed(const Duration(milliseconds: 150));
+          if (!mounted) return;
           setState(() {
             _pressedButton = null;
           });

@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
-import 'package:reserv_plus/features/vacancies/presentation/pages/vacancy_categories_page.dart';
-import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
 class VacancyFilterPage extends StatefulWidget {
   const VacancyFilterPage({super.key});

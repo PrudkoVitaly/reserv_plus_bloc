@@ -103,6 +103,7 @@ class _DocumentPageState extends State<DocumentPage>
               // Здесь можно добавить обработку результата
             }
             // Восстанавливаем предыдущее состояние документа
+            if (!mounted) return;
             context.read<DocumentBloc>().add(const DocumentLoadData());
           });
         }

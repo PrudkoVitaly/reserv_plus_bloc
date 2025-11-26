@@ -16,13 +16,6 @@ class DocumentModal extends StatefulWidget {
 class _DocumentModalState extends State<DocumentModal> {
   bool _isContainerVisible = false;
 
-  // Функция для показа и скрытия контейнера
-  void _toggleContainer() {
-    setState(() {
-      _isContainerVisible = !_isContainerVisible;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentBloc, DocumentState>(
@@ -52,7 +45,7 @@ class _DocumentModalState extends State<DocumentModal> {
     return Container(
       height: MediaQuery.of(context).size.height,
       color: Colors.black
-          .withOpacity(0.5), // Полностью затемненный фон на весь экран
+          .withValues(alpha: 0.5), // Полностью затемненный фон на весь экран
       width: MediaQuery.of(context).size.width,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -278,16 +271,20 @@ class _DocumentModalState extends State<DocumentModal> {
                               context
                                   .read<DocumentBloc>()
                                   .add(const DocumentToggleModal(false));
-                              
+
                               // Переходим к странице редактирования контактов
-                              Future.delayed(const Duration(milliseconds: 100), () {
+                              Future.delayed(const Duration(milliseconds: 100),
+                                  () {
                                 if (mounted) {
                                   // Создаем ExtendedData из UserDataService
-                                  final extendedData = ExtendedData.fromUserData();
-                                  
+                                  final extendedData =
+                                      ExtendedData.fromUserData();
+
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => ExtendedDataReviewPage(data: extendedData),
+                                      builder: (context) =>
+                                          ExtendedDataReviewPage(
+                                              data: extendedData),
                                     ),
                                   );
                                 }

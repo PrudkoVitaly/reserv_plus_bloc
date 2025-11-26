@@ -342,7 +342,7 @@ class _RegistryViewState extends State<RegistryView>
                         decoration: BoxDecoration(
                           color: state.navigationState.selectedIndex == 0
                               ? Colors.grey[300]
-                                  ?.withOpacity(_opacityAnimation.value)
+                                  ?.withValues(alpha: _opacityAnimation.value)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -391,7 +391,7 @@ class _RegistryViewState extends State<RegistryView>
                         decoration: BoxDecoration(
                           color: state.navigationState.selectedIndex == 1
                               ? Colors.grey[300]
-                                  ?.withOpacity(_opacityAnimation.value)
+                                  ?.withValues(alpha: _opacityAnimation.value)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -445,7 +445,7 @@ class _RegistryViewState extends State<RegistryView>
                             decoration: BoxDecoration(
                               color: state.navigationState.selectedIndex == 2
                                   ? Colors.grey[300]
-                                      ?.withOpacity(_opacityAnimation.value)
+                                      ?.withValues(alpha: _opacityAnimation.value)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
                             ),

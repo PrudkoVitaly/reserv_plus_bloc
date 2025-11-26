@@ -154,6 +154,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                             await Future.delayed(
                                 const Duration(milliseconds: 300));
 
+                            if (!mounted) return;
                             NavigationUtils.pushWithHorizontalAnimation(
                               context: rootContext,
                               page: const ExtendedDataRequestPage(),
@@ -176,6 +177,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                             await Future.delayed(
                                 const Duration(milliseconds: 300));
 
+                            if (!mounted) return;
                             NavigationUtils.pushWithHorizontalAnimation(
                               context: rootContext,
                               page: const VlkUnavailablePage(),
@@ -196,6 +198,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                             await Future.delayed(
                                 const Duration(milliseconds: 300));
 
+                            if (!mounted) return;
                             // Получаем данные из UserDataService
                             final extendedData = ExtendedData.fromUserData();
 

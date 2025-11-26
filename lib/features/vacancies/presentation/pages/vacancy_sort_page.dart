@@ -84,7 +84,9 @@ class _VacancySortPageState extends State<VacancySortPage> {
                           ),
                         ),
                         value: option,
+                        // ignore: deprecated_member_use
                         groupValue: selectedSort,
+                        // ignore: deprecated_member_use
                         onChanged: (String? value) {
                           setState(() {
                             selectedSort = value!;

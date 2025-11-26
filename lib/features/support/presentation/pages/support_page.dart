@@ -175,7 +175,7 @@ class _SupportViewState extends State<SupportView>
             ),
             const SizedBox(height: 12),
             Divider(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               thickness: 1,
             ),
             const SizedBox(height: 16),

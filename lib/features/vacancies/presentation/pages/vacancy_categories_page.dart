@@ -237,7 +237,7 @@ class _VacancyCategoriesViewState extends State<VacancyCategoriesView> {
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       color: shouldHighlight
-                          ? Colors.black.withOpacity(0.05)
+                          ? Colors.black.withValues(alpha: 0.05)
                           : Colors.transparent,
                     ),
                     child: Text(
@@ -342,7 +342,7 @@ class _VacancyCategoriesViewState extends State<VacancyCategoriesView> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -454,7 +454,7 @@ class _VacancyCategoriesViewState extends State<VacancyCategoriesView> {
                     onPressed: () {
                       NavigationUtils.pushWithHorizontalAnimation(
                         context: context,
-                        page: SelectionPage(),
+                        page: const SelectionPage(),
                       );
                     },
                     style: ElevatedButton.styleFrom(

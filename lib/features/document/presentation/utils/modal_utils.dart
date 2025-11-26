@@ -13,7 +13,7 @@ class ModalUtils {
         transitionDuration: const Duration(milliseconds: 300),
         opaque: false,
         barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
+        barrierColor: Colors.black.withValues(alpha: 0.5),
       ),
     );
   }
@@ -27,7 +27,7 @@ class ModalUtils {
         transitionDuration: const Duration(milliseconds: 300),
         opaque: false,
         barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
+        barrierColor: Colors.black.withValues(alpha: 0.5),
       ),
     );
   }
@@ -42,7 +42,7 @@ class ModalUtils {
         
         opaque: false,
         barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
+        barrierColor: Colors.black.withValues(alpha: 0.5),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           // Такая же анимация как у других модалов
           return FadeTransition(

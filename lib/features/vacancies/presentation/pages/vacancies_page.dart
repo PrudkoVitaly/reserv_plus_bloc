@@ -82,7 +82,7 @@ class VacanciesView extends StatelessWidget {
   Widget _buildLoading(Color color) {
     return Center(
       child: DelayedLoadingIndicator(
-        key: ValueKey('loading_${color.value}'),
+        key: ValueKey('loading_${color.toARGB32()}'),
         color: color,
       ),
     );

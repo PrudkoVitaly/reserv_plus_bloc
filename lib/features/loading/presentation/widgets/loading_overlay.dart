@@ -23,7 +23,7 @@ class LoadingOverlay extends StatelessWidget {
             child,
             if (state is LoadingInProgress && showOverlay)
               Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 child: const DelayedLoadingIndicator(
                   color: Colors.purple,
                   delay:
