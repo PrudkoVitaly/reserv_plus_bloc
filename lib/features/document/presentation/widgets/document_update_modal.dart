@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/document/presentation/bloc/document_bloc.dart';
 import 'package:reserv_plus/features/document/presentation/bloc/document_event.dart';
-import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:reserv_plus/features/notifications/domain/entities/notification.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
@@ -14,22 +13,29 @@ class DocumentUpdateModal extends StatelessWidget {
     // 1. Отправляем событие в DocumentBloc (как было)
     context.read<DocumentBloc>().add(const DocumentUpdateData());
 
-    // 2. Создаем новое уведомление
-    final newNotification = NotificationEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+    // 2. Создаем первое уведомление (запрос отправлен)
+    final now = DateTime.now();
+    final firstNotification = NotificationEntity(
+      id: '${now.microsecondsSinceEpoch}_1',
       title: 'Запит на інформацію з реєстру відправлено',
       subtitle: 'Очікуйте сповіщення про результат обробки запиту',
-      timestamp: DateTime.now(),
+      timestamp: now,
     );
 
-    // 3. Создаем NotificationBloc и добавляем уведомление
-    final notificationBloc = NotificationBloc(
-      repository: NotificationRepositoryImpl(),
+    // 3. Создаем второе уведомление (данные получены) - будет добавлено через 5 секунд
+    final secondNotification = NotificationEntity(
+      id: '${now.microsecondsSinceEpoch}_2',
+      title: 'Дані з реєстру Оберіг отримано',
+      subtitle: 'Військово-обліковий документ вже доступний',
+      timestamp: now,
     );
-    notificationBloc.add(NotificationAdd(newNotification));
-    notificationBloc.close(); // Закрываем BLoC после использования
 
-    // 4. Закрываем модальное окно
+    // 4. Используем глобальный NotificationBloc и добавляем уведомления
+    final notificationBloc = context.read<NotificationBloc>();
+    notificationBloc.add(NotificationAddRequestSent(firstNotification));
+    notificationBloc.add(NotificationAddDataReceived(secondNotification));
+
+    // 5. Закрываем модальное окно
     Navigator.of(context).pop();
   }
 

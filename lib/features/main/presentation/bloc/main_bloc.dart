@@ -13,6 +13,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     on<MainNavigationChanged>(_onNavigationChanged);
     on<MainContainerToggled>(_onContainerToggled);
     on<MainNotificationsChecked>(_onNotificationsChecked);
+    on<MainNotificationsUpdated>(_onNotificationsUpdated);
   }
 
   void _onInitialized(MainInitialized event, Emitter<MainState> emit) async {
@@ -66,6 +67,26 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       );
 
       emit(MainLoaded(updatedState));
+    }
+  }
+
+  void _onNotificationsUpdated(
+      MainNotificationsUpdated event, Emitter<MainState> emit) async {
+    if (state is MainLoaded) {
+      final currentState = state as MainLoaded;
+
+      try {
+        // Проверяем наличие непрочитанных уведомлений
+        final hasNotifications = await _repository.hasNotifications();
+
+        final updatedState = currentState.navigationState.copyWith(
+          hasNotifications: hasNotifications,
+        );
+
+        emit(MainLoaded(updatedState));
+      } catch (e) {
+        // В случае ошибки оставляем текущее состояние
+      }
     }
   }
 }

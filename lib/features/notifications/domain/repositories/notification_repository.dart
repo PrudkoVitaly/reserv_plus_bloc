@@ -11,4 +11,8 @@ abstract class NotificationRepository {
   /// [notification] - уведомление для добавления
   /// Возвращает добавленное уведомление
   Future<NotificationEntity> addNotification(NotificationEntity notification);
+
+  /// Обновляет уведомление
+  Future<NotificationEntity> updateNotification(
+      NotificationEntity notification);
 }

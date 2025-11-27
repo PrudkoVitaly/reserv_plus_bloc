@@ -27,3 +27,7 @@ class MainContainerToggled extends MainEvent {
 class MainNotificationsChecked extends MainEvent {
   const MainNotificationsChecked();
 }
+
+class MainNotificationsUpdated extends MainEvent {
+  const MainNotificationsUpdated();
+}

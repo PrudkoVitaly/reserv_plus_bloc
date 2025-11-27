@@ -8,6 +8,8 @@ import 'vacancies_screen.dart';
 import 'default_main_screen.dart';
 import 'menu_screen.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -58,47 +60,55 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MainBloc, MainState>(
-      builder: (context, state) {
-        if (state is MainLoading) {
-          return const Scaffold(
-            body: DelayedLoadingIndicator(),
-          );
-        } else if (state is MainError) {
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 80,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Помилка: ${state.message}',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<MainBloc>().add(const MainInitialized());
-                    },
-                    child: const Text('Спробувати знову'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        } else if (state is MainLoaded) {
-          return _buildMainContent(state);
-        } else {
-          return const Scaffold(
-            body: DelayedLoadingIndicator(),
-          );
+    return BlocListener<NotificationBloc, NotificationState>(
+      listener: (context, notificationState) {
+        // Когда уведомления загружены или обновлены, обновляем состояние MainBloc
+        if (notificationState is NotificationLoaded) {
+          context.read<MainBloc>().add(const MainNotificationsUpdated());
         }
       },
+      child: BlocBuilder<MainBloc, MainState>(
+        builder: (context, state) {
+          if (state is MainLoading) {
+            return const Scaffold(
+              body: DelayedLoadingIndicator(),
+            );
+          } else if (state is MainError) {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 80,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Помилка: ${state.message}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<MainBloc>().add(const MainInitialized());
+                      },
+                      child: const Text('Спробувати знову'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else if (state is MainLoaded) {
+            return _buildMainContent(state);
+          } else {
+            return const Scaffold(
+              body: DelayedLoadingIndicator(),
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -293,8 +303,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             decoration: BoxDecoration(
                               color: state.navigationState.selectedIndex == 2
-                                  ? Colors.grey[300]
-                                      ?.withValues(alpha: _opacityAnimation.value)
+                                  ? Colors.grey[300]?.withValues(
+                                      alpha: _opacityAnimation.value)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
                             ),

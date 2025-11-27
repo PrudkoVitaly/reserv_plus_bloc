@@ -6,6 +6,7 @@ import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
 import 'package:reserv_plus/features/main/domain/entities/navigation_state.dart';
 import 'package:reserv_plus/features/main/data/repositories/navigation_repository_impl.dart';
 import 'package:reserv_plus/features/main/presentation/pages/main_page.dart';
+import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
 import '../bloc/registry_bloc.dart';
 import '../bloc/registry_event.dart';
 import '../bloc/registry_state.dart';
@@ -17,7 +18,9 @@ class RegistryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MainBloc(
-        repository: NavigationRepositoryImpl(),
+        repository: NavigationRepositoryImpl(
+          notificationRepository: NotificationRepositoryImpl(),
+        ),
       )..add(const MainInitialized()),
       child: const RegistryView(),
     );
@@ -444,8 +447,8 @@ class _RegistryViewState extends State<RegistryView>
                                 horizontal: 18, vertical: 2),
                             decoration: BoxDecoration(
                               color: state.navigationState.selectedIndex == 2
-                                  ? Colors.grey[300]
-                                      ?.withValues(alpha: _opacityAnimation.value)
+                                  ? Colors.grey[300]?.withValues(
+                                      alpha: _opacityAnimation.value)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
                             ),

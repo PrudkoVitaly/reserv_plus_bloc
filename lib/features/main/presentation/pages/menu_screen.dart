@@ -8,6 +8,8 @@ import 'package:reserv_plus/features/support/presentation/bloc/support_event.dar
 import 'package:reserv_plus/features/support/data/repositories/support_repository_impl.dart';
 import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
+import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -161,52 +163,61 @@ class _MenuScreenViewState extends State<MenuScreenView>
   }
 
   Widget _buildMenuItems(BuildContext context) {
-    final menuItems = [
-      MenuItem(
-        icon: CupertinoIcons.bell,
-        title: 'Сповіщення',
-        hasNotification: true,
-        onTap: () {
-          NavigationUtils.pushWithHorizontalAnimation(
-            context: context,
-            page: const NotificationPage(),
-          );
-        },
-      ),
-      MenuItem(
-        icon: CupertinoIcons.question_circle,
-        title: 'Питання та відповіді',
-        onTap: () {},
-      ),
-      MenuItem(
-        icon: CupertinoIcons.search_circle,
-        title: 'Штрафи онлайн',
-        onTap: () {},
-      ),
-      MenuItem(
-        icon: CupertinoIcons.exclamationmark_circle,
-        title: 'Виправити дані онлайн',
-        onTap: () {},
-      ),
-      MenuItem(
-        icon: CupertinoIcons.device_phone_portrait,
-        title: 'Активні сесії',
-        onTap: () {},
-      ),
-      MenuItem(
-        icon: CupertinoIcons.gear_alt,
-        title: 'Налаштування',
-        onTap: () {},
-      ),
-      MenuItem(
-        icon: CupertinoIcons.arrow_right_square,
-        title: 'Вийти',
-        onTap: () {},
-      ),
-    ];
+    return BlocBuilder<MainBloc, MainState>(
+      builder: (context, mainState) {
+        // Получаем hasNotifications из состояния MainBloc
+        final hasNotifications = mainState is MainLoaded
+            ? mainState.navigationState.hasNotifications
+            : false;
 
-    return Column(
-      children: menuItems.map((item) => _buildMenuItem(item)).toList(),
+        final menuItems = [
+          MenuItem(
+            icon: CupertinoIcons.bell,
+            title: 'Сповіщення',
+            hasNotification: hasNotifications,
+            onTap: () {
+              NavigationUtils.pushWithHorizontalAnimation(
+                context: context,
+                page: const NotificationPage(),
+              );
+            },
+          ),
+          MenuItem(
+            icon: CupertinoIcons.question_circle,
+            title: 'Питання та відповіді',
+            onTap: () {},
+          ),
+          MenuItem(
+            icon: CupertinoIcons.search_circle,
+            title: 'Штрафи онлайн',
+            onTap: () {},
+          ),
+          MenuItem(
+            icon: CupertinoIcons.exclamationmark_circle,
+            title: 'Виправити дані онлайн',
+            onTap: () {},
+          ),
+          MenuItem(
+            icon: CupertinoIcons.device_phone_portrait,
+            title: 'Активні сесії',
+            onTap: () {},
+          ),
+          MenuItem(
+            icon: CupertinoIcons.gear_alt,
+            title: 'Налаштування',
+            onTap: () {},
+          ),
+          MenuItem(
+            icon: CupertinoIcons.arrow_right_square,
+            title: 'Вийти',
+            onTap: () {},
+          ),
+        ];
+
+        return Column(
+          children: menuItems.map((item) => _buildMenuItem(item)).toList(),
+        );
+      },
     );
   }
 

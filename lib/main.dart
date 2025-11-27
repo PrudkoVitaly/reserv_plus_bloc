@@ -21,6 +21,8 @@ import 'features/request_sent/data/repositories/request_sent_repository_impl.dar
 import 'features/biometric/presentation/bloc/biometric_bloc.dart';
 import 'features/biometric/data/services/biometric_auth_service.dart';
 import 'features/biometric/data/repositories/biometric_repository_impl.dart';
+import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'features/notifications/data/repositories/notification_repository_impl.dart';
 
 void main() async {
   // Инициализируем WidgetsBinding
@@ -39,6 +41,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Создаем один экземпляр NotificationRepositoryImpl для переиспользования
+    final notificationRepository = NotificationRepositoryImpl();
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -58,7 +63,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => MainBloc(
-            repository: NavigationRepositoryImpl(),
+            repository: NavigationRepositoryImpl(
+              notificationRepository: notificationRepository,
+            ),
           ),
         ),
         BlocProvider(
@@ -88,6 +95,12 @@ class MyApp extends StatelessWidget {
               ),
               sharedPreferences: prefs,
             ),
+          ),
+        ),
+        // NotificationBloc
+        BlocProvider(
+          create: (context) => NotificationBloc(
+            repository: notificationRepository,
           ),
         ),
       ],

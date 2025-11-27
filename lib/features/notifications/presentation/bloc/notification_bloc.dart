@@ -11,7 +11,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         super(const NotificationInitial()) {
     // Регистрируем обработчики событий
     on<NotificationLoadAll>(_onLoadAll);
-    on<NotificationAdd>(_onAdd);
+    on<NotificationAddRequestSent>(_onAddRequestSent);
+    on<NotificationAddDataReceived>(_onAddDataReceived);
+    on<NotificationMarkAsRead>(_onMarkAsRead);
   }
 
   // Обработчик события загрузки всех уведомлений
@@ -29,9 +31,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
   }
 
-  // Обработчик события добавления уведомления
-  Future<void> _onAdd(
-    NotificationAdd event,
+  /// Обработчик события добавления уведомления о запросе
+  Future<void> _onAddRequestSent(
+    NotificationAddRequestSent event,
     Emitter<NotificationState> emit,
   ) async {
     try {
@@ -41,6 +43,51 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       // Получаем обновленный список всех уведомлений
       final notifications = await _repository.getAllNotifications();
       emit(NotificationLoaded(notifications));
+    } catch (e) {
+      emit(NotificationError(e.toString()));
+    }
+  }
+
+  // Обработчик события добавления уведомления о получении данных (с задержкой)
+  Future<void> _onAddDataReceived(
+    NotificationAddDataReceived event,
+    Emitter<NotificationState> emit,
+  ) async {
+    // Ждем 5 секунд перед добавлением уведомления
+    await Future.delayed(const Duration(seconds: 5));
+
+    try {
+      await _repository.addNotification(event.notification);
+      final notifications = await _repository.getAllNotifications();
+      emit(NotificationLoaded(notifications));
+    } catch (e) {
+      emit(NotificationError(e.toString()));
+    }
+  }
+
+  // Обработчик события отметки уведомления как прочитанного
+  Future<void> _onMarkAsRead(
+    NotificationMarkAsRead event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      // Получаем все уведомления
+      final notifications = await _repository.getAllNotifications();
+
+      // Находим уведомление по id
+      final notification = notifications.firstWhere(
+        (n) => n.id == event.notificationId,
+      );
+
+      // Создаем обновленную версию с isRead = true
+      final updatedNotification = notification.copyWith(isRead: true);
+
+      // Обновляем в репозитории
+      await _repository.updateNotification(updatedNotification);
+
+      // Получаем обновленный список и эмитим новое состояние
+      final updatedNotifications = await _repository.getAllNotifications();
+      emit(NotificationLoaded(updatedNotifications));
     } catch (e) {
       emit(NotificationError(e.toString()));
     }

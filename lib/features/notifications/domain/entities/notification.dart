@@ -12,4 +12,20 @@ class NotificationEntity {
     required this.timestamp,
     this.isRead = false,
   });
+
+  NotificationEntity copyWith({
+    String? id,
+    String? title,
+    String? subtitle,
+    DateTime? timestamp,
+    bool? isRead,
+  }) {
+    return NotificationEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      timestamp: timestamp ?? this.timestamp,
+      isRead: isRead ?? this.isRead,
+    );
+  }
 }

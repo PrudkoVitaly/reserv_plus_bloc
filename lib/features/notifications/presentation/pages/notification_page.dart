@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
@@ -12,12 +11,12 @@ class NotificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NotificationBloc(
-        repository: NotificationRepositoryImpl(),
-      )..add(const NotificationLoadAll()),
-      child: const NotificationPageView(),
-    );
+    // Загружаем уведомления при открытии страницы
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationBloc>().add(const NotificationLoadAll());
+    });
+
+    return const NotificationPageView();
   }
 }
 

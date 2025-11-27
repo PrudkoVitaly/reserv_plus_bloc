@@ -14,11 +14,29 @@ class NotificationLoadAll extends NotificationEvent {
 }
 
 // Событие для добавления нового уведомления
-class NotificationAdd extends NotificationEvent {
+class NotificationAddRequestSent extends NotificationEvent {
   final NotificationEntity notification;
 
-  const NotificationAdd(this.notification);
+  const NotificationAddRequestSent(this.notification);
 
   @override
   List<Object?> get props => [notification];
+}
+
+// Событие для добавления нового уведомления о получении данных из реестра
+class NotificationAddDataReceived extends NotificationEvent {
+  final NotificationEntity notification;
+  const NotificationAddDataReceived(this.notification);
+  @override
+  List<Object?> get props => [notification];
+}
+
+// Событие для отметки уведомления как прочитанного
+class NotificationMarkAsRead extends NotificationEvent {
+  final String notificationId;
+
+  const NotificationMarkAsRead(this.notificationId);
+
+  @override
+  List<Object?> get props => [notificationId];
 }
