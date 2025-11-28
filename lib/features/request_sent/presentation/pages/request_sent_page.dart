@@ -46,16 +46,16 @@ class RequestSentPage extends StatelessWidget {
               const SizedBox(height: 40),
               const Text(
                 "Запит відправлено",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               const Text(
                 textAlign: TextAlign.center,
                 "Запит на оновлення даних\nз реэстру відправлено. Ми\n сповістимо вас про результат.",
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  height: 1.1,
+                  height: 1,
                 ),
               ),
             ],

@@ -88,4 +88,27 @@ class DocumentRepositoryImpl implements DocumentRepository {
     await Future.delayed(const Duration(seconds: 1));
     return true;
   }
+
+  @override
+  Future<bool> canUpdateDocument() async {
+    // Получаем сохраненное время последнего обновления
+    final prefs = await SharedPreferences.getInstance();
+    final savedTimestamp = prefs.getString(_lastUpdatedKey);
+
+    // Если нет сохраненного времени - это первое обновление, разрешаем
+    if (savedTimestamp == null || savedTimestamp.isEmpty) {
+      return true;
+    }
+
+    // Парсим сохраненное время
+    final lastUpdated = DateTime.parse(savedTimestamp);
+    final now = DateTime.now();
+
+    // Вычисляем разницу во времени
+    final difference = now.difference(lastUpdated);
+
+    // Проверяем, прошло ли 6 часов (6 * 60 * 60 = 21600 секунд)
+    // Возвращаем true, если прошло >= 6 часов
+    return difference.inHours >= 6;
+  }
 }

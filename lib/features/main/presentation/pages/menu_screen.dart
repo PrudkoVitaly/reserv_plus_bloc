@@ -7,6 +7,7 @@ import 'package:reserv_plus/features/support/presentation/bloc/support_bloc.dart
 import 'package:reserv_plus/features/support/presentation/bloc/support_event.dart';
 import 'package:reserv_plus/features/support/data/repositories/support_repository_impl.dart';
 import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
+import 'package:reserv_plus/features/faq/presentation/pages/faq_list_page.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
@@ -185,7 +186,12 @@ class _MenuScreenViewState extends State<MenuScreenView>
           MenuItem(
             icon: CupertinoIcons.question_circle,
             title: 'Питання та відповіді',
-            onTap: () {},
+            onTap: () {
+              NavigationUtils.pushWithHorizontalAnimation(
+                context: context,
+                page: const FaqListPage(),
+              );
+            },
           ),
           MenuItem(
             icon: CupertinoIcons.search_circle,

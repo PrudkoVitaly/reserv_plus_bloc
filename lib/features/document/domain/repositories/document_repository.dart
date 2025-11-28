@@ -12,4 +12,8 @@ abstract class DocumentRepository {
 
   /// Исправляет данные онлайн
   Future<bool> correctDataOnline();
+
+  /// Проверяет, можно ли обновить документ
+  /// Возвращает true, если прошло 6 часов с последнего обновления
+  Future<bool> canUpdateDocument();
 }

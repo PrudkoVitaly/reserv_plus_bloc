@@ -2,18 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/document/presentation/bloc/document_bloc.dart';
 import 'package:reserv_plus/features/document/presentation/bloc/document_event.dart';
+import 'package:reserv_plus/features/document/data/repositories/document_repository_impl.dart';
 import 'package:reserv_plus/features/notifications/domain/entities/notification.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/request_sent/presentation/pages/request_sent_page.dart';
+import 'package:reserv_plus/features/document/presentation/pages/update_unavailable_page.dart';
 
 class DocumentUpdateModal extends StatelessWidget {
   const DocumentUpdateModal({super.key});
 
-  void _onUpdateDocument(BuildContext context) {
-    // 1. Отправляем событие в DocumentBloc (как было)
+  Future<void> _onUpdateDocument(BuildContext context) async {
+    // 1. Создаем экземпляр репозитория для проверки
+    final repository = DocumentRepositoryImpl();
+
+    // 2. Проверяем, можно ли обновить документ
+    final canUpdate = await repository.canUpdateDocument();
+
+    // 3. Закрываем модальное окно
+    Navigator.of(context).pop();
+
+    // 4. Если нельзя обновить - показываем страницу с предупреждением
+    if (!canUpdate) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (context.mounted) {
+          NavigationUtils.pushWithHorizontalAnimation(
+            context: context,
+            page: const UpdateUnavailablePage(),
+          );
+        }
+      });
+      return; // Выходим из метода, не выполняя обновление
+    }
+
+    // 5. Если можно обновить - выполняем стандартную логику
+    // Отправляем событие в DocumentBloc
     context.read<DocumentBloc>().add(const DocumentUpdateData());
 
-    // 2. Создаем первое уведомление (запрос отправлен)
+    // 6. Создаем первое уведомление (запрос отправлен)
     final now = DateTime.now();
     final firstNotification = NotificationEntity(
       id: '${now.microsecondsSinceEpoch}_1',
@@ -22,7 +49,7 @@ class DocumentUpdateModal extends StatelessWidget {
       timestamp: now,
     );
 
-    // 3. Создаем второе уведомление (данные получены) - будет добавлено через 5 секунд
+    // 7. Создаем второе уведомление (данные получены) - будет добавлено через 5 секунд
     final secondNotification = NotificationEntity(
       id: '${now.microsecondsSinceEpoch}_2',
       title: 'Дані з реєстру Оберіг отримано',
@@ -30,13 +57,20 @@ class DocumentUpdateModal extends StatelessWidget {
       timestamp: now,
     );
 
-    // 4. Используем глобальный NotificationBloc и добавляем уведомления
+    // 8. Используем глобальный NotificationBloc и добавляем уведомления
     final notificationBloc = context.read<NotificationBloc>();
     notificationBloc.add(NotificationAddRequestSent(firstNotification));
     notificationBloc.add(NotificationAddDataReceived(secondNotification));
 
-    // 5. Закрываем модальное окно
-    Navigator.of(context).pop();
+    // 9. Открываем RequestSentPage с небольшой задержкой для корректной навигации
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (context.mounted) {
+        NavigationUtils.pushWithHorizontalAnimation(
+          context: context,
+          page: const RequestSentPage(),
+        );
+      }
+    });
   }
 
   @override
@@ -67,17 +101,13 @@ class DocumentUpdateModal extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Иконка "i"
-                  Container(
+                  SizedBox(
                     width: 60,
                     height: 60,
-                    decoration: const BoxDecoration(
-                      color: Color.fromRGBO(253, 135, 12, 1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.info,
-                      color: Colors.white,
-                      size: 30,
+                    child: Image.asset(
+                      "images/info_icon.png",
+                      width: 60,
+                      height: 60,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -112,7 +142,7 @@ class DocumentUpdateModal extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -127,7 +157,7 @@ class DocumentUpdateModal extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+                        color: Colors.black,
                       ),
                     ),
                   ),
