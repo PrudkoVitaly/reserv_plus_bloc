@@ -25,7 +25,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // Инициализируем BLoC
     context.read<MainBloc>().add(const MainInitialized());
 
     _animationController = AnimationController(
@@ -41,7 +40,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       curve: Curves.easeOut,
     ));
 
-    // Запускаем анимацию для кнопки "Документ" при первой загрузке
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAnimation();
     });
@@ -114,8 +112,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Widget _buildMainContent(MainLoaded state) {
     final screens = [
-      const VacanciesScreen(key: ValueKey('vacancies')),
       const DefaultMainScreen(key: ValueKey('document')),
+      const VacanciesScreen(key: ValueKey('vacancies')),
       const MenuScreen(key: ValueKey('menu')),
     ];
 
@@ -149,7 +147,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         },
         child: state.navigationState.selectedIndex == -1
             ? const DefaultMainScreen(key: ValueKey('document'))
-            : screens[state.navigationState.selectedIndex],
+            : screens[state.navigationState.selectedIndex.clamp(0, 2)],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(state),
     );
@@ -159,24 +157,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Динамическая высота - 10% от высоты экрана (минимум 90, максимум 100)
     final navBarHeight = (screenHeight * 0.10).clamp(80.0, 100.0);
-
-    // Динамический размер иконок - 5% от ширины экрана
-    final iconSize = (screenWidth * 0.05).clamp(24.0, 24.0);
-
-    // Динамический размер текста - 3% от ширины экрана
+    final iconSize = (screenWidth * 0.06).clamp(24.0, 28.0);
     final textSize = (screenWidth * 0.03).clamp(12.0, 14.0);
 
     return SizedBox(
       height: navBarHeight,
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: state.navigationState.isContainerVisible
-            ? const Color.fromRGBO(106, 105, 94, 1)
-            : Colors.white,
+        backgroundColor: Colors.white,
         currentIndex: state.navigationState.selectedIndex == -1
-            ? 1
+            ? 0
             : state.navigationState.selectedIndex.clamp(0, 2),
         elevation: 0,
         selectedItemColor: Colors.black,
@@ -185,6 +176,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           context.read<MainBloc>().add(MainNavigationChanged(index));
         },
         items: [
+          // Резерв ID (index 0)
           BottomNavigationBarItem(
             icon: GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -193,6 +185,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 context.read<MainBloc>().add(const MainNavigationChanged(0));
               },
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedBuilder(
                     animation: _opacityAnimation,
@@ -200,28 +193,27 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 18),
                         decoration: BoxDecoration(
-                          color: state.navigationState.selectedIndex == 0
+                          color: (state.navigationState.selectedIndex == 0 ||
+                                  state.navigationState.selectedIndex == -1)
                               ? Colors.grey[300]
                                   ?.withValues(alpha: _opacityAnimation.value)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: state.navigationState.selectedIndex == 0
-                            ? Icon(
-                                Icons.work,
-                                size: iconSize,
-                                color: Colors.black,
-                              )
-                            : Icon(
-                                Icons.work_outline,
-                                size: iconSize,
-                                color: Colors.grey,
-                              ),
+                        child: Icon(
+                          (state.navigationState.selectedIndex == 0 ||
+                                  state.navigationState.selectedIndex == -1)
+                              ? Icons.credit_card
+                              : Icons.credit_card_outlined,
+                          size: iconSize,
+                          color: Colors.black,
+                        ),
                       );
                     },
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    "Вакансії",
+                    "Резерв ID",
                     style: TextStyle(
                       fontSize: textSize,
                       color: Colors.black,
@@ -233,6 +225,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             ),
             label: '',
           ),
+          // Вакансії (index 1)
           BottomNavigationBarItem(
             icon: GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -249,30 +242,25 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 18),
                         decoration: BoxDecoration(
-                          color: (state.navigationState.selectedIndex == 1 ||
-                                  state.navigationState.selectedIndex == -1)
+                          color: state.navigationState.selectedIndex == 1
                               ? Colors.grey[300]
                                   ?.withValues(alpha: _opacityAnimation.value)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: (state.navigationState.selectedIndex == 1 ||
-                                state.navigationState.selectedIndex == -1)
-                            ? Icon(
-                                Icons.insert_drive_file,
-                                size: iconSize,
-                                color: Colors.black,
-                              )
-                            : Icon(
-                                Icons.insert_drive_file_outlined,
-                                size: iconSize,
-                                color: Colors.grey,
-                              ),
+                        child: Icon(
+                          state.navigationState.selectedIndex == 1
+                              ? Icons.diamond
+                              : Icons.diamond_outlined,
+                          size: iconSize,
+                          color: Colors.black,
+                        ),
                       );
                     },
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    "Резерв ID",
+                    "Вакансії",
                     style: TextStyle(
                       fontSize: textSize,
                       color: Colors.black,
@@ -284,6 +272,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             ),
             label: '',
           ),
+          // Меню (index 2)
           BottomNavigationBarItem(
             icon: GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -295,6 +284,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 clipBehavior: Clip.none,
                 children: [
                   Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       AnimatedBuilder(
                         animation: _opacityAnimation,
@@ -303,25 +293,20 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             decoration: BoxDecoration(
                               color: state.navigationState.selectedIndex == 2
-                                  ? Colors.grey[300]?.withValues(
-                                      alpha: _opacityAnimation.value)
+                                  ? Colors.grey[300]
+                                      ?.withValues(alpha: _opacityAnimation.value)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: state.navigationState.selectedIndex == 2
-                                ? Icon(
-                                    Icons.menu,
-                                    size: iconSize,
-                                    color: Colors.black,
-                                  )
-                                : Icon(
-                                    Icons.menu_outlined,
-                                    size: iconSize,
-                                    color: Colors.grey,
-                                  ),
+                            child: Icon(
+                              Icons.dehaze,
+                              size: iconSize,
+                              color: Colors.black,
+                            ),
                           );
                         },
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         "Меню",
                         style: TextStyle(
@@ -334,19 +319,14 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   ),
                   if (state.navigationState.hasNotifications)
                     Positioned(
-                      right: 18,
-                      top: 4,
+                      right: 14,
+                      top: -2,
                       child: Container(
-                        width: 11,
-                        height: 11,
-                        padding: const EdgeInsets.all(2),
+                        width: 10,
+                        height: 10,
                         decoration: const BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.red,
                           shape: BoxShape.circle,
-                        ),
-                        child: const CircleAvatar(
-                          radius: 4,
-                          backgroundColor: Colors.red,
                         ),
                       ),
                     ),
