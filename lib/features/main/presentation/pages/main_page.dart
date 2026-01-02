@@ -272,7 +272,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     },
                   ),
                   Text(
-                    "Документ",
+                    "Резерв ID",
                     style: TextStyle(
                       fontSize: textSize,
                       color: Colors.black,
