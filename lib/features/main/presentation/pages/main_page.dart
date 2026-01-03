@@ -200,13 +200,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Icon(
+                        child: Image.asset(
                           (state.navigationState.selectedIndex == 0 ||
                                   state.navigationState.selectedIndex == -1)
-                              ? Icons.credit_card
-                              : Icons.credit_card_outlined,
-                          size: iconSize,
-                          color: Colors.black,
+                              ? 'images/reserv_id_botom_nav_bar_icon.png'
+                              : 'images/reserv_id_botom_nav_bar_roginal_icon.png',
+                          width: iconSize,
+                          height: iconSize,
                         ),
                       );
                     },
@@ -217,7 +217,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: textSize,
                       color: Colors.black,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: (state.navigationState.selectedIndex == 0 ||
+                              state.navigationState.selectedIndex == -1)
+                          ? FontWeight.w900
+                          : FontWeight.w500,
                     ),
                   ),
                 ],
@@ -248,12 +251,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Icon(
+                        child: Image.asset(
                           state.navigationState.selectedIndex == 1
-                              ? Icons.diamond
-                              : Icons.diamond_outlined,
-                          size: iconSize,
-                          color: Colors.black,
+                              ? 'images/vacancies_botom_nav_bar__black_icon.png'
+                              : 'images/vacancies_botom_nav_bar_icon.png',
+                          width: iconSize,
+                          height: iconSize,
                         ),
                       );
                     },
@@ -264,7 +267,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: textSize,
                       color: Colors.black,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: state.navigationState.selectedIndex == 1
+                          ? FontWeight.w900
+                          : FontWeight.w500,
                     ),
                   ),
                 ],
@@ -298,10 +303,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Icon(
-                              Icons.dehaze,
-                              size: iconSize,
-                              color: Colors.black,
+                            child: Image.asset(
+                              'images/menu_botom_nav_bar_icon.png',
+                              width: iconSize,
+                              height: iconSize,
                             ),
                           );
                         },
@@ -312,7 +317,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         style: TextStyle(
                           fontSize: textSize,
                           color: Colors.black,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: state.navigationState.selectedIndex == 2
+                              ? FontWeight.w900
+                              : FontWeight.w500,
                         ),
                       ),
                     ],
