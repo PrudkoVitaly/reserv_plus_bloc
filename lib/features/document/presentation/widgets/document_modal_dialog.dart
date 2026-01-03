@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:animations/animations.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../../../person_info/presentation/utils/person_info_utils.dart';
@@ -7,7 +8,6 @@ import '../../../extended_data/presentation/pages/extended_data_request_page.dar
 import '../../../extended_data/presentation/pages/extended_data_review_page.dart';
 import '../../../extended_data/domain/entities/extended_data.dart';
 import '../pages/vlk_unavailable_page.dart';
-import '../../../../shared/utils/navigation_utils.dart';
 import '../utils/modal_utils.dart';
 
 class DocumentModalDialog extends StatefulWidget {
@@ -142,70 +142,90 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           context,
                           icon: Icons.add_circle_outline,
                           title: "Розширені дані з реєстру",
-                          onTap: () async {
-                            // Получаем root navigator context (главный экран под модалом)
-                            final rootContext =
-                                Navigator.of(context, rootNavigator: true)
-                                    .context;
-
+                          onTap: () {
+                            // Сохраняем navigator ДО закрытия модала
+                            final navigator = Navigator.of(context, rootNavigator: true);
                             _closeModal();
 
-                            // Маленькая задержка чтобы модал успел уйти вниз
-                            await Future.delayed(
-                                const Duration(milliseconds: 300));
-
-                            if (!mounted) return;
-                            NavigationUtils.pushWithHorizontalAnimation(
-                              context: rootContext,
-                              page: const ExtendedDataRequestPage(),
-                            );
+                            // Используем сохраненный navigator
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              navigator.push(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                      const ExtendedDataRequestPage(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    return SharedAxisTransition(
+                                      animation: animation,
+                                      secondaryAnimation: secondaryAnimation,
+                                      transitionType: SharedAxisTransitionType.horizontal,
+                                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                                      child: child,
+                                    );
+                                  },
+                                  transitionDuration: const Duration(milliseconds: 350),
+                                  reverseTransitionDuration: const Duration(milliseconds: 350),
+                                ),
+                              );
+                            });
                           },
                         ),
                         _buildMenuItem(
                           context,
                           icon: Icons.medical_services_outlined,
                           title: "Направлення на ВЛК",
-                          onTap: () async {
-                            // Получаем root navigator context (главный экран под модалом)
-                            final rootContext =
-                                Navigator.of(context, rootNavigator: true)
-                                    .context;
-
+                          onTap: () {
+                            final navigator = Navigator.of(context, rootNavigator: true);
                             _closeModal();
 
-                            // Маленькая задержка чтобы модал успел уйти вниз
-                            await Future.delayed(
-                                const Duration(milliseconds: 300));
-
-                            if (!mounted) return;
-                            NavigationUtils.pushWithHorizontalAnimation(
-                              context: rootContext,
-                              page: const VlkUnavailablePage(),
-                            );
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              navigator.push(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                      const VlkUnavailablePage(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    return SharedAxisTransition(
+                                      animation: animation,
+                                      secondaryAnimation: secondaryAnimation,
+                                      transitionType: SharedAxisTransitionType.horizontal,
+                                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                                      child: child,
+                                    );
+                                  },
+                                  transitionDuration: const Duration(milliseconds: 350),
+                                  reverseTransitionDuration: const Duration(milliseconds: 350),
+                                ),
+                              );
+                            });
                           },
                         ),
                         _buildMenuItem(
                           context,
                           icon: Icons.edit_outlined,
                           title: "Уточнити контактні дані",
-                          onTap: () async {
-                            // Получаем root navigator context (главный экран под модалом)
-                            final rootContext =
-                                Navigator.of(context, rootNavigator: true)
-                                    .context;
-
-                            _closeModal();
-                            await Future.delayed(
-                                const Duration(milliseconds: 300));
-
-                            if (!mounted) return;
-                            // Получаем данные из UserDataService
+                          onTap: () {
+                            final navigator = Navigator.of(context, rootNavigator: true);
                             final extendedData = ExtendedData.fromUserData();
+                            _closeModal();
 
-                            NavigationUtils.pushWithHorizontalAnimation(
-                              context: rootContext,
-                              page: ExtendedDataReviewPage(data: extendedData),
-                            );
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              navigator.push(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                      ExtendedDataReviewPage(data: extendedData),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    return SharedAxisTransition(
+                                      animation: animation,
+                                      secondaryAnimation: secondaryAnimation,
+                                      transitionType: SharedAxisTransitionType.horizontal,
+                                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                                      child: child,
+                                    );
+                                  },
+                                  transitionDuration: const Duration(milliseconds: 350),
+                                  reverseTransitionDuration: const Duration(milliseconds: 350),
+                                ),
+                              );
+                            });
                           },
                         ),
                       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,10 @@ import '../bloc/document_state.dart';
 import '../utils/modal_utils.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import 'package:reserv_plus/features/qr_scanner/presentation/pages/qr_scanner_page.dart';
+import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
+import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
+import 'package:reserv_plus/features/notifications/presentation/pages/notification_page.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
 class DocumentPage extends StatefulWidget {
   const DocumentPage({super.key});
@@ -168,11 +173,11 @@ class _DocumentPageState extends State<DocumentPage>
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 22),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 60),
             _buildHeader(),
             const SizedBox(height: 30),
             _buildDocumentCard(state, size),
@@ -185,59 +190,76 @@ class _DocumentPageState extends State<DocumentPage>
   Widget _buildHeader() {
     Size size = MediaQuery.of(context).size;
     final isSmallScreen = size.height < 700;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
+    return BlocBuilder<MainBloc, MainState>(
+      builder: (context, mainState) {
+        final hasNotifications = mainState is MainLoaded
+            ? mainState.navigationState.hasNotifications
+            : false;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const Text(
-              "Резерв",
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Positioned(
-              top: 6,
-              right: -20,
-              child: Image.asset(
-                "images/res_plus.png",
-                width: 20,
-                color: const Color.fromRGBO(253, 135, 12, 1),
+            // Кнопка Сповіщення справа
+            GestureDetector(
+              onTap: () {
+                NavigationUtils.pushWithHorizontalAnimation(
+                  context: context,
+                  page: const NotificationPage(),
+                );
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Сповіщення",
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Image.asset(
+                          "images/notification_bell.png",
+                          width: 18,
+                          height: 18,
+                        ),
+                        if (hasNotifications)
+                          Positioned(
+                            right: -2,
+                            top: -2,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
-        ),
-        const Spacer(),
-        GestureDetector(
-          onTap: () {
-            ModalUtils.showDocumentScanOptions(context);
-          },
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  "Сканувати \nдокумент",
-                  style: TextStyle(
-                    height: 1,
-                    fontSize: isSmallScreen ? 14.0 : 16.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.right,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Image.asset(
-                "images/qr.png",
-                width: isSmallScreen ? 25.0 : 30.0,
-              ),
-            ],
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -276,9 +298,9 @@ class _DocumentPageState extends State<DocumentPage>
   Widget _buildFrontCard(DocumentLoaded state, Size size) {
     return Container(
       width: double.infinity,
-      height: size.height * 0.71,
+      height: size.height * 0.69,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: const Color.fromRGBO(156, 152, 135, 1),
           width: 1.5,
@@ -289,7 +311,11 @@ class _DocumentPageState extends State<DocumentPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 24,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -297,17 +323,17 @@ class _DocumentPageState extends State<DocumentPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Військово\n-обліковий\nдокумент",
+                      "Резерв ID",
                       style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w500,
-                        height: 1.0,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        // height: 1.0,
                       ),
                     ),
                     const Spacer(),
                     Container(
-                      height: 50,
-                      width: 50,
+                      height: 44,
+                      width: 44,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage("images/logo_main_screen.jpg"),
@@ -320,37 +346,37 @@ class _DocumentPageState extends State<DocumentPage>
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Image.asset("images/ok_icon.png", width: 18),
-                    const SizedBox(width: 10),
-                    const Text(
-                      "Дані уточнено вчасно",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        height: 1.1,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                // const SizedBox(height: 20),
+                // Row(
+                //   children: [
+                //     Image.asset("images/ok_icon.png", width: 18),
+                //     const SizedBox(width: 10),
+                //     const Text(
+                //       "Дані уточнено вчасно",
+                //       style: TextStyle(
+                //         fontSize: 16,
+                //         fontWeight: FontWeight.w500,
+                //         height: 1.1,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                const SizedBox(height: 6),
                 const Text(
                   "Дата народження:",
                   style: TextStyle(
                     color: Color.fromRGBO(106, 103, 88, 1),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                     height: 1.1,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   state.data.birthDate,
                   style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     height: 1.1,
                     wordSpacing: 0.1,
                     letterSpacing: 0.1,
@@ -359,31 +385,36 @@ class _DocumentPageState extends State<DocumentPage>
               ],
             ),
           ),
-          SizedBox(height: size.height * 0.15),
+          SizedBox(height: size.height * 0.31),
           Container(
             width: double.infinity,
-            height: 45,
+            height: 26,
             alignment: Alignment.center,
             decoration: const BoxDecoration(
               color: Color.fromRGBO(150, 148, 134, 1),
             ),
             child: Marquee(
-              text: state.data.formattedLastUpdated,
+              // text: state.data.formattedLastUpdated,
+              text: " • ${state.data.formattedLastUpdated}",
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Color.fromRGBO(252, 251, 246, 1),
+                color: Colors.black,
+                height: 0.1,
+                // color: Color.fromRGBO(252, 251, 246, 1),
               ),
               scrollAxis: Axis.horizontal,
               crossAxisAlignment: CrossAxisAlignment.center,
-              blankSpace: 50.0,
-              velocity: 40.0,
+              velocity: 20.0,
               startPadding: 10.0,
             ),
           ),
-          const SizedBox(height: 10),
+          const Spacer(),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.only(
+              left: 16,
+              bottom: 16,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -396,29 +427,21 @@ class _DocumentPageState extends State<DocumentPage>
                         state.data.status,
                         style: const TextStyle(
                           color: Color.fromRGBO(106, 103, 88, 1),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          height: 1.1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          // height: 1.1,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 6),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${state.data.lastName} ${state.data.firstName}",
+                            "${state.data.lastName.toUpperCase()}\n${state.data.firstName}\n${state.data.patronymic}",
                             style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w500,
-                              height: 1.0,
-                            ),
-                          ),
-                          Text(
-                            state.data.patronymic,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w500,
-                              height: 1.0,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                              height: 1.1,
                             ),
                           ),
                         ],
@@ -431,12 +454,16 @@ class _DocumentPageState extends State<DocumentPage>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
                     shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(10),
                   ),
                   onPressed: () {
                     ModalUtils.showDocumentModal(context);
                   },
-                  child: Image.asset("images/three_dots.png", width: 24),
+                  child: const Icon(
+                    Icons.add_outlined,
+                    size: 30,
+                    color: Colors.black,
+                  ),
+                  // child: Image.asset("images/three_dots.png", width: 24),
                 ),
               ],
             ),

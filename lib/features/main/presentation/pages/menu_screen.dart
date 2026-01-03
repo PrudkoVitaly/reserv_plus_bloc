@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reserv_plus/features/notifications/presentation/pages/notification_page.dart';
-import 'package:reserv_plus/features/shared/services/user_data_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:reserv_plus/features/support/presentation/bloc/support_bloc.dart';
 import 'package:reserv_plus/features/support/presentation/bloc/support_event.dart';
 import 'package:reserv_plus/features/support/data/repositories/support_repository_impl.dart';
 import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
 import 'package:reserv_plus/features/faq/presentation/pages/faq_list_page.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/document/presentation/utils/modal_utils.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
 
@@ -39,10 +39,12 @@ class _MenuScreenViewState extends State<MenuScreenView>
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
   bool _showSuccessIcon = false;
+  String _appVersion = '';
 
   @override
   void initState() {
     super.initState();
+    _loadAppVersion();
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
@@ -90,6 +92,15 @@ class _MenuScreenViewState extends State<MenuScreenView>
     super.dispose();
   }
 
+  Future<void> _loadAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _appVersion = packageInfo.version;
+      });
+    }
+  }
+
   void _onCopyDeviceNumber() {
     setState(() {
       _showSuccessIcon = true;
@@ -108,54 +119,63 @@ class _MenuScreenViewState extends State<MenuScreenView>
 
   @override
   Widget build(BuildContext context) {
-    final userData = UserDataService();
-
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildWelcomeSection(userData),
-                const SizedBox(height: 26),
-                _buildMenuItems(context),
-                const Divider(
-                  color: Color.fromARGB(255, 189, 189, 189),
-                  thickness: 1,
-                ),
-                const SizedBox(height: 20),
-                _buildAdditionalActions(context),
-              ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Фиксированный заголовок
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 16,
+              ),
+              child: _buildHeader(),
             ),
-          ),
+            // Прокручиваемый список
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 18),
+                      _buildMenuItems(context),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildWelcomeSection(UserDataService userData) {
+  Widget _buildHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
         const Text(
-          'Вітаємо,',
+          'Меню',
           style: TextStyle(
             fontSize: 28,
             color: Colors.black,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.bold,
             height: 1,
           ),
         ),
+        const SizedBox(height: 10),
         Text(
-          userData.firstName,
+          'Версія $_appVersion',
           style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color.fromRGBO(106, 103, 88, 1),
             height: 1,
           ),
         ),
@@ -166,79 +186,160 @@ class _MenuScreenViewState extends State<MenuScreenView>
   Widget _buildMenuItems(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, mainState) {
-        // Получаем hasNotifications из состояния MainBloc
-        final hasNotifications = mainState is MainLoaded
-            ? mainState.navigationState.hasNotifications
-            : false;
-
-        final menuItems = [
-          MenuItem(
-            icon: CupertinoIcons.bell,
-            title: 'Сповіщення',
-            hasNotification: hasNotifications,
-            onTap: () {
-              NavigationUtils.pushWithHorizontalAnimation(
-                context: context,
-                page: const NotificationPage(),
-              );
-            },
-          ),
-          MenuItem(
-            icon: CupertinoIcons.question_circle,
-            title: 'Питання та відповіді',
-            onTap: () {
-              NavigationUtils.pushWithHorizontalAnimation(
-                context: context,
-                page: const FaqListPage(),
-              );
-            },
-          ),
-          MenuItem(
-            icon: CupertinoIcons.search_circle,
-            title: 'Штрафи онлайн',
-            onTap: () {},
-          ),
-          MenuItem(
-            icon: CupertinoIcons.exclamationmark_circle,
-            title: 'Виправити дані онлайн',
-            onTap: () {},
-          ),
-          MenuItem(
-            icon: CupertinoIcons.device_phone_portrait,
-            title: 'Активні сесії',
-            onTap: () {},
-          ),
-          MenuItem(
-            icon: CupertinoIcons.gear_alt,
-            title: 'Налаштування',
-            onTap: () {},
-          ),
-          MenuItem(
-            icon: CupertinoIcons.arrow_right_square,
-            title: 'Вийти',
-            onTap: () {},
-          ),
-        ];
-
         return Column(
-          children: menuItems.map((item) => _buildMenuItem(item)).toList(),
+          children: [
+            // Группа 1: Штрафи, Виправити дані
+            _buildMenuCard([
+              MenuItem(
+                icon: CupertinoIcons.exclamationmark_circle,
+                title: 'Виправити дані\nонлайн',
+                onTap: () {},
+              ),
+              MenuItem(
+                icon: CupertinoIcons.search_circle,
+                title: 'Штрафи',
+                onTap: () {},
+              ),
+            ]),
+            const SizedBox(height: 8),
+            // Группа 2: Активні сесії, Налаштування
+            _buildMenuCard([
+              MenuItem(
+                icon: CupertinoIcons.device_phone_portrait,
+                title: 'Активні сесії',
+                onTap: () {},
+              ),
+              MenuItem(
+                icon: CupertinoIcons.gear_alt,
+                title: 'Налаштування',
+                onTap: () {},
+              ),
+            ]),
+            const SizedBox(height: 8),
+            // Группа 3: Питання та відповіді
+            _buildMenuCard([
+              MenuItem(
+                icon: CupertinoIcons.question_circle,
+                title: 'Питання та відповіді',
+                onTap: () {
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const FaqListPage(),
+                  );
+                },
+              ),
+              MenuItem(
+                icon: CupertinoIcons.question_circle,
+                title: 'Служба підтримки',
+                onTap: () {
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const SupportPage(),
+                  );
+                },
+              ),
+              MenuItem(
+                icon: Icons.copy,
+                title: 'Копіювати номер пристрою',
+                isCopyButton: true,
+                onTap: _onCopyDeviceNumber,
+              ),
+            ]),
+            const SizedBox(height: 8),
+            // Группа 4: Сканувати документ
+            _buildMenuCard([
+              MenuItem(
+                icon: CupertinoIcons.qrcode_viewfinder,
+                title: 'Сканувати документ',
+                hideChevron: true,
+                onTap: () {
+                  ModalUtils.showDocumentScanOptions(context);
+                },
+              ),
+            ]),
+            const SizedBox(height: 20),
+            _buildButtonLogout(),
+            const SizedBox(height: 12),
+            _textPersonalData(context),
+          ],
         );
       },
     );
   }
 
-  Widget _buildMenuItem(MenuItem item) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: GestureDetector(
-        onTap: item.onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
+  Widget _buildMenuCard(List<MenuItem> items) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: items.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+          final isLast = index == items.length - 1;
+
+          return Column(
             children: [
+              _buildMenuItem(item),
+              if (!isLast)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Colors.grey[300],
+                  ),
+                ),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(MenuItem item) {
+    return GestureDetector(
+      onTap: item.onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+        child: Row(
+          children: [
+            // Для кнопки копирования: иконка copy или анимированная галочка
+            if (item.isCopyButton)
+              _showSuccessIcon
+                  ? AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _opacityAnimation.value,
+                          child: Transform.scale(
+                            scale: _scaleAnimation.value,
+                            child: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFF6B35),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Icon(
+                      item.icon,
+                      size: 24,
+                      color: Colors.black87,
+                    )
+            // Для остальных пунктов - обычная иконка с notification badge
+            else
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -249,8 +350,8 @@ class _MenuScreenViewState extends State<MenuScreenView>
                   ),
                   if (item.hasNotification)
                     Positioned(
-                      right: 2,
-                      top: 2,
+                      right: -2,
+                      top: -2,
                       child: Container(
                         width: 10,
                         height: 10,
@@ -258,7 +359,7 @@ class _MenuScreenViewState extends State<MenuScreenView>
                           color: Colors.red,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: const Color.fromRGBO(226, 223, 204, 1),
+                            color: Colors.white,
                             width: 2,
                           ),
                         ),
@@ -266,103 +367,69 @@ class _MenuScreenViewState extends State<MenuScreenView>
                     ),
                 ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                item.title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                  height: 1,
                 ),
               ),
-            ],
-          ),
+            ),
+            // Для обычных пунктов показываем chevron
+            if (!item.isCopyButton && !item.hideChevron)
+              const Icon(
+                CupertinoIcons.chevron_right,
+                size: 23,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildAdditionalActions(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildAnimatedCopyButton(),
-        const SizedBox(height: 30),
-        _buildAdditionalAction(
-          'Служба підтримки',
-          () {
-            NavigationUtils.pushWithHorizontalAnimation(
-              context: context,
-              page: const SupportPage(),
-            );
-          },
+  Widget _buildButtonLogout() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(200, 0, 0, 0),
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: const Text(
+        'Вийти',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
-      ],
-    );
-  }
-
-  Widget _buildAnimatedCopyButton() {
-    return GestureDetector(
-      onTap: _onCopyDeviceNumber,
-      child: Row(
-        children: [
-          const Text(
-            'Копіювати номер пристрою',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-
-          // Анимированная иконка успеха
-          if (_showSuccessIcon)
-            AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _opacityAnimation.value,
-                  child: Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Container(
-                      width: 18,
-                      height: 18,
-                      margin: const EdgeInsets.only(left: 12),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF6B35),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-        ],
       ),
     );
   }
 
-  Widget _buildAdditionalAction(String title, VoidCallback onTap) {
+  Widget _textPersonalData(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black,
-            fontWeight: FontWeight.w400,
-          ),
+      onTap: () {
+        NavigationUtils.pushWithHorizontalAnimation(
+          context: context,
+          page: const FaqListPage(),
+        );
+      },
+      child: const Text(
+        'Повідомлення про обробку персональних даних',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+          decoration: TextDecoration.underline,
+          decorationColor: Colors.black,
+          decorationThickness: 1,
+          height: 1,
         ),
       ),
     );
@@ -374,11 +441,15 @@ class MenuItem {
   final String title;
   final VoidCallback onTap;
   final bool hasNotification;
+  final bool isCopyButton;
+  final bool hideChevron;
 
   MenuItem({
     required this.icon,
     required this.title,
     required this.onTap,
     this.hasNotification = false,
+    this.isCopyButton = false,
+    this.hideChevron = false,
   });
 }
