@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,12 @@ import 'features/notifications/data/repositories/notification_repository_impl.da
 void main() async {
   // Инициализируем WidgetsBinding
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Устанавливаем бежевый цвет navigation bar
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Color.fromRGBO(226, 223, 204, 1),
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
 
   // Получаем SharedPreferences
   final prefs = await SharedPreferences.getInstance();

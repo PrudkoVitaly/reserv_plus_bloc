@@ -4,12 +4,13 @@ import 'package:animations/animations.dart';
 import '../bloc/main_bloc.dart';
 import '../bloc/main_event.dart';
 import '../bloc/main_state.dart';
-import 'vacancies_screen.dart';
-import 'default_main_screen.dart';
-import 'menu_screen.dart';
+import 'package:reserv_plus/features/vacancies/presentation/pages/vacancies_page.dart';
+import 'package:reserv_plus/features/document/presentation/pages/document_page.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/menu_screen.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
+import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -21,6 +22,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
+  late AnimationController _navBarAnimationController;
+  late Animation<double> _navBarSlideAnimation;
+  final _bottomNavBarController = BottomNavBarController();
 
   @override
   void initState() {
@@ -40,14 +44,41 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       curve: Curves.easeOut,
     ));
 
+    // Анимация для скрытия/показа BottomNavigationBar
+    _navBarAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _navBarSlideAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _navBarAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Слушаем изменения видимости BottomNavigationBar
+    _bottomNavBarController.addListener(_onNavBarVisibilityChanged);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAnimation();
     });
   }
 
+  void _onNavBarVisibilityChanged() {
+    if (_bottomNavBarController.isVisible) {
+      _navBarAnimationController.reverse();
+    } else {
+      _navBarAnimationController.forward();
+    }
+  }
+
   @override
   void dispose() {
+    _bottomNavBarController.removeListener(_onNavBarVisibilityChanged);
     _animationController.dispose();
+    _navBarAnimationController.dispose();
     super.dispose();
   }
 
@@ -112,8 +143,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Widget _buildMainContent(MainLoaded state) {
     final screens = [
-      const DefaultMainScreen(key: ValueKey('document')),
-      const VacanciesScreen(key: ValueKey('vacancies')),
+      const DocumentPage(key: ValueKey('document')),
+      const VacanciesPage(key: ValueKey('vacancies')),
       const MenuScreen(key: ValueKey('menu')),
     ];
 
@@ -146,7 +177,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           );
         },
         child: state.navigationState.selectedIndex == -1
-            ? const DefaultMainScreen(key: ValueKey('document'))
+            ? const DocumentPage(key: ValueKey('document'))
             : screens[state.navigationState.selectedIndex.clamp(0, 2)],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(state),
@@ -161,11 +192,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     final iconSize = (screenWidth * 0.06).clamp(24.0, 28.0);
     final textSize = (screenWidth * 0.03).clamp(12.0, 14.0);
 
-    return SizedBox(
-      height: navBarHeight,
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
+    return AnimatedBuilder(
+      animation: _navBarSlideAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, navBarHeight * _navBarSlideAnimation.value),
+          child: child,
+        );
+      },
+      child: SizedBox(
+        height: navBarHeight,
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
         currentIndex: state.navigationState.selectedIndex == -1
             ? 0
             : state.navigationState.selectedIndex.clamp(0, 2),
@@ -345,6 +384,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         ],
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        ),
       ),
     );
   }

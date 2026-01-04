@@ -27,7 +27,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
   }
 
 
-  void _onLoadData(DocumentLoadData event, Emitter<DocumentState> emit) async {
+  Future<void> _onLoadData(DocumentLoadData event, Emitter<DocumentState> emit) async {
     emit(const DocumentLoading());
 
     try {
@@ -38,7 +38,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     }
   }
 
-  void _onFlipCard(DocumentFlipCard event, Emitter<DocumentState> emit) {
+  Future<void> _onFlipCard(DocumentFlipCard event, Emitter<DocumentState> emit) async {
     if (state is DocumentLoaded) {
       final currentState = state as DocumentLoaded;
       emit(currentState.copyWith(
@@ -47,12 +47,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
       ));
 
       // Имитация анимации
-      Future.delayed(const Duration(milliseconds: 600), () {
-        if (state is DocumentLoaded) {
-          final updatedState = state as DocumentLoaded;
-          emit(updatedState.copyWith(isFlipping: false));
-        }
-      });
+      await Future.delayed(const Duration(milliseconds: 600));
+      if (!emit.isDone && state is DocumentLoaded) {
+        final updatedState = state as DocumentLoaded;
+        emit(updatedState.copyWith(isFlipping: false));
+      }
     }
   }
 
@@ -70,7 +69,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     }
   }
 
-  void _onUpdateData(
+  Future<void> _onUpdateData(
       DocumentUpdateData event, Emitter<DocumentState> emit) async {
     if (state is DocumentLoaded) {
       final currentState = state as DocumentLoaded;
@@ -89,7 +88,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     }
   }
 
-  void _onShareDocument(
+  Future<void> _onShareDocument(
       DocumentShareDocument event, Emitter<DocumentState> emit) async {
     try {
       if (state is DocumentLoaded) {
@@ -118,7 +117,7 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     }
   }
 
-  void _onCorrectDataOnline(
+  Future<void> _onCorrectDataOnline(
       DocumentCorrectDataOnline event, Emitter<DocumentState> emit) async {
     try {
       await _repository.correctDataOnline();

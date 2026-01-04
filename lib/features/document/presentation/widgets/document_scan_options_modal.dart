@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/document_bloc.dart';
-import '../bloc/document_event.dart';
+import 'package:reserv_plus/features/qr_scanner/presentation/pages/qr_scanner_page.dart';
 
 class DocumentScanOptionsModal extends StatefulWidget {
   const DocumentScanOptionsModal({super.key});
@@ -18,6 +16,14 @@ class _DocumentScanOptionsModalState extends State<DocumentScanOptionsModal> {
 
   void _closeModal() {
     Navigator.of(context).pop();
+  }
+
+  void _openQRScanner(BuildContext context, String scanType) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const QRScannerPage(),
+      ),
+    );
   }
 
   void _handleDragStart(DragStartDetails details) {
@@ -114,23 +120,17 @@ class _DocumentScanOptionsModalState extends State<DocumentScanOptionsModal> {
                       _buildScanOption(
                         context,
                         'QR військово-облікового документа',
-                        () => context
-                            .read<DocumentBloc>()
-                            .add(const ScanMilitaryDocumentQREvent()),
+                        () => _openQRScanner(context, 'military'),
                       ),
                       _buildScanOption(
                         context,
                         'QR паперової повістки',
-                        () => context
-                            .read<DocumentBloc>()
-                            .add(const ScanPaperSummonsQREvent()),
+                        () => _openQRScanner(context, 'summons'),
                       ),
                       _buildScanOption(
                         context,
                         'QR направлення на ВЛК',
-                        () => context
-                            .read<DocumentBloc>()
-                            .add(const ScanReferralQREvent()),
+                        () => _openQRScanner(context, 'referral'),
                       ),
                     ],
                   ),

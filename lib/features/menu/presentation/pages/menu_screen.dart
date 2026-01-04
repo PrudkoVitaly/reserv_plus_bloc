@@ -11,6 +11,7 @@ import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/document/presentation/utils/modal_utils.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/fix_data/fix_data_page.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -188,15 +189,20 @@ class _MenuScreenViewState extends State<MenuScreenView>
       builder: (context, mainState) {
         return Column(
           children: [
-            // Группа 1: Штрафи, Виправити дані
+            // Группа 1: Виправити дані, Штрафи
             _buildMenuCard([
               MenuItem(
-                icon: CupertinoIcons.exclamationmark_circle,
+                imagePath: 'images/fix_data_icon.png',
                 title: 'Виправити дані\nонлайн',
-                onTap: () {},
+                onTap: () {
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const FixDataPage(),
+                  );
+                },
               ),
               MenuItem(
-                icon: CupertinoIcons.search_circle,
+                imagePath: 'images/fines_icon.png',
                 title: 'Штрафи',
                 onTap: () {},
               ),
@@ -205,12 +211,12 @@ class _MenuScreenViewState extends State<MenuScreenView>
             // Группа 2: Активні сесії, Налаштування
             _buildMenuCard([
               MenuItem(
-                icon: CupertinoIcons.device_phone_portrait,
+                imagePath: 'images/sessions_icon.png',
                 title: 'Активні сесії',
                 onTap: () {},
               ),
               MenuItem(
-                icon: CupertinoIcons.gear_alt,
+                imagePath: 'images/settings_icon.png',
                 title: 'Налаштування',
                 onTap: () {},
               ),
@@ -219,7 +225,7 @@ class _MenuScreenViewState extends State<MenuScreenView>
             // Группа 3: Питання та відповіді
             _buildMenuCard([
               MenuItem(
-                icon: CupertinoIcons.question_circle,
+                imagePath: 'images/faq_icon.png',
                 title: 'Питання та відповіді',
                 onTap: () {
                   NavigationUtils.pushWithHorizontalAnimation(
@@ -229,7 +235,7 @@ class _MenuScreenViewState extends State<MenuScreenView>
                 },
               ),
               MenuItem(
-                icon: CupertinoIcons.question_circle,
+                imagePath: 'images/support_icon.png',
                 title: 'Служба підтримки',
                 onTap: () {
                   NavigationUtils.pushWithHorizontalAnimation(
@@ -239,7 +245,7 @@ class _MenuScreenViewState extends State<MenuScreenView>
                 },
               ),
               MenuItem(
-                icon: Icons.copy,
+                imagePath: 'images/copy_device_icon.png',
                 title: 'Копіювати номер пристрою',
                 isCopyButton: true,
                 onTap: _onCopyDeviceNumber,
@@ -249,7 +255,7 @@ class _MenuScreenViewState extends State<MenuScreenView>
             // Группа 4: Сканувати документ
             _buildMenuCard([
               MenuItem(
-                icon: CupertinoIcons.qrcode_viewfinder,
+                imagePath: 'images/scan_document_icon.png',
                 title: 'Сканувати документ',
                 hideChevron: true,
                 onTap: () {
@@ -303,7 +309,7 @@ class _MenuScreenViewState extends State<MenuScreenView>
       onTap: item.onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         child: Row(
           children: [
             // Для кнопки копирования: иконка copy или анимированная галочка
@@ -333,21 +339,34 @@ class _MenuScreenViewState extends State<MenuScreenView>
                         );
                       },
                     )
-                  : Icon(
-                      item.icon,
-                      size: 24,
-                      color: Colors.black87,
-                    )
-            // Для остальных пунктов - обычная иконка с notification badge
+                  : item.imagePath != null
+                      ? Image.asset(
+                          item.imagePath!,
+                          width: 32,
+                          height: 32,
+                        )
+                      : Icon(
+                          item.icon,
+                          size: 32,
+                          color: Colors.black87,
+                        )
+            // Для остальных пунктов - иконка или изображение с notification badge
             else
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Icon(
-                    item.icon,
-                    size: 24,
-                    color: Colors.black87,
-                  ),
+                  if (item.imagePath != null)
+                    Image.asset(
+                      item.imagePath!,
+                      width: 30,
+                      height: 30,
+                    )
+                  else
+                    Icon(
+                      item.icon,
+                      size: 30,
+                      color: Colors.black87,
+                    ),
                   if (item.hasNotification)
                     Positioned(
                       right: -2,
@@ -437,7 +456,8 @@ class _MenuScreenViewState extends State<MenuScreenView>
 }
 
 class MenuItem {
-  final IconData icon;
+  final IconData? icon;
+  final String? imagePath;
   final String title;
   final VoidCallback onTap;
   final bool hasNotification;
@@ -445,7 +465,8 @@ class MenuItem {
   final bool hideChevron;
 
   MenuItem({
-    required this.icon,
+    this.icon,
+    this.imagePath,
     required this.title,
     required this.onTap,
     this.hasNotification = false,

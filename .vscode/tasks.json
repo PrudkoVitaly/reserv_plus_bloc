@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Install APK",
+            "type": "shell",
+            "command": "${env:ANDROID_HOME}/platform-tools/adb.exe",
+            "args": [
+                "install",
+                "-r",
+                "${workspaceFolder}/build/app/outputs/flutter-apk/app-debug.apk"
+            ],
+            "windows": {
+                "command": "${env:LOCALAPPDATA}/Android/sdk/platform-tools/adb.exe"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "silent",
+                "panel": "dedicated"
+            },
+            "ignoreExitCode": true
+        }
+    ]
+}
+

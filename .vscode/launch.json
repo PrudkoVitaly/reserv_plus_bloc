@@ -7,19 +7,29 @@
         {
             "name": "reserv_plus_bloc",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "deviceId": "WOI7I7XCW4PR7L49",
+            "preLaunchTask": "Install APK"
+        },
+        {
+            "name": "reserv_plus_bloc (attach)",
+            "request": "attach",
+            "type": "dart",
+            "deviceId": "WOI7I7XCW4PR7L49"
         },
         {
             "name": "reserv_plus_bloc (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "deviceId": "WOI7I7XCW4PR7L49"
         },
         {
             "name": "reserv_plus_bloc (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "deviceId": "WOI7I7XCW4PR7L49"
         }
     ]
 }
