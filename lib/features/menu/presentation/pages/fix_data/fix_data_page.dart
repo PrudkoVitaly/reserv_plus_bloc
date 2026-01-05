@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
 import 'personal_data_error_page.dart';
 
 class FixDataPage extends StatelessWidget {
@@ -13,7 +14,7 @@ class FixDataPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context),
+            const CustomBackHeader(title: 'Виправити дані\nонлайн'),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -30,37 +31,6 @@ class FixDataPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 24, top: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-              color: Colors.black,
-              size: 28,
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text(
-              'Виправити дані\nонлайн',
-              style: TextStyle(
-                fontSize: 30,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                height: 1.1,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

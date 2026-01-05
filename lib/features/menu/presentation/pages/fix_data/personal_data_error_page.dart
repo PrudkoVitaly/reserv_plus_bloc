@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/shared/services/user_data_service.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/fix_data/describe_situation_page.dart';
 
 class PersonalDataErrorPage extends StatelessWidget {
   const PersonalDataErrorPage({super.key});
@@ -14,7 +17,7 @@ class PersonalDataErrorPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context),
+            const CustomBackHeader(title: 'Перевірте дані'),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -82,37 +85,6 @@ class PersonalDataErrorPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 24, top: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-              color: Colors.black,
-              size: 28,
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text(
-              'Перевірте дані',
-              style: TextStyle(
-                fontSize: 30,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                height: 1.1,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildDataItem({
     required String label,
     required String value,
@@ -153,7 +125,10 @@ class PersonalDataErrorPage extends StatelessWidget {
         width: double.infinity,
         child: ElevatedButton(
           onPressed: () {
-            // TODO: Действие подтверждения
+            NavigationUtils.pushWithHorizontalAnimation(
+              context: context,
+              page: const DescribeSituationPage(),
+            );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
@@ -163,6 +138,10 @@ class PersonalDataErrorPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
             elevation: 0,
+            splashFactory: NoSplash.splashFactory,
+            shadowColor: Colors.transparent,
+            overlayColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
           ),
           child: const Text(
             'Підтвердити',

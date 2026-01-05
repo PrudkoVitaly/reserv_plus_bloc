@@ -12,6 +12,9 @@ import 'package:reserv_plus/features/document/presentation/utils/modal_utils.dar
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/fix_data/fix_data_page.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/fix_data/already_submitted_page.dart';
+import 'package:reserv_plus/features/shared/services/fix_data_request_service.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/fines/fines_intro_page.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -194,17 +197,33 @@ class _MenuScreenViewState extends State<MenuScreenView>
               MenuItem(
                 imagePath: 'images/fix_data_icon.png',
                 title: 'Виправити дані\nонлайн',
-                onTap: () {
-                  NavigationUtils.pushWithHorizontalAnimation(
-                    context: context,
-                    page: const FixDataPage(),
-                  );
+                onTap: () async {
+                  final canSubmit = await FixDataRequestService.canSubmitRequest();
+                  if (!context.mounted) return;
+
+                  if (canSubmit) {
+                    NavigationUtils.pushWithHorizontalAnimation(
+                      context: context,
+                      page: const FixDataPage(),
+                    );
+                  } else {
+                    // Запрос уже был отправлен менее часа назад
+                    NavigationUtils.pushWithHorizontalAnimation(
+                      context: context,
+                      page: const AlreadySubmittedPage(),
+                    );
+                  }
                 },
               ),
               MenuItem(
                 imagePath: 'images/fines_icon.png',
                 title: 'Штрафи',
-                onTap: () {},
+                onTap: () {
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const FinesIntroPage(),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 8),

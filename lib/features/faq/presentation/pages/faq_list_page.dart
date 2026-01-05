@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/faq/data/faq_data.dart';
 import 'package:reserv_plus/features/faq/domain/entities/faq_item.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
 import 'faq_detail_page.dart';
 
 class FaqListPage extends StatelessWidget {
@@ -13,37 +14,15 @@ class FaqListPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: Colors.black,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Text(
-                'Питання та\nвідповіді',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                  height: 1,
-                ),
-              ),
-            ),
+            const CustomBackHeader(title: 'Питання та\nвідповіді'),
             const SizedBox(height: 24),
             Expanded(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,

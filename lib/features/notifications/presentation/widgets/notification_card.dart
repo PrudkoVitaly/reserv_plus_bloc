@@ -4,6 +4,7 @@ import 'package:reserv_plus/features/notifications/domain/entities/notification.
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/notifications/presentation/pages/request_sent_detail_page.dart';
 import 'package:reserv_plus/features/notifications/presentation/pages/data_received_detail_page.dart';
+import 'package:reserv_plus/features/notifications/presentation/pages/fix_data_request_detail_page.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
 
@@ -65,10 +66,10 @@ class NotificationCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               _formatTimestamp(notification.timestamp),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[500],
+                fontWeight: FontWeight.w600,
+                color: Color.fromRGBO(106, 103, 88, 0.8),
               ),
             ),
           ],
@@ -92,6 +93,9 @@ class NotificationCard extends StatelessWidget {
       case 'Дані з реєстру Оберіг отримано':
         detailPage = const DataReceivedDetailPage();
         break;
+      case 'Запит на виправлення даних відправлено':
+        detailPage = const FixDataRequestDetailPage();
+        break;
       default:
         return; // Не открываем детали для неизвестных типов
     }
@@ -103,6 +107,10 @@ class NotificationCard extends StatelessWidget {
   }
 
   String _formatTimestamp(DateTime timestamp) {
-    return '${timestamp.day}.${timestamp.month}.${timestamp.year} о ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
+    final day = timestamp.day.toString().padLeft(2, '0');
+    final month = timestamp.month.toString().padLeft(2, '0');
+    final hour = timestamp.hour.toString().padLeft(2, '0');
+    final minute = timestamp.minute.toString().padLeft(2, '0');
+    return '$day.$month.${timestamp.year} о $hour:$minute';
   }
 }

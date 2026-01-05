@@ -5,6 +5,7 @@ import 'package:reserv_plus/features/notifications/presentation/bloc/notificatio
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
 import 'package:reserv_plus/features/notifications/presentation/widgets/notification_card.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -27,33 +28,11 @@ class NotificationPageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: Colors.black,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Text(
-                'Сповіщення',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                  height: 1,
-                ),
-              ),
-            ),
+            const CustomBackHeader(title: 'Сповіщення'),
             Expanded(
               child: BlocBuilder<NotificationBloc, NotificationState>(
                 builder: (context, state) {

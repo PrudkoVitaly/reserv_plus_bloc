@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/faq/domain/entities/faq_item.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
 
 class FaqDetailPage extends StatefulWidget {
   final FaqItem faqItem;
@@ -95,26 +96,16 @@ class _FaqDetailPageState extends State<FaqDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: Stack(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
-            child: Column(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Colors.black,
-                    size: 28,
-                  ),
-                ),
+                const CustomBackHeader(),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
                     key: _questionKey,
                     widget.faqItem.question,
@@ -131,8 +122,8 @@ class _FaqDetailPageState extends State<FaqDetailPage> {
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     padding: const EdgeInsets.only(
-                      left: 16,
-                      right: 16,
+                      left: 24,
+                      right: 24,
                       bottom: 24,
                     ),
                     child: Text(
@@ -148,44 +139,44 @@ class _FaqDetailPageState extends State<FaqDetailPage> {
                 ),
               ],
             ),
-          ),
-          if (_showDivider)
+            if (_showDivider)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: _dividerTop,
+                child: Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Colors.grey[400],
+                ),
+              ),
             Positioned(
               left: 0,
               right: 0,
-              top: _dividerTop,
-              child: Divider(
-                height: 1,
-                thickness: 1,
-                color: Colors.grey[400],
-              ),
-            ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: IgnorePointer(
-              child: AnimatedOpacity(
-                opacity: _bottomGradientOpacity,
-                duration: const Duration(milliseconds: 200),
-                child: Container(
-                  height: 150,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        const Color.fromRGBO(226, 223, 204, 1)
-                            .withValues(alpha: 0),
-                        const Color.fromRGBO(226, 223, 204, 1),
-                      ],
+              bottom: 0,
+              child: IgnorePointer(
+                child: AnimatedOpacity(
+                  opacity: _bottomGradientOpacity,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          const Color.fromRGBO(226, 223, 204, 1)
+                              .withValues(alpha: 0),
+                          const Color.fromRGBO(226, 223, 204, 1),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

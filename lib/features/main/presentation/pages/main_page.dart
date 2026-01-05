@@ -363,19 +363,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       ),
                     ],
                   ),
-                  if (state.navigationState.hasNotifications)
-                    Positioned(
-                      right: 14,
-                      top: -2,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
