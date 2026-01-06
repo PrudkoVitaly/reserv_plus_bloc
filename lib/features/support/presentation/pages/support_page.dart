@@ -130,13 +130,13 @@ class _SupportViewState extends State<SupportView>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             const Text(
-              'Напишіть у чат-бот, якщо у вас виникли проблеми або питання. Працюємо цілодобово.',
+              'Маєте додаткові питання про послуги або виникла проблема із застосунком? Чатбот підкаже, що робити.',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18,
-                height: 1.2,
+                height: 1.1,
                 fontWeight: FontWeight.w500,
               ),
             ),

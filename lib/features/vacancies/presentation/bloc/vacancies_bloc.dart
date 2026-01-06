@@ -24,6 +24,11 @@ class VacanciesBloc extends Bloc<VacanciesEvent, VacanciesState> {
 
   void _onInitialized(
       VacanciesInitialized event, Emitter<VacanciesState> emit) async {
+    // Если уже инициализирован - не делаем ничего
+    if (state is! VacanciesInitial) {
+      return;
+    }
+
     emit(const VacanciesLoading());
 
     try {

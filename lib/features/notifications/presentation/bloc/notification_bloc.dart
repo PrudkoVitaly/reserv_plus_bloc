@@ -53,8 +53,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     NotificationAddDataReceived event,
     Emitter<NotificationState> emit,
   ) async {
-    // Ждем 5 секунд перед добавлением уведомления
-    await Future.delayed(const Duration(seconds: 5));
+    // Ждем 15 секунд перед добавлением уведомления
+    await Future.delayed(const Duration(seconds: 15));
 
     try {
       await _repository.addNotification(event.notification);

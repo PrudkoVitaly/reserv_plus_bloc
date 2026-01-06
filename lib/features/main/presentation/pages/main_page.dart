@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:animations/animations.dart';
 import '../bloc/main_bloc.dart';
 import '../bloc/main_event.dart';
 import '../bloc/main_state.dart';
@@ -8,6 +7,7 @@ import 'package:reserv_plus/features/vacancies/presentation/pages/vacancies_page
 import 'package:reserv_plus/features/document/presentation/pages/document_page.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/menu_screen.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/animated_tab_switcher.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
 import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
@@ -64,6 +64,27 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAnimation();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Предзагрузка иконок BottomNavigationBar для предотвращения мигания
+    _precacheNavBarImages();
+  }
+
+  void _precacheNavBarImages() {
+    final images = [
+      'images/reserv_id_botom_nav_bar_icon.png',
+      'images/reserv_id_botom_nav_bar_roginal_icon.png',
+      'images/vacancies_botom_nav_bar__black_icon.png',
+      'images/vacancies_botom_nav_bar_icon.png',
+      'images/menu_botom_nav_bar_icon.png',
+    ];
+
+    for (final image in images) {
+      precacheImage(AssetImage(image), context);
+    }
   }
 
   void _onNavBarVisibilityChanged() {
@@ -142,43 +163,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _buildMainContent(MainLoaded state) {
-    final screens = [
-      const DocumentPage(key: ValueKey('document')),
-      const VacanciesPage(key: ValueKey('vacancies')),
-      const MenuScreen(key: ValueKey('menu')),
-    ];
+    final currentIndex = state.navigationState.selectedIndex == -1
+        ? 0
+        : state.navigationState.selectedIndex.clamp(0, 2);
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      body: PageTransitionSwitcher(
-        duration: const Duration(milliseconds: 700),
-        reverse: false,
-        transitionBuilder: (
-          Widget child,
-          Animation<double> primaryAnimation,
-          Animation<double> secondaryAnimation,
-        ) {
-          // Применяем кастомную кривую для более заметного эффекта
-          final curvedPrimaryAnimation = CurvedAnimation(
-            parent: primaryAnimation,
-            curve: Curves.easeInOut,
-          );
-          final curvedSecondaryAnimation = CurvedAnimation(
-            parent: secondaryAnimation,
-            curve: Curves.easeInOut,
-          );
-
-          return SharedAxisTransition(
-            animation: curvedPrimaryAnimation,
-            secondaryAnimation: curvedSecondaryAnimation,
-            transitionType: SharedAxisTransitionType.horizontal,
-            fillColor: const Color.fromRGBO(226, 223, 204, 1),
-            child: child,
-          );
-        },
-        child: state.navigationState.selectedIndex == -1
-            ? const DocumentPage(key: ValueKey('document'))
-            : screens[state.navigationState.selectedIndex.clamp(0, 2)],
+      body: AnimatedTabSwitcher(
+        currentIndex: currentIndex,
+        children: const [
+          DocumentPage(),
+          VacanciesPage(),
+          MenuScreen(),
+        ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(state),
     );

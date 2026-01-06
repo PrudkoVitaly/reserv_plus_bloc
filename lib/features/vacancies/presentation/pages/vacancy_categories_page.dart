@@ -105,7 +105,7 @@ class _VacancyCategoriesViewState extends State<VacancyCategoriesView> {
                 'Вакансії в\nСилах оборони\nУкраїни',
                 style: TextStyle(
                   fontSize: 28,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black,
                   height: 0.9,
                 ),

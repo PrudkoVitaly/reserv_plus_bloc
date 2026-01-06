@@ -6,7 +6,6 @@ import '../bloc/vacancies_bloc.dart';
 import '../bloc/vacancies_event.dart';
 import '../bloc/vacancies_state.dart';
 import '../widgets/vacancies_onboarding_view.dart';
-import '../../data/repositories/vacancies_repository_impl.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 
 class VacanciesPage extends StatelessWidget {
@@ -14,12 +13,10 @@ class VacanciesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => VacanciesBloc(
-        repository: VacanciesRepositoryImpl(),
-      )..add(const VacanciesInitialized()),
-      child: const VacanciesView(),
-    );
+    // Инициализируем блок если он в начальном состоянии
+    // Блок сам проверит и проигнорирует если уже инициализирован
+    context.read<VacanciesBloc>().add(const VacanciesInitialized());
+    return const VacanciesView();
   }
 }
 

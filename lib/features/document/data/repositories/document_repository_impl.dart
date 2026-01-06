@@ -107,8 +107,9 @@ class DocumentRepositoryImpl implements DocumentRepository {
     // Вычисляем разницу во времени
     final difference = now.difference(lastUpdated);
 
-    // Проверяем, прошло ли 6 часов (6 * 60 * 60 = 21600 секунд)
-    // Возвращаем true, если прошло >= 6 часов
-    return difference.inHours >= 6;
+    // TODO: Вернуть 6 часов после тестирования
+    // Проверяем, прошло ли 5 секунд (для тестирования)
+    // Возвращаем true, если прошло >= 5 секунд
+    return difference.inSeconds >= 5;
   }
 }

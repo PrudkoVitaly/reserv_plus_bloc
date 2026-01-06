@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animations/animations.dart';
 import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_checkbox.dart';
 import '../bloc/vacancies_bloc.dart';
 import '../bloc/vacancies_event.dart';
 
@@ -75,41 +76,17 @@ class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
                   ),
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () {
+                CustomCheckbox(
+                  value: _dontShowAgain,
+                  onChanged: (value) {
                     setState(() {
-                      _dontShowAgain = !_dontShowAgain;
+                      _dontShowAgain = value;
                     });
                     context.read<VacanciesBloc>().add(
                           VacanciesSetDontShowAgain(_dontShowAgain),
                         );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Checkbox(
-                        value: _dontShowAgain,
-                        onChanged: (value) {
-                          setState(() {
-                            _dontShowAgain = value ?? false;
-                          });
-                          context.read<VacanciesBloc>().add(
-                                VacanciesSetDontShowAgain(_dontShowAgain),
-                              );
-                        },
-                        activeColor: const Color.fromRGBO(253, 135, 12, 1),
-                        checkColor: Colors.black,
-                        side: const BorderSide(color: Colors.black, width: 2),
-                      ),
-                      const Text(
-                        'Більше не показувати',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+                  label: 'Більше не показувати',
                 ),
                 const SizedBox(height: 16),
                 SizedBox(

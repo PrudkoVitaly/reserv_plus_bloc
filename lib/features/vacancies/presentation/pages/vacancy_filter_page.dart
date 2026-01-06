@@ -120,9 +120,9 @@ class _VacancyFilterPageState extends State<VacancyFilterPage> {
         'Вакансії для\nпридатних до\nнебойової служби',
         style: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: Colors.black,
-          height: 1.1,
+          height: 1,
         ),
       ),
       trailing: GestureDetector(
@@ -169,7 +169,7 @@ Widget _buildFilterRow(String title, String value) {
       title,
       style: const TextStyle(
         fontSize: 18,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
         color: Colors.black,
       ),
     ),
@@ -188,6 +188,8 @@ Widget _buildFilterRow(String title, String value) {
         const Icon(
           Icons.arrow_forward_ios,
           size: 20,
+          color: Colors.black,
+          fontWeight: FontWeight.w900,
         ),
       ],
     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:reserv_plus/features/support/presentation/bloc/support_bloc.dart';
 import 'package:reserv_plus/features/support/presentation/bloc/support_event.dart';
 import 'package:reserv_plus/features/support/data/repositories/support_repository_impl.dart';
@@ -15,6 +16,8 @@ import 'package:reserv_plus/features/menu/presentation/pages/fix_data/fix_data_p
 import 'package:reserv_plus/features/menu/presentation/pages/fix_data/already_submitted_page.dart';
 import 'package:reserv_plus/features/shared/services/fix_data_request_service.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/fines/fines_intro_page.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/sessions/active_sessions_page.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/settings/settings_page.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -88,6 +91,30 @@ class _MenuScreenViewState extends State<MenuScreenView>
         weight: 12.5,
       ),
     ]).animate(_animationController);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Предзагрузка иконок меню для предотвращения мигания при переключении табов
+    _precacheMenuImages();
+  }
+
+  void _precacheMenuImages() {
+    final images = [
+      'images/fix_data_icon.png',
+      'images/fines_icon.png',
+      'images/sessions_icon.png',
+      'images/settings_icon.png',
+      'images/faq_icon.png',
+      'images/support_icon.png',
+      'images/copy_device_icon.png',
+      'images/scan_document_icon.png',
+    ];
+
+    for (final image in images) {
+      precacheImage(AssetImage(image), context);
+    }
   }
 
   @override
@@ -232,12 +259,22 @@ class _MenuScreenViewState extends State<MenuScreenView>
               MenuItem(
                 imagePath: 'images/sessions_icon.png',
                 title: 'Активні сесії',
-                onTap: () {},
+                onTap: () {
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const ActiveSessionsPage(),
+                  );
+                },
               ),
               MenuItem(
                 imagePath: 'images/settings_icon.png',
                 title: 'Налаштування',
-                onTap: () {},
+                onTap: () {
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const SettingsPage(),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 8),
@@ -333,42 +370,48 @@ class _MenuScreenViewState extends State<MenuScreenView>
           children: [
             // Для кнопки копирования: иконка copy или анимированная галочка
             if (item.isCopyButton)
-              _showSuccessIcon
-                  ? AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (context, child) {
-                        return Opacity(
-                          opacity: _opacityAnimation.value,
-                          child: Transform.scale(
-                            scale: _scaleAnimation.value,
-                            child: Container(
-                              width: 24,
-                              height: 24,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFF6B35),
-                                shape: BoxShape.circle,
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: Center(
+                  child: _showSuccessIcon
+                      ? AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) {
+                            return Opacity(
+                              opacity: _opacityAnimation.value,
+                              child: Transform.scale(
+                                scale: _scaleAnimation.value,
+                                child: Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFF6B35),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 16,
-                              ),
+                            );
+                          },
+                        )
+                      : item.imagePath != null
+                          ? Image.asset(
+                              item.imagePath!,
+                              width: 32,
+                              height: 32,
+                            )
+                          : Icon(
+                              item.icon,
+                              size: 32,
+                              color: Colors.black87,
                             ),
-                          ),
-                        );
-                      },
-                    )
-                  : item.imagePath != null
-                      ? Image.asset(
-                          item.imagePath!,
-                          width: 32,
-                          height: 32,
-                        )
-                      : Icon(
-                          item.icon,
-                          size: 32,
-                          color: Colors.black87,
-                        )
+                ),
+              )
             // Для остальных пунктов - иконка или изображение с notification badge
             else
               Stack(
@@ -451,11 +494,11 @@ class _MenuScreenViewState extends State<MenuScreenView>
 
   Widget _textPersonalData(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        NavigationUtils.pushWithHorizontalAnimation(
-          context: context,
-          page: const FaqListPage(),
-        );
+      onTap: () async {
+        final uri = Uri.parse('https://reserveplus.mod.gov.ua/privacy/');
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
       },
       child: const Text(
         'Повідомлення про обробку персональних даних',

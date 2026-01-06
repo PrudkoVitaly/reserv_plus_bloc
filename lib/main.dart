@@ -24,6 +24,8 @@ import 'features/biometric/data/services/biometric_auth_service.dart';
 import 'features/biometric/data/repositories/biometric_repository_impl.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'features/notifications/data/repositories/notification_repository_impl.dart';
+import 'features/vacancies/presentation/bloc/vacancies_bloc.dart';
+import 'features/vacancies/data/repositories/vacancies_repository_impl.dart';
 
 void main() async {
   // Инициализируем WidgetsBinding
@@ -108,6 +110,12 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => NotificationBloc(
             repository: notificationRepository,
+          ),
+        ),
+        // VacanciesBloc - глобальный чтобы не пересоздавался при переключении табов
+        BlocProvider(
+          create: (context) => VacanciesBloc(
+            repository: VacanciesRepositoryImpl(),
           ),
         ),
       ],

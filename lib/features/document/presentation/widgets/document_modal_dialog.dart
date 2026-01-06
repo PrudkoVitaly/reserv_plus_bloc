@@ -108,8 +108,13 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           icon: Icons.info_outline,
                           title: "Переглянути документ",
                           onTap: () {
+                            // Сохраняем navigatorState ДО закрытия модала
+                            final navigatorState = Navigator.of(context, rootNavigator: true);
                             _closeModal();
-                            PersonInfoUtils.showPersonInfoModal(context);
+                            // Ждём пока модал уедет вниз, потом показываем новый
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              PersonInfoUtils.showPersonInfoModalWithNavigator(navigatorState);
+                            });
                           },
                         ),
                         _buildMenuItem(

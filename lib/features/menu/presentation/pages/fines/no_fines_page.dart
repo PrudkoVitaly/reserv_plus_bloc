@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
+import 'package:reserv_plus/features/menu/presentation/pages/fines/checking_fines_page.dart';
 
 class NoFinesPage extends StatelessWidget {
   const NoFinesPage({super.key});
@@ -75,7 +77,7 @@ class NoFinesPage extends StatelessWidget {
         children: [
           _buildUnderstandButton(context),
           const SizedBox(height: 22),
-          _buildCheckAgainButton(),
+          _buildCheckAgainButton(context),
         ],
       ),
     );
@@ -113,10 +115,13 @@ class NoFinesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckAgainButton() {
+  Widget _buildCheckAgainButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Проверить еще раз
+        NavigationUtils.pushWithHorizontalAnimation(
+          context: context,
+          page: const CheckingFinesPage(),
+        );
       },
       child: const Text(
         'Перевірити ще раз',

@@ -48,14 +48,9 @@ class BiometricRepositoryImpl implements BiometricRepository {
     // Проверяем, включена ли биометрия в настройках приложения
     final isEnabled = await isBiometricEnabled();
 
-    // Если биометрия доступна но отключена в приложении - включаем автоматически
-    if (!isEnabled && availableTypes.isNotEmpty) {
-      await setBiometricEnabled(true);
-    }
-
     return BiometricStatus(
       isAvailable: true,
-      isEnabled: availableTypes.isNotEmpty, // Включаем если есть отпечатки
+      isEnabled: isEnabled, // Используем значение из настроек
       type: biometricType,
     );
   }
@@ -66,7 +61,8 @@ class BiometricRepositoryImpl implements BiometricRepository {
       // Сначала проверяем статус
       final status = await getBiometricStatus();
 
-      if (!status.isAvailable) {
+      // Если биометрия недоступна или отключена в настройках - не аутентифицируем
+      if (!status.isAvailable || !status.isEnabled) {
         return false;
       }
 
@@ -87,6 +83,6 @@ class BiometricRepositoryImpl implements BiometricRepository {
   // Читаем значение из SharedPreferences
   @override
   Future<bool> isBiometricEnabled() async {
-    return _sharedPreferences.getBool(_biometricEnabledKey) ?? false;
+    return _sharedPreferences.getBool(_biometricEnabledKey) ?? true; // По умолчанию включена
   }
 }

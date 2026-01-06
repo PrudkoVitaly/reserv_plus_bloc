@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/custom_checkbox.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/fines/no_fines_page.dart';
 
@@ -80,45 +81,14 @@ class _FinesIntroPageState extends State<FinesIntroPage> {
   }
 
   Widget _buildCheckbox() {
-    return GestureDetector(
-      onTap: () {
+    return CustomCheckbox(
+      value: _dontShowAgain,
+      onChanged: (value) {
         setState(() {
-          _dontShowAgain = !_dontShowAgain;
+          _dontShowAgain = value;
         });
       },
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.black,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(2),
-            ),
-            child: _dontShowAgain
-                ? const Icon(
-                    Icons.check,
-                    size: 18,
-                    color: Colors.black,
-                  )
-                : null,
-          ),
-          const SizedBox(width: 12),
-          const Text(
-            'Більше не показувати',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
+      label: 'Більше не показувати',
     );
   }
 
