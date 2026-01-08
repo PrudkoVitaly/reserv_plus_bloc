@@ -5,6 +5,7 @@ import 'package:reserv_plus/features/support/presentation/pages/support_page.dar
 import 'package:reserv_plus/features/shared/presentation/widgets/custom_checkbox.dart';
 import '../bloc/vacancies_bloc.dart';
 import '../bloc/vacancies_event.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class VacanciesOnboardingView extends StatefulWidget {
   const VacanciesOnboardingView({super.key});
@@ -89,31 +90,14 @@ class _VacanciesOnboardingViewState extends State<VacanciesOnboardingView> {
                   label: 'Більше не показувати',
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context
-                          .read<VacanciesBloc>()
-                          .add(const VacanciesStartPressed());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: const Text(
-                      'Почати',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
+                PrimaryButton(
+                  text: 'Почати',
+                  onPressed: () {
+                    context
+                        .read<VacanciesBloc>()
+                        .add(const VacanciesStartPressed());
+                  },
+                  verticalPadding: 20,
                 ),
                 const SizedBox(height: 5),
               ],

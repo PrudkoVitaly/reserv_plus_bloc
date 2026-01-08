@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
 import 'package:intl/intl.dart';
@@ -188,8 +187,6 @@ class _DocumentPageState extends State<DocumentPage>
   }
 
   Widget _buildHeader() {
-    Size size = MediaQuery.of(context).size;
-    final isSmallScreen = size.height < 700;
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, mainState) {
         final hasNotifications = mainState is MainLoaded
@@ -386,29 +383,7 @@ class _DocumentPageState extends State<DocumentPage>
             ),
           ),
           SizedBox(height: size.height * 0.31),
-          Container(
-            width: double.infinity,
-            height: 26,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: Color.fromRGBO(150, 148, 134, 1),
-            ),
-            child: Marquee(
-              // text: state.data.formattedLastUpdated,
-              text: " • ${state.data.formattedLastUpdated}",
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-                height: 0.1,
-                // color: Color.fromRGBO(252, 251, 246, 1),
-              ),
-              scrollAxis: Axis.horizontal,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              velocity: 20.0,
-              startPadding: 10.0,
-            ),
-          ),
+          _buildMarqueeStrip(state),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.only(
@@ -469,6 +444,39 @@ class _DocumentPageState extends State<DocumentPage>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMarqueeStrip(DocumentLoaded state) {
+    // Текст и цвет зависят от состояния обновления
+    final isUpdating = state.isUpdating;
+    final backgroundColor = isUpdating
+        ? const Color.fromRGBO(255, 235, 59, 1) // Жёлтый
+        : const Color.fromRGBO(150, 148, 134, 1); // Серый
+    final marqueeText = isUpdating
+        ? " • Оновлюємо документ • Впораємось за пару годин • Дякуємо за терпіння!"
+        : " • ${state.data.formattedLastUpdated}";
+
+    return Container(
+      width: double.infinity,
+      height: 26,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+      ),
+      child: Marquee(
+        text: marqueeText,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+          height: 0.1,
+        ),
+        scrollAxis: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        velocity: 20.0,
+        startPadding: 10.0,
       ),
     );
   }

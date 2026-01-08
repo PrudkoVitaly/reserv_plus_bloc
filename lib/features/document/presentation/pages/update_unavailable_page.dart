@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class UpdateUnavailablePage extends StatelessWidget {
   const UpdateUnavailablePage({super.key});
@@ -49,29 +50,14 @@ class UpdateUnavailablePage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Закрываем страницу и возвращаемся назад
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                  ),
-                ),
-                child: const Text(
-                  'Зрозуміло',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            PrimaryButton(
+              text: 'Зрозуміло',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              verticalPadding: 20,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class VacancyFilterPage extends StatefulWidget {
   const VacancyFilterPage({super.key});
@@ -75,30 +76,14 @@ class _VacancyFilterPageState extends State<VacancyFilterPage> {
                   const SizedBox(height: 20),
                   _buildToggleRow(isToggleActive, _toggleSwitch),
                   const Spacer(),
-                  Container(
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    width: double.infinity,
-                    child: ElevatedButton(
+                    child: PrimaryButton(
+                      text: 'Показати ${isToggleActive ? activeVacancyCount : inactiveVacancyCount} вакансій',
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                      ),
-                      child: Text(
-                        'Показати ${isToggleActive ? activeVacancyCount : inactiveVacancyCount} вакансій',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 1,
-                          color: Colors.black,
-                        ),
-                      ),
+                      verticalPadding: 20,
                     ),
                   ),
                   const SizedBox(height: 24),

@@ -105,21 +105,24 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                         const SizedBox(height: 20),
                         _buildMenuItem(
                           context,
-                          icon: Icons.info_outline,
+                          imagePath: 'images/document_modal_view_icon.png',
                           title: "Переглянути документ",
                           onTap: () {
                             // Сохраняем navigatorState ДО закрытия модала
-                            final navigatorState = Navigator.of(context, rootNavigator: true);
+                            final navigatorState =
+                                Navigator.of(context, rootNavigator: true);
                             _closeModal();
                             // Ждём пока модал уедет вниз, потом показываем новый
-                            Future.delayed(const Duration(milliseconds: 300), () {
-                              PersonInfoUtils.showPersonInfoModalWithNavigator(navigatorState);
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
+                              PersonInfoUtils.showPersonInfoModalWithNavigator(
+                                  navigatorState);
                             });
                           },
                         ),
                         _buildMenuItem(
                           context,
-                          icon: Icons.upload_file_outlined,
+                          imagePath: 'images/document_modal_pdf_icon.png',
                           title: "Завантажити PDF",
                           onTap: () {
                             context
@@ -130,13 +133,14 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                         ),
                         _buildMenuItem(
                           context,
-                          icon: Icons.refresh,
+                          imagePath: 'images/document_modal_refresh_icon.png',
                           title: "Оновити документ",
                           onTap: () {
                             // Закрываем текущий модал
                             _closeModal();
                             // Показываем новый модал с небольшой задержкой
-                            Future.delayed(const Duration(milliseconds: 200), () {
+                            Future.delayed(const Duration(milliseconds: 200),
+                                () {
                               if (context.mounted) {
                                 ModalUtils.showDocumentUpdateModal(context);
                               }
@@ -145,30 +149,39 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                         ),
                         _buildMenuItem(
                           context,
-                          icon: Icons.add_circle_outline,
+                          imagePath:
+                              'images/document_modal_extended_data_icon.png',
                           title: "Розширені дані з реєстру",
                           onTap: () {
                             // Сохраняем navigator ДО закрытия модала
-                            final navigator = Navigator.of(context, rootNavigator: true);
+                            final navigator =
+                                Navigator.of(context, rootNavigator: true);
                             _closeModal();
 
                             // Используем сохраненный navigator
-                            Future.delayed(const Duration(milliseconds: 300), () {
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
                               navigator.push(
                                 PageRouteBuilder(
-                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
                                       const ExtendedDataRequestPage(),
-                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
                                     return SharedAxisTransition(
                                       animation: animation,
                                       secondaryAnimation: secondaryAnimation,
-                                      transitionType: SharedAxisTransitionType.horizontal,
-                                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                                      transitionType:
+                                          SharedAxisTransitionType.horizontal,
+                                      fillColor: const Color.fromRGBO(
+                                          226, 223, 204, 1),
                                       child: child,
                                     );
                                   },
-                                  transitionDuration: const Duration(milliseconds: 350),
-                                  reverseTransitionDuration: const Duration(milliseconds: 350),
+                                  transitionDuration:
+                                      const Duration(milliseconds: 350),
+                                  reverseTransitionDuration:
+                                      const Duration(milliseconds: 350),
                                 ),
                               );
                             });
@@ -176,28 +189,36 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                         ),
                         _buildMenuItem(
                           context,
-                          icon: Icons.medical_services_outlined,
+                          imagePath: 'images/document_modal_vlk_icon.png',
                           title: "Направлення на ВЛК",
                           onTap: () {
-                            final navigator = Navigator.of(context, rootNavigator: true);
+                            final navigator =
+                                Navigator.of(context, rootNavigator: true);
                             _closeModal();
 
-                            Future.delayed(const Duration(milliseconds: 300), () {
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
                               navigator.push(
                                 PageRouteBuilder(
-                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
                                       const VlkUnavailablePage(),
-                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
                                     return SharedAxisTransition(
                                       animation: animation,
                                       secondaryAnimation: secondaryAnimation,
-                                      transitionType: SharedAxisTransitionType.horizontal,
-                                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                                      transitionType:
+                                          SharedAxisTransitionType.horizontal,
+                                      fillColor: const Color.fromRGBO(
+                                          226, 223, 204, 1),
                                       child: child,
                                     );
                                   },
-                                  transitionDuration: const Duration(milliseconds: 350),
-                                  reverseTransitionDuration: const Duration(milliseconds: 350),
+                                  transitionDuration:
+                                      const Duration(milliseconds: 350),
+                                  reverseTransitionDuration:
+                                      const Duration(milliseconds: 350),
                                 ),
                               );
                             });
@@ -205,29 +226,38 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                         ),
                         _buildMenuItem(
                           context,
-                          icon: Icons.edit_outlined,
+                          imagePath: 'images/document_modal_edit_icon.png',
                           title: "Уточнити контактні дані",
                           onTap: () {
-                            final navigator = Navigator.of(context, rootNavigator: true);
+                            final navigator =
+                                Navigator.of(context, rootNavigator: true);
                             final extendedData = ExtendedData.fromUserData();
                             _closeModal();
 
-                            Future.delayed(const Duration(milliseconds: 300), () {
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
                               navigator.push(
                                 PageRouteBuilder(
-                                  pageBuilder: (context, animation, secondaryAnimation) =>
-                                      ExtendedDataReviewPage(data: extendedData),
-                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      ExtendedDataReviewPage(
+                                          data: extendedData),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
                                     return SharedAxisTransition(
                                       animation: animation,
                                       secondaryAnimation: secondaryAnimation,
-                                      transitionType: SharedAxisTransitionType.horizontal,
-                                      fillColor: const Color.fromRGBO(226, 223, 204, 1),
+                                      transitionType:
+                                          SharedAxisTransitionType.horizontal,
+                                      fillColor: const Color.fromRGBO(
+                                          226, 223, 204, 1),
                                       child: child,
                                     );
                                   },
-                                  transitionDuration: const Duration(milliseconds: 350),
-                                  reverseTransitionDuration: const Duration(milliseconds: 350),
+                                  transitionDuration:
+                                      const Duration(milliseconds: 350),
+                                  reverseTransitionDuration:
+                                      const Duration(milliseconds: 350),
                                 ),
                               );
                             });
@@ -246,7 +276,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
 
 Widget _buildMenuItem(
   BuildContext context, {
-  required IconData icon,
+  required String imagePath,
   required String title,
   required VoidCallback onTap,
 }) {
@@ -257,10 +287,11 @@ Widget _buildMenuItem(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: Colors.black,
-            size: 30,
+          Image.asset(
+            imagePath,
+            width: 28,
+            height: 28,
+            fit: BoxFit.contain,
           ),
           const SizedBox(width: 16),
           Expanded(

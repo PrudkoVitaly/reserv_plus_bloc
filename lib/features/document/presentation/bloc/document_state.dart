@@ -21,12 +21,14 @@ class DocumentLoaded extends DocumentState {
   final bool isFrontVisible;
   final bool isModalVisible;
   final bool isFlipping;
+  final bool isUpdating; // Флаг для показа желтой бегущей строки
 
   const DocumentLoaded({
     required this.data,
     this.isFrontVisible = true,
     this.isModalVisible = false,
     this.isFlipping = false,
+    this.isUpdating = false,
   });
 
   DocumentLoaded copyWith({
@@ -34,17 +36,19 @@ class DocumentLoaded extends DocumentState {
     bool? isFrontVisible,
     bool? isModalVisible,
     bool? isFlipping,
+    bool? isUpdating,
   }) {
     return DocumentLoaded(
       data: data ?? this.data,
       isFrontVisible: isFrontVisible ?? this.isFrontVisible,
       isModalVisible: isModalVisible ?? this.isModalVisible,
       isFlipping: isFlipping ?? this.isFlipping,
+      isUpdating: isUpdating ?? this.isUpdating,
     );
   }
 
   @override
-  List<Object?> get props => [data, isFrontVisible, isModalVisible, isFlipping];
+  List<Object?> get props => [data, isFrontVisible, isModalVisible, isFlipping, isUpdating];
 }
 
 class DocumentError extends DocumentState {

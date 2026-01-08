@@ -3,6 +3,7 @@ import 'package:reserv_plus/features/shared/services/user_data_service.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/fix_data/describe_situation_page.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class PersonalDataErrorPage extends StatelessWidget {
   const PersonalDataErrorPage({super.key});
@@ -121,36 +122,14 @@ class PersonalDataErrorPage extends StatelessWidget {
   Widget _buildBottomButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {
-            NavigationUtils.pushWithHorizontalAnimation(
-              context: context,
-              page: const DescribeSituationPage(),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            elevation: 0,
-            splashFactory: NoSplash.splashFactory,
-            shadowColor: Colors.transparent,
-            overlayColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-          ),
-          child: const Text(
-            'Підтвердити',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+      child: PrimaryButton(
+        text: 'Підтвердити',
+        onPressed: () {
+          NavigationUtils.pushWithHorizontalAnimation(
+            context: context,
+            page: const DescribeSituationPage(),
+          );
+        },
       ),
     );
   }

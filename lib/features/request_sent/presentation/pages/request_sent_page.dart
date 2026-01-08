@@ -4,6 +4,7 @@ import '../bloc/request_sent_bloc.dart';
 import '../bloc/request_sent_event.dart';
 import '../bloc/request_sent_state.dart';
 import '../../../main/presentation/pages/main_page.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class RequestSentPage extends StatelessWidget {
   const RequestSentPage({super.key});
@@ -62,28 +63,15 @@ class RequestSentPage extends StatelessWidget {
           ),
         ),
         floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                foregroundColor: const Color.fromRGBO(22, 1, 0, 1),
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-              ),
-              onPressed: () {
-                context
-                    .read<RequestSentBloc>()
-                    .add(const RequestSentContinue());
-              },
-              child: const Text(
-                "Дякую",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-              ),
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: PrimaryButton(
+            text: 'Дякую',
+            onPressed: () {
+              context.read<RequestSentBloc>().add(const RequestSentContinue());
+            },
+            verticalPadding: 20,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

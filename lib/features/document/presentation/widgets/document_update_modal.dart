@@ -9,6 +9,7 @@ import 'package:reserv_plus/features/notifications/presentation/bloc/notificatio
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/request_sent/presentation/pages/request_sent_page.dart';
 import 'package:reserv_plus/features/document/presentation/pages/update_unavailable_page.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class DocumentUpdateModal extends StatelessWidget {
   const DocumentUpdateModal({super.key});
@@ -126,26 +127,11 @@ class DocumentUpdateModal extends StatelessWidget {
                   const SizedBox(height: 32),
 
                   // Кнопка "Оновити"
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => _onUpdateDocument(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        'Оновити',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+                  PrimaryButton(
+                    text: 'Оновити',
+                    onPressed: () => _onUpdateDocument(context),
+                    verticalPadding: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                   const SizedBox(height: 16),
 

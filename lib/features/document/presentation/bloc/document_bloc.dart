@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/document_repository.dart';
 import '../../data/services/document_share_service.dart';
 import '../../data/services/document_pdf_generator.dart';
+import '../../data/services/document_update_service.dart';
 import 'document_event.dart';
 import 'document_state.dart';
 
@@ -32,7 +33,21 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
 
     try {
       final data = await _repository.getDocumentData();
-      emit(DocumentLoaded(data: data));
+
+      // Проверяем, нужно ли показывать желтую полосу обновления
+      final isUpdating = await DocumentUpdateService.isUpdating();
+      final remainingTimeMs = await DocumentUpdateService.getRemainingTimeMs();
+
+      emit(DocumentLoaded(data: data, isUpdating: isUpdating));
+
+      // Если идёт обновление, запускаем таймер на оставшееся время
+      if (isUpdating && remainingTimeMs > 0) {
+        await Future.delayed(Duration(milliseconds: remainingTimeMs));
+        if (!emit.isDone && state is DocumentLoaded) {
+          final loadedState = state as DocumentLoaded;
+          emit(loadedState.copyWith(isUpdating: false));
+        }
+      }
     } catch (e) {
       emit(DocumentError(e.toString()));
     }
@@ -77,11 +92,24 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
 
       try {
         final updatedData = await _repository.updateDocumentData();
+
+        // Сохраняем время начала обновления для сохранения состояния между экранами
+        await DocumentUpdateService.saveUpdateStartTime();
+
+        // Показываем желтую бегущую строку на 10 секунд
         emit(DocumentLoaded(
           data: updatedData,
           isFrontVisible: currentState.isFrontVisible,
           isModalVisible: false,
+          isUpdating: true,
         ));
+
+        // Через 10 секунд убираем желтую строку
+        await Future.delayed(const Duration(seconds: 10));
+        if (!emit.isDone && state is DocumentLoaded) {
+          final loadedState = state as DocumentLoaded;
+          emit(loadedState.copyWith(isUpdating: false));
+        }
       } catch (e) {
         emit(DocumentError(e.toString()));
       }

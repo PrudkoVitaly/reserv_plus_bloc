@@ -5,6 +5,7 @@ import 'package:reserv_plus/features/notifications/presentation/bloc/notificatio
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_event.dart';
 import 'package:reserv_plus/features/notifications/domain/entities/notification.dart';
 import 'package:reserv_plus/features/shared/services/fix_data_request_service.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class RequestSentPage extends StatelessWidget {
   const RequestSentPage({super.key});
@@ -100,49 +101,27 @@ class RequestSentPage extends StatelessWidget {
   Widget _buildBottomButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () async {
-            // Сохраняем время запроса для блокировки на 1 час
-            await FixDataRequestService.saveRequestTime();
+      child: PrimaryButton(
+        text: 'Зрозуміло',
+        onPressed: () async {
+          // Сохраняем время запроса для блокировки на 1 час
+          await FixDataRequestService.saveRequestTime();
 
-            // Добавляем уведомление о запросе
-            if (context.mounted) {
-              context.read<NotificationBloc>().add(
-                    NotificationAddRequestSent(
-                      NotificationEntity(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
-                        title: 'Запит на виправлення даних відправлено',
-                        subtitle: 'Скоро ви дізнаєтесь, чи доставлено ваш запит.',
-                        timestamp: DateTime.now(),
-                      ),
+          // Добавляем уведомление о запросе
+          if (context.mounted) {
+            context.read<NotificationBloc>().add(
+                  NotificationAddRequestSent(
+                    NotificationEntity(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Запит на виправлення даних відправлено',
+                      subtitle: 'Скоро ви дізнаєтесь, чи доставлено ваш запит.',
+                      timestamp: DateTime.now(),
                     ),
-                  );
-              NavigationUtils.popToFirst(context);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            elevation: 0,
-            splashFactory: NoSplash.splashFactory,
-            shadowColor: Colors.transparent,
-            overlayColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-          ),
-          child: const Text(
-            'Зрозуміло',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+                  ),
+                );
+            NavigationUtils.popToFirst(context);
+          }
+        },
       ),
     );
   }

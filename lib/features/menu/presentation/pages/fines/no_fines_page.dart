@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/fines/checking_fines_page.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class NoFinesPage extends StatelessWidget {
   const NoFinesPage({super.key});
@@ -84,34 +85,12 @@ class NoFinesPage extends StatelessWidget {
   }
 
   Widget _buildUnderstandButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
-          foregroundColor: Colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          elevation: 0,
-          splashFactory: NoSplash.splashFactory,
-          shadowColor: Colors.transparent,
-          overlayColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-        ),
-        child: const Text(
-          'Зрозуміло',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+    return PrimaryButton(
+      text: 'Зрозуміло',
+      onPressed: () {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      },
     );
   }
 
