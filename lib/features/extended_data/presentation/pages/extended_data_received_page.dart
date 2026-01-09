@@ -3,11 +3,44 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 import '../../data/services/extended_data_pdf_generator.dart';
 import '../../domain/entities/extended_data.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
-class ExtendedDataReceivedPage extends StatelessWidget {
+class ExtendedDataReceivedPage extends StatefulWidget {
   final String? pdfPath;
 
   const ExtendedDataReceivedPage({super.key, this.pdfPath});
+
+  @override
+  State<ExtendedDataReceivedPage> createState() =>
+      _ExtendedDataReceivedPageState();
+}
+
+class _ExtendedDataReceivedPageState extends State<ExtendedDataReceivedPage> {
+  String? _cachedPdfPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _preGeneratePDF();
+  }
+
+  Future<void> _preGeneratePDF() async {
+    if (widget.pdfPath != null) {
+      final file = File(widget.pdfPath!);
+      if (await file.exists()) {
+        _cachedPdfPath = widget.pdfPath;
+        return;
+      }
+    }
+    // Генерируем PDF заранее
+    try {
+      final data = ExtendedData.fromUserData();
+      _cachedPdfPath =
+          await ExtendedDataPdfGenerator.generateExtendedDataPDF(data);
+    } catch (e) {
+      // Игнорируем ошибку, попробуем сгенерировать при клике
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +81,7 @@ class ExtendedDataReceivedPage extends StatelessWidget {
                         fontSize: 18,
                         color: Colors.black,
                         height: 1,
+                        fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -58,12 +92,12 @@ class ExtendedDataReceivedPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: GestureDetector(
-                          onTap: () => _downloadPDF(context),
+                          onTap: _sharePDF,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Image.asset(
-                                "images/download_image.png",
+                                "images/download_file.png",
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,
@@ -86,28 +120,11 @@ class ExtendedDataReceivedPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                  ),
-                ),
-                child: const Text(
-                  'Зрозуміло',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
+            PrimaryButton(
+              text: 'Зрозуміло',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
           ],
         ),
@@ -115,62 +132,35 @@ class ExtendedDataReceivedPage extends StatelessWidget {
     );
   }
 
-  void _downloadPDF(BuildContext context) async {
+  Future<void> _sharePDF() async {
     try {
-      if (pdfPath != null) {
-        final file = File(pdfPath!);
+      // Если PDF уже сгенерирован - сразу шарим
+      if (_cachedPdfPath != null) {
+        final file = File(_cachedPdfPath!);
         if (await file.exists()) {
-          // Показываем диалог выбора действия
           await Share.shareXFiles(
-            [XFile(pdfPath!)],
+            [XFile(_cachedPdfPath!)],
             text: 'Розширені дані з реєстру',
           );
-        } else {
-          // Если PDF не существует, генерируем новый
-          if (!context.mounted) return;
-          await _generateAndSharePDF(context);
+          return;
         }
-      } else {
-        // Если путь не передан, генерируем новый PDF
-        if (!context.mounted) return;
-        await _generateAndSharePDF(context);
       }
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Помилка: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
 
-  Future<void> _generateAndSharePDF(BuildContext context) async {
-    try {
-      // Показываем индикатор загрузки
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Генеруємо PDF...'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-
-      // Генерируем PDF
+      // Если нет - генерируем и шарим
       final data = ExtendedData.fromUserData();
       final newPdfPath =
           await ExtendedDataPdfGenerator.generateExtendedDataPDF(data);
+      _cachedPdfPath = newPdfPath;
 
-      // Показываем диалог выбора действия
       await Share.shareXFiles(
         [XFile(newPdfPath)],
         text: 'Розширені дані з реєстру',
       );
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Помилка генерації PDF: $e'),
+          content: Text('Помилка: $e'),
           backgroundColor: Colors.red,
         ),
       );

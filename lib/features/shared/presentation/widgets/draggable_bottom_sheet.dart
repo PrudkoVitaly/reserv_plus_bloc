@@ -14,7 +14,7 @@ class DraggableBottomSheet {
     required BuildContext context,
     required String title,
     required Widget child,
-    double initialChildSize = 0.93,
+    double initialChildSize = 0.95,
     double minChildSize = 0.5,
     double maxChildSize = 0.95,
   }) {
@@ -23,6 +23,7 @@ class DraggableBottomSheet {
       isScrollControlled: true,
       enableDrag: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: initialChildSize,
         minChildSize: minChildSize,
@@ -85,8 +86,10 @@ class DraggableBottomSheet {
   /// [maxChildSize] - Максимальный размер, по умолчанию 0.95
   static Future<T?> showCustom<T>({
     required BuildContext context,
-    required Widget Function(BuildContext context, ScrollController scrollController) builder,
-    double initialChildSize = 0.93,
+    required Widget Function(
+            BuildContext context, ScrollController scrollController)
+        builder,
+    double initialChildSize = 0.95,
     double minChildSize = 0.5,
     double maxChildSize = 0.95,
   }) {
@@ -95,6 +98,7 @@ class DraggableBottomSheet {
       isScrollControlled: true,
       enableDrag: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: initialChildSize,
         minChildSize: minChildSize,
@@ -139,8 +143,10 @@ class DraggableBottomSheet {
   /// [maxChildSize] - Максимальный размер, по умолчанию 0.95
   static Future<T?> showCustomWithNavigator<T>({
     required NavigatorState navigatorState,
-    required Widget Function(BuildContext context, ScrollController scrollController) builder,
-    double initialChildSize = 0.93,
+    required Widget Function(
+            BuildContext context, ScrollController scrollController)
+        builder,
+    double initialChildSize = 0.95,
     double minChildSize = 0.5,
     double maxChildSize = 0.95,
   }) {
@@ -149,6 +155,7 @@ class DraggableBottomSheet {
       isScrollControlled: true,
       enableDrag: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: initialChildSize,
         minChildSize: minChildSize,

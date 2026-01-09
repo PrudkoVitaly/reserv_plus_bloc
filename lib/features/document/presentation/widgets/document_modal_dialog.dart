@@ -4,7 +4,7 @@ import 'package:animations/animations.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../../../person_info/presentation/utils/person_info_utils.dart';
-import '../../../extended_data/presentation/pages/extended_data_request_page.dart';
+import '../../../extended_data/presentation/pages/extended_data_received_page.dart';
 import '../../../extended_data/presentation/pages/extended_data_review_page.dart';
 import '../../../extended_data/domain/entities/extended_data.dart';
 import '../pages/vlk_unavailable_page.dart';
@@ -153,35 +153,37 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                               'images/document_modal_extended_data_icon.png',
                           title: "Розширені дані з реєстру",
                           onTap: () {
-                            // Сохраняем navigator ДО закрытия модала
                             final navigator =
                                 Navigator.of(context, rootNavigator: true);
                             _closeModal();
-
-                            // Используем сохраненный navigator
                             Future.delayed(const Duration(milliseconds: 300),
                                 () {
                               navigator.push(
                                 PageRouteBuilder(
+                                  opaque: false,
+                                  barrierColor:
+                                      const Color.fromRGBO(226, 223, 204, 1),
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
-                                      const ExtendedDataRequestPage(),
+                                      const ExtendedDataReceivedPage(),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
-                                    return SharedAxisTransition(
-                                      animation: animation,
-                                      secondaryAnimation: secondaryAnimation,
-                                      transitionType:
-                                          SharedAxisTransitionType.horizontal,
-                                      fillColor: const Color.fromRGBO(
-                                          226, 223, 204, 1),
+                                    final slideIn = Tween<Offset>(
+                                      begin: const Offset(1.0, 0.0),
+                                      end: Offset.zero,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeInOut,
+                                    ));
+                                    return SlideTransition(
+                                      position: slideIn,
                                       child: child,
                                     );
                                   },
                                   transitionDuration:
-                                      const Duration(milliseconds: 350),
+                                      const Duration(milliseconds: 300),
                                   reverseTransitionDuration:
-                                      const Duration(milliseconds: 350),
+                                      const Duration(milliseconds: 300),
                                 ),
                               );
                             });

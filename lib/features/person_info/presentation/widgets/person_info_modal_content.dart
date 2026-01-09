@@ -5,6 +5,8 @@ import '../bloc/person_info_bloc.dart';
 import '../bloc/person_info_event.dart';
 import '../bloc/person_info_state.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/document/presentation/bloc/document_bloc.dart';
+import 'package:reserv_plus/features/document/presentation/bloc/document_state.dart';
 import '../../domain/entities/person_info.dart';
 
 class PersonInfoModalContent extends StatefulWidget {
@@ -41,6 +43,26 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
         return _buildLoadingState();
       },
     );
+  }
+
+  String _formatFullName(String fullName) {
+    final parts = fullName.split(' ');
+    if (parts.isEmpty) return fullName;
+
+    final result = <String>[];
+    for (int i = 0; i < parts.length; i++) {
+      if (i == 0) {
+        // Фамилия - все заглавные
+        result.add(parts[i].toUpperCase());
+      } else {
+        // Имя и отчество - только первая заглавная
+        final word = parts[i].toLowerCase();
+        if (word.isNotEmpty) {
+          result.add(word[0].toUpperCase() + word.substring(1));
+        }
+      }
+    }
+    return result.join('\n');
   }
 
   Widget _buildLoadingState() {
@@ -89,17 +111,17 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 24, right: 24, bottom: 20),
+      padding: const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 20),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Text(
             textAlign: TextAlign.left,
-            "Військово-\nобліковий\nдокумент",
+            "Резерв ID",
             style: TextStyle(
               fontSize: 32,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               height: 0.9,
             ),
           ),
@@ -123,26 +145,44 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
   }
 
   Widget _buildMarquee(PersonInfo personInfo) {
-    return Container(
-      width: double.infinity,
-      height: 40,
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(150, 148, 134, 1),
-      ),
-      child: Marquee(
-        text: personInfo.formattedLastUpdated,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Color.fromRGBO(252, 251, 246, 1),
-        ),
-        scrollAxis: Axis.horizontal,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        blankSpace: 50.0,
-        velocity: 40.0,
-        startPadding: 10.0,
-      ),
+    return BlocBuilder<DocumentBloc, DocumentState>(
+      builder: (context, documentState) {
+        final isUpdating =
+            documentState is DocumentLoaded && documentState.isUpdating;
+        final formattedDate = documentState is DocumentLoaded
+            ? documentState.data.formattedLastUpdated
+            : personInfo.formattedLastUpdated;
+
+        final backgroundColor = isUpdating
+            ? const Color.fromRGBO(255, 235, 59, 1) // Жёлтый
+            : const Color.fromRGBO(150, 148, 134, 1); // Серый
+        final marqueeText = isUpdating
+            ? " • Оновлюємо документ • Впораємось за пару годин • Дякуємо за терпіння!"
+            : " • $formattedDate";
+
+        return Container(
+          width: double.infinity,
+          height: 26,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+          ),
+          child: Marquee(
+            key: ValueKey(isUpdating),
+            text: marqueeText,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+              height: 0.1,
+            ),
+            scrollAxis: Axis.horizontal,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            velocity: isUpdating ? 40.0 : 20.0,
+            startPadding: 10.0,
+          ),
+        );
+      },
     );
   }
 
@@ -153,7 +193,7 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
         children: [
           const SizedBox(height: 4),
           _buildPersonCard(personInfo),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           _buildExclusionReasonCard(personInfo),
           const SizedBox(height: 10),
           _buildVlcCard(personInfo),
@@ -175,25 +215,145 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _formatFullName(personInfo.fullName),
+              textAlign: TextAlign.left,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              personInfo.status,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Дата народження:",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              personInfo.birthDate,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              "РНОКПП:",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              personInfo.rnokpp,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExclusionReasonCard(PersonInfo personInfo) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        "Підстава зняття чи виключення:\n${personInfo.exclusionReason}",
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVlcCard(PersonInfo personInfo) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  "Постанова ВЛК:",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 5),
                 Text(
-                  textAlign: TextAlign.left,
-                  personInfo.fullName,
+                  personInfo.vlcDecision.replaceAll('\n', ' '),
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1,
                   ),
                 ),
-                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+          const Divider(
+            thickness: 1,
+            height: 1,
+            color: Color.fromRGBO(234, 235, 228, 1),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                const Text(
+                  "Дата ВЛК:",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
+                ),
+                const Spacer(),
                 Text(
-                  personInfo.status,
+                  personInfo.vlcDate,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -202,109 +362,6 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
                 ),
               ],
             ),
-          ),
-          const Divider(
-            thickness: 2,
-            color: Color.fromRGBO(234, 235, 228, 1),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      "Дата народження",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                    const Spacer(),
-                    Text(
-                      personInfo.birthDate,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Text(
-                      "РНОКПП",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                    const Spacer(),
-                    Text(
-                      personInfo.rnokpp,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExclusionReasonCard(PersonInfo personInfo) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        "Підстава зняття чи виключення:\n${personInfo.exclusionReason}",
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
-
-  Widget _buildVlcCard(PersonInfo personInfo) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Постанова ВЛК",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              const Spacer(),
-              Text(
-                personInfo.vlcDecision,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const Text(
-                "Дата ВЛК",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(width: 25),
-              Text(
-                personInfo.vlcDate,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-            ],
           ),
         ],
       ),
@@ -319,24 +376,26 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "ТЦК та СП:",
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 5),
                 Text(
-                  "Амур-Нижньодніпровський районий територіальний центр\nкомплектування та соціальної підтримки",
+                  "Амур-Нижньодніпровський районний у місті Дніпро ТЦК та СП",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1.1,
                   ),
@@ -345,12 +404,12 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
             ),
           ),
           const Divider(
-            thickness: 2,
+            thickness: 1,
+            height: 1,
             color: Color.fromRGBO(234, 235, 228, 1),
           ),
-          const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -358,62 +417,90 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
                   children: [
                     const Text(
                       "Звання",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 1.1,
+                      ),
                     ),
                     const Spacer(),
                     Text(
                       personInfo.rank,
                       style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w500),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 1.1,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     const Text(
                       "ВОС:",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 1.1,
+                      ),
                     ),
                     const Spacer(),
                     Text(
                       personInfo.vos,
                       style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w500),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 1.1,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 const Text(
                   "Категорія обліку:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Text(
                   personInfo.category,
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w500),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Text(
                   personInfo.position,
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w500),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 const Text(
-                  "Номер в реэстрації Оберіг:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  "Номер в реєстрі Оберіг:",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Text(
                   personInfo.registrationNumber,
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w500),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -439,37 +526,42 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
               Text(
                 "Телефон",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   height: 1.1,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           Text(
             personInfo.phone,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w500, height: 1.1),
           ),
           const SizedBox(height: 10),
           const Text(
             "Email:",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w500, height: 1.1),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           Text(
             personInfo.email,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "Адреса проживання:",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w500, height: 1.1),
           ),
           const SizedBox(height: 10),
+          const Text(
+            "Адреса проживання:",
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w500, height: 1.1),
+          ),
+          const SizedBox(height: 5),
           Text(
-            personInfo.address,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            personInfo.address.replaceAll('\n', ' '),
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w500, height: 1.1),
           ),
         ],
       ),
@@ -494,13 +586,13 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
                 children: [
                   Image.asset(
                     "images/ok_icon.png",
-                    width: 20,
+                    width: 18,
                   ),
                   const SizedBox(width: 10),
                   const Text(
                     "Дані уточнено вчасно",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       height: 1.1,
                     ),
@@ -508,15 +600,15 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Дата уточнення\nданих:",
+                    "Дата останнього\nуточнення даних:",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       height: 1.1,
                     ),
@@ -526,7 +618,7 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
                   Text(
                     personInfo.dataUpdateDate,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       height: 1.1,
                     ),

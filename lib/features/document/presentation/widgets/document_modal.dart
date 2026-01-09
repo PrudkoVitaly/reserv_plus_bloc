@@ -5,6 +5,8 @@ import '../bloc/document_event.dart';
 import '../bloc/document_state.dart';
 import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
 import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_review_page.dart';
+import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_received_page.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
 class DocumentModal extends StatefulWidget {
   const DocumentModal({super.key});
@@ -215,7 +217,7 @@ class _DocumentModalState extends State<DocumentModal> {
                           });
                           // Затем закрываем модальное окно после анимации
                           Future.delayed(const Duration(milliseconds: 300), () {
-                            if (mounted) {
+                            if (mounted && context.mounted) {
                               // Сбрасываем состояние контейнера
                               setState(() {
                                 _isContainerVisible = false;
@@ -223,7 +225,11 @@ class _DocumentModalState extends State<DocumentModal> {
                               context
                                   .read<DocumentBloc>()
                                   .add(const DocumentToggleModal(false));
-                              // Здесь можно добавить навигацию к расширенным данным
+                              // Навигация к расширенным данным с анимацией
+                              NavigationUtils.pushWithHorizontalAnimation(
+                                context: context,
+                                page: const ExtendedDataReceivedPage(),
+                              );
                             }
                           });
                         },

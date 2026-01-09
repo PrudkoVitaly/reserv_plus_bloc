@@ -466,6 +466,7 @@ class _DocumentPageState extends State<DocumentPage>
         color: backgroundColor,
       ),
       child: Marquee(
+        key: ValueKey(isUpdating),
         text: marqueeText,
         style: const TextStyle(
           fontSize: 14,
@@ -475,7 +476,7 @@ class _DocumentPageState extends State<DocumentPage>
         ),
         scrollAxis: Axis.horizontal,
         crossAxisAlignment: CrossAxisAlignment.center,
-        velocity: 20.0,
+        velocity: isUpdating ? 40.0 : 20.0,
         startPadding: 10.0,
       ),
     );
