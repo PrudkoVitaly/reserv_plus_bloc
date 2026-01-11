@@ -189,7 +189,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
                             'Не пам\'ятаю код для входу',
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -264,45 +264,49 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _buildNumberButton(context, '0'),
             ),
-            GestureDetector(
-              onTapDown: (_) {
-                setState(() {
-                  _pressedButton = 'delete';
-                });
-              },
-              onTapUp: (_) async {
-                await Future.delayed(const Duration(milliseconds: 150));
-                if (!mounted) return;
-                setState(() {
-                  _pressedButton = null;
-                });
-                context.read<PinBloc>().add(const PinDeletePressed());
-              },
-              onTapCancel: () {
-                setState(() {
-                  _pressedButton = null;
-                });
-              },
-              child: Container(
-                height: 60,
-                width: 60,
-                decoration: BoxDecoration(
-                  color:
-                      _pressedButton == 'delete' ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: GestureDetector(
+                onTapDown: (_) {
+                  setState(() {
+                    _pressedButton = 'delete';
+                  });
+                },
+                onTapUp: (_) async {
+                  await Future.delayed(const Duration(milliseconds: 150));
+                  if (!mounted) return;
+                  setState(() {
+                    _pressedButton = null;
+                  });
+                  context.read<PinBloc>().add(const PinDeletePressed());
+                },
+                onTapCancel: () {
+                  setState(() {
+                    _pressedButton = null;
+                  });
+                },
+                child: ClipPath(
+                  clipper: _DeleteButtonClipper(),
+                  child: Container(
+                    width: 40,
+                    height: 30,
+                    color: _pressedButton == 'delete'
+                        ? Colors.black
+                        : Colors.white,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Icon(
+                          Icons.close,
+                          color: _pressedButton == 'delete'
+                              ? Colors.white
+                              : Colors.black,
+                          size: 22,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.close,
-                  color:
-                      _pressedButton == 'delete' ? Colors.white : Colors.black,
-                  size: 24,
+                  ),
                 ),
               ),
             ),
@@ -360,4 +364,54 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
           const BiometricAuthenticationRequested(),
         );
   }
+}
+
+/// Clipper для кнопки удаления со срезанным левым углом (форма бирки/тега)
+class _DeleteButtonClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    final arrowWidth = size.width * 0.35; // Длина носика (стрелки)
+    const radius = 6.0; // Радиус скругления
+    const tipRadius = 3.0; // Радиус для кончика стрелки
+
+    // Начинаем после скругления верхнего угла носика
+    path.moveTo(arrowWidth + radius, 0);
+
+    // Верхняя сторона до правого верхнего угла
+    path.lineTo(size.width - radius, 0);
+    path.quadraticBezierTo(size.width, 0, size.width, radius);
+
+    // Правая сторона до правого нижнего угла
+    path.lineTo(size.width, size.height - radius);
+    path.quadraticBezierTo(
+        size.width, size.height, size.width - radius, size.height);
+
+    // Нижняя сторона до скругления нижнего угла носика
+    path.lineTo(arrowWidth + radius, size.height);
+
+    // Скругление нижнего угла носика (где прямоугольник переходит в стрелку)
+    path.quadraticBezierTo(arrowWidth, size.height, arrowWidth - tipRadius,
+        size.height - tipRadius);
+
+    // Линия к кончику стрелки
+    path.lineTo(tipRadius, size.height / 2 + tipRadius);
+
+    // Скругление кончика стрелки
+    path.quadraticBezierTo(
+        0, size.height / 2, tipRadius, size.height / 2 - tipRadius);
+
+    // Линия от кончика к верхнему углу носика
+    path.lineTo(arrowWidth - tipRadius, tipRadius);
+
+    // Скругление верхнего угла носика (где стрелка переходит в прямоугольник)
+    path.quadraticBezierTo(arrowWidth, 0, arrowWidth + radius, 0);
+
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

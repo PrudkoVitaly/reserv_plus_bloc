@@ -67,7 +67,7 @@ class BiometricRepositoryImpl implements BiometricRepository {
       }
 
       return await _biometricAuthService.authenticate(
-        localizedReason: 'Вхід за біометричними даними',
+        localizedReason: ' ',
       );
     } catch (e) {
       return false;

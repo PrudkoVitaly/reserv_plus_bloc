@@ -8,9 +8,9 @@ import 'package:reserv_plus/features/document/presentation/pages/document_page.d
 import 'package:reserv_plus/features/menu/presentation/pages/menu_screen.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/animated_tab_switcher.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_bottom_navigation_bar.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
-import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -19,93 +19,11 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _opacityAnimation;
-  late AnimationController _navBarAnimationController;
-  late Animation<double> _navBarSlideAnimation;
-  final _bottomNavBarController = BottomNavBarController();
-
+class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
     context.read<MainBloc>().add(const MainInitialized());
-
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
-    _opacityAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-
-    // Анимация для скрытия/показа BottomNavigationBar
-    _navBarAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _navBarSlideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _navBarAnimationController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Слушаем изменения видимости BottomNavigationBar
-    _bottomNavBarController.addListener(_onNavBarVisibilityChanged);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startAnimation();
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Предзагрузка иконок BottomNavigationBar для предотвращения мигания
-    _precacheNavBarImages();
-  }
-
-  void _precacheNavBarImages() {
-    final images = [
-      'images/reserv_id_botom_nav_bar_icon.png',
-      'images/reserv_id_botom_nav_bar_roginal_icon.png',
-      'images/vacancies_botom_nav_bar__black_icon.png',
-      'images/vacancies_botom_nav_bar_icon.png',
-      'images/menu_botom_nav_bar_icon.png',
-    ];
-
-    for (final image in images) {
-      precacheImage(AssetImage(image), context);
-    }
-  }
-
-  void _onNavBarVisibilityChanged() {
-    if (_bottomNavBarController.isVisible) {
-      _navBarAnimationController.reverse();
-    } else {
-      _navBarAnimationController.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _bottomNavBarController.removeListener(_onNavBarVisibilityChanged);
-    _animationController.dispose();
-    _navBarAnimationController.dispose();
-    super.dispose();
-  }
-
-  void _startAnimation() {
-    _animationController.reset();
-    _animationController.forward();
   }
 
   @override
@@ -177,198 +95,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           MenuScreen(),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(state),
-    );
-  }
-
-  Widget _buildBottomNavigationBar(MainLoaded state) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    final navBarHeight = (screenHeight * 0.10).clamp(80.0, 100.0);
-    final iconSize = (screenWidth * 0.06).clamp(24.0, 28.0);
-    final textSize = (screenWidth * 0.03).clamp(12.0, 14.0);
-
-    return AnimatedBuilder(
-      animation: _navBarSlideAnimation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, navBarHeight * _navBarSlideAnimation.value),
-          child: child,
-        );
-      },
-      child: SizedBox(
-        height: navBarHeight,
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-        currentIndex: state.navigationState.selectedIndex == -1
-            ? 0
-            : state.navigationState.selectedIndex.clamp(0, 2),
-        elevation: 0,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          context.read<MainBloc>().add(MainNavigationChanged(index));
-        },
-        items: [
-          // Резерв ID (index 0)
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _startAnimation();
-                context.read<MainBloc>().add(const MainNavigationChanged(0));
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedBuilder(
-                    animation: _opacityAnimation,
-                    builder: (context, child) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        decoration: BoxDecoration(
-                          color: (state.navigationState.selectedIndex == 0 ||
-                                  state.navigationState.selectedIndex == -1)
-                              ? Colors.grey[300]
-                                  ?.withValues(alpha: _opacityAnimation.value)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Image.asset(
-                          (state.navigationState.selectedIndex == 0 ||
-                                  state.navigationState.selectedIndex == -1)
-                              ? 'images/reserv_id_botom_nav_bar_icon.png'
-                              : 'images/reserv_id_botom_nav_bar_roginal_icon.png',
-                          width: iconSize,
-                          height: iconSize,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Резерв ID",
-                    style: TextStyle(
-                      fontSize: textSize,
-                      color: Colors.black,
-                      fontWeight: (state.navigationState.selectedIndex == 0 ||
-                              state.navigationState.selectedIndex == -1)
-                          ? FontWeight.w900
-                          : FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            label: '',
-          ),
-          // Вакансії (index 1)
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _startAnimation();
-                context.read<MainBloc>().add(const MainNavigationChanged(1));
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedBuilder(
-                    animation: _opacityAnimation,
-                    builder: (context, child) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        decoration: BoxDecoration(
-                          color: state.navigationState.selectedIndex == 1
-                              ? Colors.grey[300]
-                                  ?.withValues(alpha: _opacityAnimation.value)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Image.asset(
-                          state.navigationState.selectedIndex == 1
-                              ? 'images/vacancies_botom_nav_bar__black_icon.png'
-                              : 'images/vacancies_botom_nav_bar_icon.png',
-                          width: iconSize,
-                          height: iconSize,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Вакансії",
-                    style: TextStyle(
-                      fontSize: textSize,
-                      color: Colors.black,
-                      fontWeight: state.navigationState.selectedIndex == 1
-                          ? FontWeight.w900
-                          : FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            label: '',
-          ),
-          // Меню (index 2)
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _startAnimation();
-                context.read<MainBloc>().add(const MainNavigationChanged(2));
-              },
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnimatedBuilder(
-                        animation: _opacityAnimation,
-                        builder: (context, child) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            decoration: BoxDecoration(
-                              color: state.navigationState.selectedIndex == 2
-                                  ? Colors.grey[300]
-                                      ?.withValues(alpha: _opacityAnimation.value)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Image.asset(
-                              'images/menu_botom_nav_bar_icon.png',
-                              width: iconSize,
-                              height: iconSize,
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Меню",
-                        style: TextStyle(
-                          fontSize: textSize,
-                          color: Colors.black,
-                          fontWeight: state.navigationState.selectedIndex == 2
-                              ? FontWeight.w900
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            label: '',
-          ),
-        ],
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        ),
+      bottomNavigationBar: const AppBottomNavigationBar(
+        enableHideAnimation: true,
       ),
     );
   }

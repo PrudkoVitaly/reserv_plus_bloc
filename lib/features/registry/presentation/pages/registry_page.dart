@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_event.dart';
-import 'package:reserv_plus/features/main/presentation/bloc/main_state.dart';
-import 'package:reserv_plus/features/main/domain/entities/navigation_state.dart';
 import 'package:reserv_plus/features/main/data/repositories/navigation_repository_impl.dart';
 import 'package:reserv_plus/features/main/presentation/pages/main_page.dart';
 import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_bottom_navigation_bar.dart';
 import '../bloc/registry_bloc.dart';
 import '../bloc/registry_event.dart';
 import '../bloc/registry_state.dart';
@@ -34,40 +33,12 @@ class RegistryView extends StatefulWidget {
   State<RegistryView> createState() => _RegistryViewState();
 }
 
-class _RegistryViewState extends State<RegistryView>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _opacityAnimation;
-
+class _RegistryViewState extends State<RegistryView> {
   @override
   void initState() {
     super.initState();
     // Запускаем загрузку данных
     context.read<RegistryBloc>().add(const RegistryLoadData());
-
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
-    _opacityAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _startAnimation() {
-    _animationController.reset();
-    _animationController.forward();
   }
 
   @override
@@ -189,20 +160,7 @@ class _RegistryViewState extends State<RegistryView>
             ),
           ),
         ),
-        bottomNavigationBar: BlocBuilder<MainBloc, MainState>(
-          builder: (context, state) {
-            if (state is MainLoaded) {
-              return _buildBottomNavigationBar(state);
-            }
-            return _buildBottomNavigationBar(const MainLoaded(
-              NavigationState(
-                selectedIndex: -1,
-                isContainerVisible: false,
-                hasNotifications: true,
-              ),
-            ));
-          },
-        ),
+        bottomNavigationBar: const AppBottomNavigationBar(),
       ),
     );
   }
@@ -299,201 +257,4 @@ class _RegistryViewState extends State<RegistryView>
     );
   }
 
-  Widget _buildBottomNavigationBar(MainLoaded state) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    // Динамическая высота - 10% от высоты экрана (минимум 90, максимум 100)
-    final navBarHeight = (screenHeight * 0.10).clamp(80.0, 100.0);
-
-    // Динамический размер иконок - 5% от ширины экрана
-    final iconSize = (screenWidth * 0.05).clamp(24.0, 24.0);
-
-    // Динамический размер текста - 3% от ширины экрана
-    final textSize = (screenWidth * 0.03).clamp(12.0, 14.0);
-
-    return SizedBox(
-      height: navBarHeight,
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: state.navigationState.isContainerVisible
-            ? const Color.fromRGBO(106, 105, 94, 1)
-            : Colors.white,
-        currentIndex: state.navigationState.selectedIndex.clamp(0, 2),
-        elevation: 0,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          context.read<MainBloc>().add(MainNavigationChanged(index));
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _startAnimation();
-                context.read<MainBloc>().add(const MainNavigationChanged(0));
-              },
-              child: Column(
-                children: [
-                  AnimatedBuilder(
-                    animation: _opacityAnimation,
-                    builder: (context, child) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: state.navigationState.selectedIndex == 0
-                              ? Colors.grey[300]
-                                  ?.withValues(alpha: _opacityAnimation.value)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: state.navigationState.selectedIndex == 0
-                            ? Icon(
-                                Icons.work,
-                                size: iconSize,
-                                color: Colors.black,
-                              )
-                            : Icon(
-                                Icons.work_outline,
-                                size: iconSize,
-                                color: Colors.grey,
-                              ),
-                      );
-                    },
-                  ),
-                  Text(
-                    "Вакансії",
-                    style: TextStyle(
-                      fontSize: textSize,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _startAnimation();
-                context.read<MainBloc>().add(const MainNavigationChanged(1));
-              },
-              child: Column(
-                children: [
-                  AnimatedBuilder(
-                    animation: _opacityAnimation,
-                    builder: (context, child) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: state.navigationState.selectedIndex == 1
-                              ? Colors.grey[300]
-                                  ?.withValues(alpha: _opacityAnimation.value)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: state.navigationState.selectedIndex == 1
-                            ? Icon(
-                                Icons.insert_drive_file,
-                                size: iconSize,
-                                color: Colors.black,
-                              )
-                            : Icon(
-                                Icons.insert_drive_file_outlined,
-                                size: iconSize,
-                                color: state.navigationState.selectedIndex == 1
-                                    ? Colors.black
-                                    : Colors.grey,
-                              ),
-                      );
-                    },
-                  ),
-                  Text(
-                    "Документ",
-                    style: TextStyle(
-                      fontSize: textSize,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _startAnimation();
-                context.read<MainBloc>().add(const MainNavigationChanged(2));
-              },
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Column(
-                    children: [
-                      AnimatedBuilder(
-                        animation: _opacityAnimation,
-                        builder: (context, child) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: state.navigationState.selectedIndex == 2
-                                  ? Colors.grey[300]?.withValues(
-                                      alpha: _opacityAnimation.value)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: state.navigationState.selectedIndex == 2
-                                ? Icon(
-                                    Icons.menu,
-                                    size: iconSize,
-                                    color: Colors.black,
-                                  )
-                                : Icon(
-                                    Icons.menu_outlined,
-                                    size: iconSize,
-                                    color: Colors.grey,
-                                  ),
-                          );
-                        },
-                      ),
-                      Text(
-                        "Меню",
-                        style: TextStyle(
-                          fontSize: textSize,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (state.navigationState.hasNotifications)
-                    const Positioned(
-                      right: 20,
-                      top: 4,
-                      child: CircleAvatar(
-                        radius: 4,
-                        backgroundColor: Colors.red,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            label: '',
-          ),
-        ],
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-      ),
-    );
-  }
 }

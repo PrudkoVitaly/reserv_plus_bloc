@@ -19,6 +19,21 @@ class PinBloc extends Bloc<PinEvent, PinState> {
     on<PinReset>(_onPinReset);
   }
 
+  /// Получить текущее значение isBiometricsAvailable из любого состояния
+  bool _getBiometricsAvailable() {
+    final currentState = state;
+    if (currentState is PinInitial) {
+      return currentState.isBiometricsAvailable;
+    } else if (currentState is PinEntering) {
+      return currentState.isBiometricsAvailable;
+    } else if (currentState is PinShaking) {
+      return currentState.isBiometricsAvailable;
+    } else if (currentState is PinError) {
+      return currentState.isBiometricsAvailable;
+    }
+    return false;
+  }
+
   void _onPinStarted(PinStarted event, Emitter<PinState> emit) async {
     final isBiometricsAvailable = await _repository.isBiometricsAvailable();
     emit(PinInitial(
@@ -33,11 +48,7 @@ class PinBloc extends Bloc<PinEvent, PinState> {
       _enteredPin.add(event.number);
       emit(PinEntering(
         enteredPin: List.from(_enteredPin),
-        isBiometricsAvailable: state is PinInitial
-            ? (state as PinInitial).isBiometricsAvailable
-            : state is PinEntering
-                ? (state as PinEntering).isBiometricsAvailable
-                : false,
+        isBiometricsAvailable: _getBiometricsAvailable(),
         isBiometricsModalVisible: false,
       ));
 
@@ -52,14 +63,12 @@ class PinBloc extends Bloc<PinEvent, PinState> {
 
   void _onDeletePressed(PinDeletePressed event, Emitter<PinState> emit) async {
     if (_enteredPin.isNotEmpty) {
+      final isBiometricsAvailable = _getBiometricsAvailable();
+
       // Сначала показываем анимацию дрожания
       emit(PinShaking(
         enteredPin: List.from(_enteredPin),
-        isBiometricsAvailable: state is PinInitial
-            ? (state as PinInitial).isBiometricsAvailable
-            : state is PinEntering
-                ? (state as PinEntering).isBiometricsAvailable
-                : false,
+        isBiometricsAvailable: isBiometricsAvailable,
         isBiometricsModalVisible: false,
       ));
 
@@ -70,11 +79,7 @@ class PinBloc extends Bloc<PinEvent, PinState> {
       _enteredPin.clear();
       emit(PinEntering(
         enteredPin: List.from(_enteredPin),
-        isBiometricsAvailable: state is PinInitial
-            ? (state as PinInitial).isBiometricsAvailable
-            : state is PinEntering
-                ? (state as PinEntering).isBiometricsAvailable
-                : false,
+        isBiometricsAvailable: isBiometricsAvailable,
         isBiometricsModalVisible: false,
       ));
     }
@@ -113,11 +118,7 @@ class PinBloc extends Bloc<PinEvent, PinState> {
     // Показываем модальное окно биометрии
     emit(PinEntering(
       enteredPin: _enteredPin,
-      isBiometricsAvailable: state is PinInitial
-          ? (state as PinInitial).isBiometricsAvailable
-          : state is PinEntering
-              ? (state as PinEntering).isBiometricsAvailable
-              : false,
+      isBiometricsAvailable: _getBiometricsAvailable(),
       isBiometricsModalVisible: true,
     ));
 
@@ -127,28 +128,18 @@ class PinBloc extends Bloc<PinEvent, PinState> {
 
   void _onBiometricsCancelled(
       PinBiometricsCancelled event, Emitter<PinState> emit) {
-    final isBiometricsAvailable = state is PinInitial
-        ? (state as PinInitial).isBiometricsAvailable
-        : state is PinEntering
-            ? (state as PinEntering).isBiometricsAvailable
-            : false;
     emit(PinEntering(
       enteredPin: _enteredPin,
-      isBiometricsAvailable: isBiometricsAvailable,
+      isBiometricsAvailable: _getBiometricsAvailable(),
       isBiometricsModalVisible: false,
     ));
   }
 
   void _onPinReset(PinReset event, Emitter<PinState> emit) {
     _enteredPin.clear();
-    final isBiometricsAvailable = state is PinInitial
-        ? (state as PinInitial).isBiometricsAvailable
-        : state is PinEntering
-            ? (state as PinEntering).isBiometricsAvailable
-            : false;
     emit(PinEntering(
       enteredPin: _enteredPin,
-      isBiometricsAvailable: isBiometricsAvailable,
+      isBiometricsAvailable: _getBiometricsAvailable(),
       isBiometricsModalVisible: false,
     ));
   }

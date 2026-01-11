@@ -1,5 +1,7 @@
 import 'package:local_auth/local_auth.dart' hide BiometricType;
 import 'package:local_auth/local_auth.dart' as local_auth;
+import 'package:local_auth_android/local_auth_android.dart' hide BiometricType;
+import 'package:local_auth_darwin/local_auth_darwin.dart' hide BiometricType;
 import 'package:reserv_plus/features/biometric/domain/entities/biometric_type.dart';
 
 class BiometricAuthService {
@@ -52,6 +54,26 @@ class BiometricAuthService {
           stickyAuth: false,
           biometricOnly: true,
         ),
+        authMessages: const [
+          AndroidAuthMessages(
+            signInTitle: 'Вхід за біометричними даними',
+            cancelButton: 'Скасувати',
+            biometricHint: '',
+            biometricNotRecognized: 'Біометрію не розпізнано',
+            biometricRequiredTitle: 'Потрібна біометрія',
+            biometricSuccess: 'Успішно',
+            deviceCredentialsRequiredTitle: 'Потрібні облікові дані',
+            deviceCredentialsSetupDescription: 'Налаштуйте облікові дані',
+            goToSettingsButton: 'До налаштувань',
+            goToSettingsDescription: 'Налаштуйте біометрію',
+          ),
+          IOSAuthMessages(
+            cancelButton: 'Скасувати',
+            goToSettingsButton: 'До налаштувань',
+            goToSettingsDescription: 'Налаштуйте біометрію',
+            lockOut: 'Біометрію заблоковано',
+          ),
+        ],
       );
     } catch (e) {
       return false;

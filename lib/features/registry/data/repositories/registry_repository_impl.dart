@@ -5,7 +5,7 @@ class RegistryRepositoryImpl implements RegistryRepository {
   @override
   Future<RegistryData> getRegistryData() async {
     // Имитация задержки загрузки данных из реестра
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     // В реальном приложении здесь будет API запрос к реестру Оберіг
     return const RegistryData(
