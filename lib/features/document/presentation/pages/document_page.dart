@@ -424,21 +424,21 @@ class _DocumentPageState extends State<DocumentPage>
                     ],
                   ),
                 ),
-                const SizedBox(width: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(253, 135, 12, 1),
                     shape: const CircleBorder(),
+                    elevation: 0,
                   ),
                   onPressed: () {
                     ModalUtils.showDocumentModal(context);
                   },
                   child: const Icon(
                     Icons.add_outlined,
-                    size: 30,
+                    size: 32,
                     color: Colors.black,
+                    fontWeight: FontWeight.w500,
                   ),
-                  // child: Image.asset("images/three_dots.png", width: 24),
                 ),
               ],
             ),

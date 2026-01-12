@@ -5,7 +5,7 @@ import 'package:reserv_plus/features/forgot_pin/data/repository/forgot_pin_repos
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_bloc.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_event.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_state.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
 class ForgotPinPage extends StatelessWidget {
   const ForgotPinPage({super.key});
@@ -59,7 +59,7 @@ class ForgotPinView extends StatelessWidget {
                         'Забули код для входу?',
                         style: TextStyle(
                           fontSize: 34,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                           color: Colors.black,
                           height: 1,
                         ),
@@ -71,6 +71,7 @@ class ForgotPinView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.black,
+                          fontWeight: FontWeight.w500,
                           height: 1,
                         ),
                         textAlign: TextAlign.center,
@@ -82,11 +83,10 @@ class ForgotPinView extends StatelessWidget {
 
               // Кнопка "Авторизуватися"
               BlocBuilder<ForgotPinBloc, ForgotPinState>(
-                  builder: (context, state) {
-                return SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
+                builder: (context, state) {
+                  return PrimaryButton(
+                    text: 'Авторизуватися',
+                    isLoading: state is ForgotPinAuthorizationInProgress,
                     onPressed: state is ForgotPinLoaded
                         ? () {
                             context
@@ -94,25 +94,9 @@ class ForgotPinView extends StatelessWidget {
                                 .add(ForgotPinAuthorizePressed());
                           }
                         : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: state is ForgotPinAuthorizationInProgress
-                        ? const DelayedLoadingIndicator()
-                        : const Text(
-                            'Авторизуватися',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                  ),
-                );
-              }),
+                  );
+                },
+              ),
 
               const SizedBox(height: 16),
 

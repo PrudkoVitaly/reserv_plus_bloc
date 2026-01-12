@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_event.dart';
-import 'package:reserv_plus/features/main/data/repositories/navigation_repository_impl.dart';
 import 'package:reserv_plus/features/main/presentation/pages/main_page.dart';
-import 'package:reserv_plus/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/app_bottom_navigation_bar.dart';
 import '../bloc/registry_bloc.dart';
 import '../bloc/registry_event.dart';
@@ -15,14 +13,9 @@ class RegistryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MainBloc(
-        repository: NavigationRepositoryImpl(
-          notificationRepository: NotificationRepositoryImpl(),
-        ),
-      )..add(const MainInitialized()),
-      child: const RegistryView(),
-    );
+    // Инициализируем глобальный MainBloc
+    context.read<MainBloc>().add(const MainInitialized());
+    return const RegistryView();
   }
 }
 
@@ -160,7 +153,9 @@ class _RegistryViewState extends State<RegistryView> {
             ),
           ),
         ),
-        bottomNavigationBar: const AppBottomNavigationBar(),
+        bottomNavigationBar: const AppBottomNavigationBar(
+          enableHighlightAnimation: false, // Без подсветки на экране загрузки
+        ),
       ),
     );
   }
