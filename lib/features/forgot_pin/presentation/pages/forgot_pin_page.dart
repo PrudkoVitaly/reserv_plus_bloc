@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reserv_plus/features/bank_auth/presentation/pages/bank_selection_page.dart';
 import 'package:reserv_plus/features/forgot_pin/data/repository/forgot_pin_repository_impl.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_bloc.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_event.dart';
@@ -82,18 +83,13 @@ class ForgotPinView extends StatelessWidget {
               ),
 
               // Кнопка "Авторизуватися"
-              BlocBuilder<ForgotPinBloc, ForgotPinState>(
-                builder: (context, state) {
-                  return PrimaryButton(
-                    text: 'Авторизуватися',
-                    isLoading: state is ForgotPinAuthorizationInProgress,
-                    onPressed: state is ForgotPinLoaded
-                        ? () {
-                            context
-                                .read<ForgotPinBloc>()
-                                .add(ForgotPinAuthorizePressed());
-                          }
-                        : null,
+              PrimaryButton(
+                text: 'Авторизуватися',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const BankSelectionPage(),
+                    ),
                   );
                 },
               ),
