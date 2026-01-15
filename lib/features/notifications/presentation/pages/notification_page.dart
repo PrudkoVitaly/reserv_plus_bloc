@@ -5,7 +5,7 @@ import 'package:reserv_plus/features/notifications/presentation/bloc/notificatio
 import 'package:reserv_plus/features/notifications/presentation/bloc/notification_state.dart';
 import 'package:reserv_plus/features/notifications/presentation/widgets/notification_card.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -32,7 +32,7 @@ class NotificationPageView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(title: 'Сповіщення'),
+            const AppHeader(title: 'Сповіщення'),
             Expanded(
               child: BlocBuilder<NotificationBloc, NotificationState>(
                 builder: (context, state) {

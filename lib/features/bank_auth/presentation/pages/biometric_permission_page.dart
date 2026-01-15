@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/features/bank_auth/presentation/pages/loading_data_page.dart';
+import 'package:reserv_plus/features/registry/presentation/pages/registry_page.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
@@ -7,10 +7,10 @@ import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 class BiometricPermissionPage extends StatelessWidget {
   const BiometricPermissionPage({super.key});
 
-  void _navigateToLoading(BuildContext context) {
+  void _navigateToRegistry(BuildContext context) {
     NavigationUtils.pushWithHorizontalAnimation(
       context: context,
-      page: const LoadingDataPage(),
+      page: const RegistryPage(),
     );
   }
 
@@ -30,7 +30,6 @@ class BiometricPermissionPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
                 // Заголовок
                 const Text(
                   'Дозвольте вхід за\nбіометричними\nданими',
@@ -38,7 +37,7 @@ class BiometricPermissionPage extends StatelessWidget {
                     fontSize: 34,
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
-                    height: 1.1,
+                    height: 1,
                   ),
                   textAlign: TextAlign.start,
                 ),
@@ -47,52 +46,56 @@ class BiometricPermissionPage extends StatelessWidget {
 
                 // Подзаголовок
                 const Text(
-                  'Щоб швидко заходити в\nзастосунок',
+                  'Щоб входити до застосунку за відбитком пальця або скануванням обличчя.',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
-                    height: 1.2,
+                    height: 1,
                   ),
                   textAlign: TextAlign.start,
                 ),
 
-                const SizedBox(height: 40),
-
-                // Иконки биометрии (отпечаток + Face ID)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'images/fingerprint_icon.png',
-                      width: 100,
-                      height: 100,
+                // Иконки биометрии (отпечаток + Face ID) - центрируем между текстом и кнопками
+                Expanded(
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'images/fingerprint_icon.png',
+                          width: 80,
+                          height: 80,
+                        ),
+                        const SizedBox(width: 40),
+                        Image.asset(
+                          'images/face_id_icon.png',
+                          width: 80,
+                          height: 80,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 24),
-                    Image.asset(
-                      'images/face_id_icon.png',
-                      width: 100,
-                      height: 100,
-                    ),
-                  ],
+                  ),
                 ),
 
                 // Кнопка "Дозволити"
                 PrimaryButton(
                   text: 'Дозволити',
-                  onPressed: () => _navigateToLoading(context),
+                  onPressed: () => _navigateToRegistry(context),
                 ),
 
                 const SizedBox(height: 16),
 
                 // Кнопка "Пропустити"
-                TextButton(
-                  onPressed: () => _navigateToLoading(context),
-                  child: const Text(
-                    'Пропустити',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
+                Center(
+                  child: TextButton(
+                    onPressed: () => _navigateToRegistry(context),
+                    child: const Text(
+                      'Дозволю пізніше',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                 ),

@@ -295,7 +295,7 @@ class _DocumentPageState extends State<DocumentPage>
   Widget _buildFrontCard(DocumentLoaded state, Size size) {
     return Container(
       width: double.infinity,
-      height: size.height * 0.69,
+      height: size.height * 0.65,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
@@ -382,7 +382,7 @@ class _DocumentPageState extends State<DocumentPage>
               ],
             ),
           ),
-          SizedBox(height: size.height * 0.31),
+          SizedBox(height: size.height * 0.28),
           _buildMarqueeStrip(state),
           const Spacer(),
           Padding(
@@ -487,7 +487,7 @@ class _DocumentPageState extends State<DocumentPage>
 
     return Container(
       width: double.infinity,
-      height: size.height * 0.7,
+      height: size.height * 0.65,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(

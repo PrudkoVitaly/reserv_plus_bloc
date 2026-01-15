@@ -46,7 +46,10 @@ dependencies:
   
   # Для хранения данных локально
   shared_preferences: ^2.2.2
-  
+
+  # Для безопасного хранения PIN-кода (шифрованное хранилище)
+  flutter_secure_storage: ^9.2.2
+
   # Для работы с датами и локализацией
   intl: ^0.18.1
   
@@ -81,7 +84,7 @@ dependencies:
   # Для биометрической аутентификации
   local_auth: ^2.3.0
   local_auth_android: ^1.0.45
-  local_auth_ios: ^1.1.7
+  local_auth_darwin: ^1.4.1
 
   # Для сканирования QR-кодов
   camera: ^0.10.5

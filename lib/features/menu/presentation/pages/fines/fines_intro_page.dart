@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/custom_checkbox.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
@@ -23,7 +23,7 @@ class _FinesIntroPageState extends State<FinesIntroPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(),
+            const AppHeader(),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),

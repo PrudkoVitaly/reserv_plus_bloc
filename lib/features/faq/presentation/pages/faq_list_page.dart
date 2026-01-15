@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/faq/data/faq_data.dart';
 import 'package:reserv_plus/features/faq/domain/entities/faq_item.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'faq_detail_page.dart';
 
 class FaqListPage extends StatelessWidget {
@@ -18,7 +18,7 @@ class FaqListPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(title: 'Питання та\nвідповіді'),
+            const AppHeader(title: 'Питання та\nвідповіді'),
             const SizedBox(height: 24),
             Expanded(
               child: Container(

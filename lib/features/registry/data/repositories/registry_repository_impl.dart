@@ -1,3 +1,5 @@
+import 'package:reserv_plus/features/shared/services/user_data_service.dart';
+
 import '../../domain/entities/registry_data.dart';
 import '../../domain/repositories/registry_repository.dart';
 
@@ -7,13 +9,15 @@ class RegistryRepositoryImpl implements RegistryRepository {
     // Имитация задержки загрузки данных из реестра
     await Future.delayed(const Duration(milliseconds: 200));
 
+    final userData = UserDataService();
+
     // В реальном приложении здесь будет API запрос к реестру Оберіг
-    return const RegistryData(
-      fullName: "Іван Іванович Іванов",
-      status: "На обліку",
-      registrationNumber: "1234567890",
-      birthDate: "01.01.1990",
-      address: "м. Київ, вул. Хрещатик, 1",
+    return RegistryData(
+      fullName: userData.fullName,
+      status: userData.status,
+      registrationNumber: userData.registrationNumber,
+      birthDate: userData.birthDate,
+      address: userData.address,
       hasNotifications: true,
     );
   }

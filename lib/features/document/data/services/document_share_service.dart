@@ -39,7 +39,6 @@ class DocumentShareService {
     required String fullName,
     required String birthDate,
     required String status,
-    required String validityDate,
     required String lastUpdated,
   }) async {
     final documentText = '''
@@ -48,7 +47,6 @@ class DocumentShareService {
 👤 ПІБ: $fullName
 📅 Дата народження: $birthDate
 📊 Статус: $status
-✅ Дійсний до: $validityDate
 🕒 Останнє оновлення: $lastUpdated
 
 Документ згенеровано додатком Резерв+

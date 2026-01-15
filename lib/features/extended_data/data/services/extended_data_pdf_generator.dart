@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
+import 'package:reserv_plus/features/shared/services/user_data_service.dart';
 
 class ExtendedDataPdfGenerator {
   static Future<String> generateExtendedDataPDF(ExtendedData data) async {
@@ -144,12 +145,10 @@ class ExtendedDataPdfGenerator {
           pw.SizedBox(height: 10),
 
           // ВЛК данные
-          _buildInfoRow('Дата взяття на облік', '26.10.2024', font),
-          _buildInfoRow('Дата ВЛК', '26.10.2024', font),
-          _buildInfoRow('Номер протоколу ВЛК',
-              'Свідоцтво про хворобу №17/408 від 06.09.2024', font),
-          _buildInfoRow('Постанова ВЛК',
-              'Непридатний з виключенням з військового обліку', font),
+          _buildInfoRow('Дата взяття на облік', UserDataService().vlkDate, font),
+          _buildInfoRow('Дата ВЛК', UserDataService().vlkDate, font),
+          _buildInfoRow('Номер протоколу ВЛК', UserDataService().vlkProtocolNumber, font),
+          _buildInfoRow('Постанова ВЛК', UserDataService().vlkResolution, font),
         ],
       ),
     );

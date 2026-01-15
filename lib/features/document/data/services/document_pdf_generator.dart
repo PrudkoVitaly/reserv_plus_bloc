@@ -9,7 +9,6 @@ class DocumentPdfGenerator {
     required String fullName,
     required String birthDate,
     required String status,
-    required String validityDate,
     required String qrCode,
     required String lastUpdated,
   }) async {
@@ -86,8 +85,6 @@ class DocumentPdfGenerator {
                   _buildInfoRow('Дата народження:', birthDate),
                   pw.SizedBox(height: 12),
                   _buildInfoRow('Статус:', status),
-                  pw.SizedBox(height: 12),
-                  _buildInfoRow('Дійсний до:', validityDate),
                   pw.SizedBox(height: 12),
                   _buildInfoRow('Оновлено:', lastUpdated),
                   

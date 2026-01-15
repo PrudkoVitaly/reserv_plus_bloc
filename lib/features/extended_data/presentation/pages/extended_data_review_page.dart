@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
-import 'package:reserv_plus/features/support/presentation/pages/support_page.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 
 class ExtendedDataReviewPage extends StatelessWidget {
   final ExtendedData data;
@@ -14,84 +14,46 @@ class ExtendedDataReviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-        elevation: 0,
-        
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 34.0, top: 8.0, bottom: 8.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SupportPage(),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 25,
-                  height: 25,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '?',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-          'Уточнення\nконтактних даних',
-          style: TextStyle(
-              color: Colors.black,
-              fontSize:34,
-              fontWeight: FontWeight.w400,
-              height: 1,
+            const AppHeader(
+              title: 'Уточнення\nконтактних даних',
+              showHelpButton: true,
             ),
-          ),
-          const SizedBox(height: 20),
-            // Номер телефону
-            _buildContactField(
-              label: 'Номер телефону',
-              value: _formatPhone(data.phone),
+            const SizedBox(height: 20),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Номер телефону
+                    _buildContactField(
+                      label: 'Номер телефону',
+                      value: _formatPhone(data.phone),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Адреса проживання
+                    _buildContactField(
+                      label: 'Адреса проживання',
+                      value: data.address,
+                    ),
+
+                    const SizedBox(height: 24),
+            
+                    // Email адреса
+                    _buildContactField(
+                      label: 'Email адреса',
+                      value: data.email,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Адреса проживання
-            _buildContactField(
-              label: 'Адреса проживання',
-              value: data.address,
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Email адреса
-            _buildContactField(
-              label: 'Email адреса',
-              value: data.email,
-            ),
-            
           ],
         ),
       ),

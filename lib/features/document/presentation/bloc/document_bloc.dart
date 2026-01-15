@@ -128,7 +128,6 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
           fullName: data.fullName,
           birthDate: data.birthDate,
           status: data.status,
-          validityDate: data.validityDate,
           qrCode: data.qrCode,
           lastUpdated: data.formattedLastUpdated,
         );

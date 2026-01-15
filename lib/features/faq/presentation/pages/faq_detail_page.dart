@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/faq/domain/entities/faq_item.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 
 class FaqDetailPage extends StatefulWidget {
   final FaqItem faqItem;
@@ -103,7 +103,7 @@ class _FaqDetailPageState extends State<FaqDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const CustomBackHeader(),
+                const AppHeader(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(

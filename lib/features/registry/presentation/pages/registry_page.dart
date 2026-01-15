@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_bloc.dart';
 import 'package:reserv_plus/features/main/presentation/bloc/main_event.dart';
 import 'package:reserv_plus/features/main/presentation/pages/main_page.dart';
+import 'package:reserv_plus/features/notifications/presentation/pages/notification_page.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/app_bottom_navigation_bar.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 import '../bloc/registry_bloc.dart';
 import '../bloc/registry_event.dart';
 import '../bloc/registry_state.dart';
@@ -43,10 +45,11 @@ class _RegistryViewState extends State<RegistryView> {
     return BlocListener<RegistryBloc, RegistryState>(
       listener: (context, state) {
         if (state is RegistrySuccess) {
-          // Переходим на главный экран после успешной загрузки
-          Navigator.pushReplacement(
+          // Переходим на главный экран и очищаем весь стек навигации
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainPage()),
+            (route) => false,
           );
         }
       },
@@ -61,48 +64,41 @@ class _RegistryViewState extends State<RegistryView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Text(
-                          "Резерв",
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 24.0 : 28.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Positioned(
-                          top: isSmallScreen ? 4 : 6,
-                          right: isSmallScreen ? -16 : -20,
-                          child: Image.asset(
-                            "images/res_plus.png",
-                            width: isSmallScreen ? 16.0 : 20.0,
-                            color: const Color.fromRGBO(253, 135, 12, 1),
-                          ),
-                        ),
-                      ],
-                    ),
                     const Spacer(),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            "Сканувати \nдокумент",
-                            style: TextStyle(
-                              height: 1,
-                              fontSize: isSmallScreen ? 14.0 : 16.0,
-                              fontWeight: FontWeight.w500,
+                    GestureDetector(
+                      onTap: () {
+                        NavigationUtils.pushWithHorizontalAnimation(
+                          context: context,
+                          page: const NotificationPage(),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              "Сповіщення",
+                              style: TextStyle(
+                                height: 1,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                            textAlign: TextAlign.right,
-                          ),
+                            const SizedBox(width: 8),
+                            Image.asset(
+                              "images/notification_bell.png",
+                              width: 18,
+                              height: 18,
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 6),
-                        Image.asset(
-                          "images/qr.png",
-                          width: isSmallScreen ? 25.0 : 30.0,
-                        ),
-                      ],
+                      ),
                     ),
                     // Flexible(
                     //   child: Text(
@@ -251,5 +247,4 @@ class _RegistryViewState extends State<RegistryView> {
       ),
     );
   }
-
 }

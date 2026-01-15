@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:reserv_plus/features/bank_auth/presentation/pages/biometric_permission_page.dart';
+import 'package:reserv_plus/features/pin/data/services/pin_storage_service.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
@@ -84,10 +85,14 @@ class _ConfirmPinPageState extends State<ConfirmPinPage>
     }
   }
 
-  void _verifyPin() {
+  void _verifyPin() async {
     final enteredPin = _pin.join();
     if (enteredPin == widget.originalPin) {
-      // PIN совпадает - переходим к биометрии
+      // PIN совпадает - сохраняем в защищённое хранилище
+      final pinStorage = PinStorageService();
+      await pinStorage.savePin(enteredPin);
+
+      // Переходим к биометрии
       _navigateToBiometric();
     } else {
       // PIN не совпадает - показываем дрожь и вибрацию, затем возвращаемся

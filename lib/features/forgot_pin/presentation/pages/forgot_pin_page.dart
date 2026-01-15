@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:reserv_plus/features/bank_auth/presentation/pages/bank_selection_page.dart';
+import 'package:reserv_plus/features/bank_auth/presentation/pages/welcome_page.dart';
 import 'package:reserv_plus/features/forgot_pin/data/repository/forgot_pin_repository_impl.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_bloc.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_event.dart';
 import 'package:reserv_plus/features/forgot_pin/presentation/bloc/forgot_pin_state.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
+import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
 class ForgotPinPage extends StatelessWidget {
   const ForgotPinPage({super.key});
@@ -86,10 +87,11 @@ class ForgotPinView extends StatelessWidget {
               PrimaryButton(
                 text: 'Авторизуватися',
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const BankSelectionPage(),
-                    ),
+                  // Восстанавливаем системные панели перед переходом
+                  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+                  NavigationUtils.pushWithHorizontalAnimation(
+                    context: context,
+                    page: const WelcomePage(),
                   );
                 },
               ),

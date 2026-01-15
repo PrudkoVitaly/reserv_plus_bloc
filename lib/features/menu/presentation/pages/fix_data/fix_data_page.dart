@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'personal_data_error_page.dart';
 
 class FixDataPage extends StatelessWidget {
@@ -14,7 +14,7 @@ class FixDataPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(title: 'Виправити дані\nонлайн'),
+            const AppHeader(title: 'Виправити дані\nонлайн'),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(

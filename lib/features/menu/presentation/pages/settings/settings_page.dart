@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/custom_switch.dart';
 import 'package:reserv_plus/features/shared/services/settings_service.dart';
 
@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(),
+            const AppHeader(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(

@@ -39,7 +39,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
       patronymic: userData.patronymic,
       birthDate: userData.birthDate,
       status: userData.status,
-      validityDate: "27.11.2025",
+      validityDate: "", // Не используется для "Виключено з обліку"
       qrCode: "images/qr_code.png",
       lastUpdated: lastUpdated,
       formattedLastUpdated: _formatLastUpdated(lastUpdated),
@@ -67,7 +67,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
       patronymic: userData.patronymic,
       birthDate: userData.birthDate,
       status: userData.status,
-      validityDate: "27.11.2025",
+      validityDate: "", // Не используется для "Виключено з обліку"
       qrCode: "images/qr_code.png",
       lastUpdated: now,
       formattedLastUpdated: _formatLastUpdated(now),

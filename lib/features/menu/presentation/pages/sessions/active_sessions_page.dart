@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/draggable_bottom_sheet.dart';
 import 'package:reserv_plus/features/shared/services/session_service.dart';
 
@@ -48,7 +48,7 @@ class _ActiveSessionsPageState extends State<ActiveSessionsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(),
+            const AppHeader(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/shared/services/user_data_service.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 import 'package:reserv_plus/features/menu/presentation/pages/fix_data/describe_situation_page.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 
@@ -18,7 +18,7 @@ class PersonalDataErrorPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(title: 'Перевірте дані'),
+            const AppHeader(title: 'Перевірте дані'),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(

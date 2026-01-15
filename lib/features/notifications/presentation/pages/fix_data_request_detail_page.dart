@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/custom_back_header.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
 
 class FixDataRequestDetailPage extends StatelessWidget {
   const FixDataRequestDetailPage({super.key});
@@ -12,7 +12,7 @@ class FixDataRequestDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomBackHeader(),
+            const AppHeader(),
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

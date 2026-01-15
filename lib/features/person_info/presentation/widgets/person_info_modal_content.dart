@@ -203,6 +203,7 @@ class _PersonInfoModalContentState extends State<PersonInfoModalContent> {
           _buildContactCard(personInfo),
           const SizedBox(height: 10),
           _buildDataUpdateCard(personInfo),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 10),
         ],
       ),
     );

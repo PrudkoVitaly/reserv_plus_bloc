@@ -1,16 +1,43 @@
 import '../../domain/entities/pin_validation_result.dart';
 import '../../domain/repositories/pin_repository.dart';
+import '../services/pin_storage_service.dart';
 
+/// Реализация репозитория для работы с PIN-кодом
+///
+/// Использует PinStorageService для безопасного хранения PIN.
+/// Раньше здесь был хардкод "1234", теперь PIN сохраняется
+/// и проверяется из защищённого хранилища.
 class PinRepositoryImpl implements PinRepository {
-  // Временный хардкод - в реальном приложении будет проверка с сервером
-  static const String _correctPin = "1234";
+  final PinStorageService _pinStorageService;
+
+  PinRepositoryImpl({PinStorageService? pinStorageService})
+      : _pinStorageService = pinStorageService ?? PinStorageService();
+
+  @override
+  Future<void> savePin(String pin) async {
+    await _pinStorageService.savePin(pin);
+  }
+
+  @override
+  Future<bool> hasPin() async {
+    return await _pinStorageService.hasPin();
+  }
 
   @override
   Future<PinValidationResult> validatePin(String pin) async {
-    // Убираем задержку для мгновенной анимации
-    // await Future.delayed(const Duration(milliseconds: 500));
+    // Получаем сохранённый PIN из защищённого хранилища
+    final savedPin = await _pinStorageService.getPin();
 
-    if (pin == _correctPin) {
+    // Если PIN не был создан — ошибка
+    if (savedPin == null) {
+      return const PinValidationResult(
+        isValid: false,
+        errorMessage: 'PIN-код не встановлено',
+      );
+    }
+
+    // Сравниваем введённый PIN с сохранённым
+    if (pin == savedPin) {
       return const PinValidationResult(
         isValid: true,
         shouldUseBiometrics: false,
@@ -18,7 +45,7 @@ class PinRepositoryImpl implements PinRepository {
     } else {
       return const PinValidationResult(
         isValid: false,
-        errorMessage: 'Неправильный пин-код!',
+        errorMessage: 'Неправильний PIN-код',
       );
     }
   }
@@ -26,6 +53,7 @@ class PinRepositoryImpl implements PinRepository {
   @override
   Future<bool> isBiometricsAvailable() async {
     // В реальном приложении здесь будет проверка доступности биометрии
+    // через BiometricAuthService
     return true;
   }
 
@@ -35,10 +63,14 @@ class PinRepositoryImpl implements PinRepository {
     await Future.delayed(const Duration(seconds: 2));
 
     // В реальном приложении здесь будет вызов биометрической аутентификации
-    // Пока что имитируем, что биометрия может быть неуспешной
     return const PinValidationResult(
       isValid: false,
-      errorMessage: 'Биометрическая аутентификация не удалась',
+      errorMessage: 'Біометрична автентифікація не вдалась',
     );
+  }
+
+  @override
+  Future<void> deletePin() async {
+    await _pinStorageService.deletePin();
   }
 }
