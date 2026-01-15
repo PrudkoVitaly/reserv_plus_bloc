@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
 import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
 
 /// Утилита для навигации с анимациями
@@ -77,94 +76,6 @@ class NavigationUtils {
       BottomNavBarController().show();
       return result;
     });
-  }
-
-  /// Вертикальная анимация перехода (Shared Axis Vertical)
-  /// Используется для модальных окон и вспомогательных экранов
-  ///
-  /// [context] - контекст виджета
-  /// [page] - целевая страница для навигации
-  /// [duration] - длительность анимации (по умолчанию 350ms)
-  /// [fillColor] - цвет фона при переходе
-  static Future<T?> pushWithVerticalAnimation<T>({
-    required BuildContext context,
-    required Widget page,
-    Duration duration = const Duration(milliseconds: 350),
-    Color fillColor = const Color.fromRGBO(226, 223, 204, 1),
-  }) {
-    return Navigator.of(context).push<T>(
-      PageRouteBuilder<T>(
-        pageBuilder: (context, animation, secondaryAnimation) => page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SharedAxisTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            transitionType: SharedAxisTransitionType.vertical,
-            fillColor: fillColor,
-            child: child,
-          );
-        },
-        transitionDuration: duration,
-        reverseTransitionDuration: duration,
-      ),
-    );
-  }
-
-  /// Анимация масштабирования (Shared Axis Scaled)
-  /// Используется для переходов с эффектом увеличения/уменьшения
-  ///
-  /// [context] - контекст виджета
-  /// [page] - целевая страница для навигации
-  /// [duration] - длительность анимации (по умолчанию 350ms)
-  /// [fillColor] - цвет фона при переходе
-  static Future<T?> pushWithScaledAnimation<T>({
-    required BuildContext context,
-    required Widget page,
-    Duration duration = const Duration(milliseconds: 350),
-    Color fillColor = const Color.fromRGBO(226, 223, 204, 1),
-  }) {
-    return Navigator.of(context).push<T>(
-      PageRouteBuilder<T>(
-        pageBuilder: (context, animation, secondaryAnimation) => page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SharedAxisTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            transitionType: SharedAxisTransitionType.scaled,
-            fillColor: fillColor,
-            child: child,
-          );
-        },
-        transitionDuration: duration,
-        reverseTransitionDuration: duration,
-      ),
-    );
-  }
-
-  /// Fade анимация перехода
-  /// Используется для плавных переходов без направления
-  ///
-  /// [context] - контекст виджета
-  /// [page] - целевая страница для навигации
-  /// [duration] - длительность анимации (по умолчанию 350ms)
-  static Future<T?> pushWithFadeAnimation<T>({
-    required BuildContext context,
-    required Widget page,
-    Duration duration = const Duration(milliseconds: 350),
-  }) {
-    return Navigator.of(context).push<T>(
-      PageRouteBuilder<T>(
-        pageBuilder: (context, animation, secondaryAnimation) => page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
-        transitionDuration: duration,
-        reverseTransitionDuration: duration,
-      ),
-    );
   }
 
   /// Возврат на главный экран (первый экран в стеке)
