@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:reserv_plus/shared/utils/navigation_utils.dart';
-import 'extended_data_received_page.dart';
-import '../../data/services/extended_data_pdf_generator.dart';
-import '../../domain/entities/extended_data.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
+import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_received_page.dart';
 
 class ExtendedDataSuccessPage extends StatelessWidget {
   const ExtendedDataSuccessPage({super.key});
@@ -12,7 +10,7 @@ class ExtendedDataSuccessPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
       body: Padding(
-        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 24.0),
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 26.0),
         child: Column(
           children: [
             Expanded(
@@ -54,58 +52,63 @@ class ExtendedDataSuccessPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: () async {
-                  // Генерируем PDF и переходим к финальному экрану
-                  try {
-                    final data = ExtendedData.fromUserData();
-                    final pdfPath =
-                        await ExtendedDataPdfGenerator.generateExtendedDataPDF(
-                            data);
+            PrimaryButton(
+              text: 'Зрозуміло',
+              onPressed: () {
+                // Переходим на ExtendedDataReceivedPage с горизонтальной анимацией
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    opaque: false,
+                    barrierColor: const Color.fromRGBO(226, 223, 204, 1),
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const ExtendedDataReceivedPage(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      // Анимация для входящего экрана
+                      final slideIn = Tween<Offset>(
+                        begin: const Offset(1.0, 0.0),
+                        end: Offset.zero,
+                      ).animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeInOut,
+                      ));
 
-                    if (!context.mounted) return;
+                      // Анимация для уходящего экрана
+                      final slideOut = Tween<Offset>(
+                        begin: Offset.zero,
+                        end: const Offset(-0.3, 0.0),
+                      ).animate(CurvedAnimation(
+                        parent: secondaryAnimation,
+                        curve: Curves.easeInOut,
+                      ));
 
-                    NavigationUtils.pushWithHorizontalAnimation(
-                      context: context,
-                      page: ExtendedDataReceivedPage(pdfPath: pdfPath),
-                    ).then((_) {
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    });
-                  } catch (e) {
-                    // Если ошибка, переходим без PDF
-                    if (!context.mounted) return;
+                      // Затемнение уходящего экрана
+                      final fadeOut = Tween<double>(
+                        begin: 1.0,
+                        end: 0.5,
+                      ).animate(CurvedAnimation(
+                        parent: secondaryAnimation,
+                        curve: Curves.easeInOut,
+                      ));
 
-                    NavigationUtils.pushWithHorizontalAnimation(
-                      context: context,
-                      page: const ExtendedDataReceivedPage(),
-                    ).then((_) {
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                      return SlideTransition(
+                        position: slideOut,
+                        child: FadeTransition(
+                          opacity: fadeOut,
+                          child: SlideTransition(
+                            position: slideIn,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    },
+                    transitionDuration: const Duration(milliseconds: 200),
+                    reverseTransitionDuration: const Duration(milliseconds: 200),
                   ),
-                ),
-                child: const Text(
-                  'Зрозуміло',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
+                );
+              },
             ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
       ),

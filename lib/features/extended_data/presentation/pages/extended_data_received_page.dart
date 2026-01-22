@@ -4,6 +4,7 @@ import 'dart:io';
 import '../../data/services/extended_data_pdf_generator.dart';
 import '../../domain/entities/extended_data.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
+import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
 
 class ExtendedDataReceivedPage extends StatefulWidget {
   final String? pdfPath;
@@ -123,9 +124,12 @@ class _ExtendedDataReceivedPageState extends State<ExtendedDataReceivedPage> {
             PrimaryButton(
               text: 'Зрозуміло',
               onPressed: () {
-                Navigator.of(context).pop();
+                // Показываем BottomNavigationBar и возвращаемся на главный экран
+                BottomNavBarController().show();
+                Navigator.of(context).popUntil((route) => route.isFirst);
               },
             ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
       ),

@@ -1,13 +1,12 @@
-// lib/features/extended_data/presentation/pages/extended_data_request_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/repositories/extended_data_repository_impl.dart';
 import '../bloc/extended_data_bloc.dart';
 import '../bloc/extended_data_event.dart';
 import '../bloc/extended_data_state.dart';
-import 'package:reserv_plus/features/shared/presentation/widgets/delayed_loading_indicator.dart';
+import 'package:reserv_plus/features/shared/presentation/widgets/primary_button.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
-import 'extended_data_success_page.dart';
+import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_success_page.dart';
 
 class ExtendedDataRequestPage extends StatelessWidget {
   const ExtendedDataRequestPage({super.key});
@@ -28,56 +27,10 @@ class ExtendedDataRequestView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ExtendedDataBloc, ExtendedDataState>(
-      listener: (context, state) {
-        if (state is ExtendedDataReviewScreen) {
-          // Переходим к экрану "Запит надіслано" с анимацией
-          NavigationUtils.pushWithHorizontalAnimation(
-            context: context,
-            page: const ExtendedDataSuccessPage(),
-          ).then((_) {
-            // Заменяем текущий route после завершения анимации
-            if (context.mounted) {
-              Navigator.of(context).pop();
-            }
-          });
-        }
+    return BlocBuilder<ExtendedDataBloc, ExtendedDataState>(
+      builder: (context, state) {
+        return _buildRequestScreen(context, state);
       },
-      child: BlocBuilder<ExtendedDataBloc, ExtendedDataState>(
-        builder: (context, state) {
-          // Если идет процесс отправки запроса - показываем полноэкранный loading
-          if (state is ExtendedDataRequestInProgress) {
-            return _buildLoadingScreen();
-          }
-
-          // Иначе показываем обычный экран с формой
-          return _buildRequestScreen(context, state);
-        },
-      ),
-    );
-  }
-
-  // Полноэкранный экран загрузки
-  Widget _buildLoadingScreen() {
-    return const Scaffold(
-      backgroundColor: Color.fromRGBO(226, 223, 204, 1),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DelayedLoadingIndicator(),
-            SizedBox(height: 24),
-            Text(
-              'Надсилаємо запит...',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -94,7 +47,7 @@ class ExtendedDataRequestView extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 34.0),
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 26.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -130,33 +83,17 @@ class ExtendedDataRequestView extends StatelessWidget {
               textAlign: TextAlign.left,
             ),
             const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: state is ExtendedDataRequestConfirmation
-                    ? () {
-                        context
-                            .read<ExtendedDataBloc>()
-                            .add(const ExtendedDataConfirmRequest());
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                  ),
-                ),
-                child: const Text(
-                  'Надіслати запит',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
+            PrimaryButton(
+              text: 'Надіслати запит',
+              onPressed: () {
+                // Переходим на ExtendedDataSuccessPage
+                NavigationUtils.pushWithHorizontalAnimation(
+                  context: context,
+                  page: const ExtendedDataSuccessPage(),
+                );
+              },
             ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
         ),
       ),

@@ -1,6 +1,6 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../bloc/loading_bloc.dart';
 import '../bloc/loading_event.dart' as events;
 import '../bloc/loading_state.dart' as states;
@@ -46,23 +46,6 @@ class _LoadingPageState extends State<LoadingPage> {
       },
       child: Scaffold(
         backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-        appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(226, 223, 204, 1),
-          leading: IconButton(
-            padding: const EdgeInsets.only(left: 15),
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-              size: 26,
-            ),
-            onPressed: () {
-              context
-                  .read<LoadingBloc>()
-                  .add(const events.LoadingBackPressed());
-              Navigator.pop(context);
-            },
-          ),
-        ),
         body: BlocBuilder<LoadingBloc, states.LoadingState>(
           builder: (context, state) {
             if (state is states.LoadingInProgress) {
@@ -79,34 +62,10 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Widget _buildLoadingContent(states.LoadingState state) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          LoadingAnimationWidget.staggeredDotsWave(
-            color: const Color.fromRGBO(253, 135, 12, 1),
-            size: 70,
-          ),
-          const SizedBox(height: 30),
-          const Text(
-            'Завантаження...',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
-          if (state is states.LoadingInProgress) ...[
-            const SizedBox(height: 20),
-            LinearProgressIndicator(
-              value: state.progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                Color.fromRGBO(253, 135, 12, 1),
-              ),
-            ),
-          ],
-        ],
+    return const Center(
+      child: _GradientCircularProgressIndicator(
+        size: 30,
+        strokeWidth: 2,
       ),
     );
   }
@@ -146,4 +105,92 @@ class _LoadingPageState extends State<LoadingPage> {
       ),
     );
   }
+}
+
+class _GradientCircularProgressIndicator extends StatefulWidget {
+  final double size;
+  final double strokeWidth;
+
+  const _GradientCircularProgressIndicator({
+    this.size = 48,
+    this.strokeWidth = 3,
+  });
+
+  @override
+  State<_GradientCircularProgressIndicator> createState() =>
+      _GradientCircularProgressIndicatorState();
+}
+
+class _GradientCircularProgressIndicatorState
+    extends State<_GradientCircularProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle: _controller.value * 2 * math.pi,
+          child: CustomPaint(
+            size: Size(widget.size, widget.size),
+            painter: _GradientCirclePainter(
+              strokeWidth: widget.strokeWidth,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _GradientCirclePainter extends CustomPainter {
+  final double strokeWidth;
+
+  _GradientCirclePainter({required this.strokeWidth});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - strokeWidth) / 2;
+
+    final gradient = SweepGradient(
+      startAngle: 0,
+      endAngle: math.pi * 2,
+      colors: const [
+        Color.fromRGBO(200, 197, 180, 1), // Серый (конец/начало)
+        Color.fromRGBO(35, 34, 30, 1), // Чёрный
+        Color.fromRGBO(200, 197, 180, 1), // Серый
+      ],
+      stops: const [0.0, 0.75, 1.0],
+    );
+
+    final paint = Paint()
+      ..shader =
+          gradient.createShader(Rect.fromCircle(center: center, radius: radius))
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawCircle(center, radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

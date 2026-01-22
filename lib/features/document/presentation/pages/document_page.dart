@@ -89,7 +89,12 @@ class _DocumentPageState extends State<DocumentPage>
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    final mediaQuery = MediaQuery.of(context);
+    // Используем высоту без системных панелей для одинакового отображения в debug и release
+    final availableHeight = mediaQuery.size.height -
+        mediaQuery.padding.top -
+        mediaQuery.padding.bottom;
+    Size size = Size(mediaQuery.size.width, availableHeight);
 
     return BlocListener<DocumentBloc, DocumentState>(
       listener: (context, state) {
@@ -293,9 +298,11 @@ class _DocumentPageState extends State<DocumentPage>
   }
 
   Widget _buildFrontCard(DocumentLoaded state, Size size) {
+    final screenWidth =
+        MediaQuery.of(context).size.width - 44; // ширина минус padding (22*2)
     return Container(
       width: double.infinity,
-      height: size.height * 0.65,
+      height: screenWidth * 1.65,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
@@ -382,9 +389,9 @@ class _DocumentPageState extends State<DocumentPage>
               ],
             ),
           ),
-          SizedBox(height: size.height * 0.28),
-          _buildMarqueeStrip(state),
           const Spacer(),
+          _buildMarqueeStrip(state),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.only(
               left: 16,
@@ -484,10 +491,12 @@ class _DocumentPageState extends State<DocumentPage>
 
   Widget _buildBackCard(DocumentLoaded state, Size size) {
     final displayDate = _getDateWithAddedYear(state.data.formattedLastUpdated);
+    final screenWidth =
+        MediaQuery.of(context).size.width - 44; // ширина минус padding (22*2)
 
     return Container(
       width: double.infinity,
-      height: size.height * 0.65,
+      height: screenWidth * 1.65,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(

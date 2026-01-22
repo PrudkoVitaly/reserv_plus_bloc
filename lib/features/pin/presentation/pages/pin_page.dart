@@ -229,7 +229,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
                   : null,
               onTapUp: isBiometricsAvailable
                   ? (_) async {
-                      await Future.delayed(const Duration(milliseconds: 150));
+                      await Future.delayed(const Duration(milliseconds: 80));
                       if (!mounted) return;
                       setState(() {
                         _pressedButton = null;
@@ -273,7 +273,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
                   });
                 },
                 onTapUp: (_) async {
-                  await Future.delayed(const Duration(milliseconds: 150));
+                  await Future.delayed(const Duration(milliseconds: 80));
                   if (!mounted) return;
                   setState(() {
                     _pressedButton = null;
@@ -329,7 +329,7 @@ class _PinPageState extends State<PinPage> with TickerProviderStateMixin {
         },
         onTapUp: (_) async {
           // Минимальная задержка, чтобы подсветка успела показаться
-          await Future.delayed(const Duration(milliseconds: 150));
+          await Future.delayed(const Duration(milliseconds: 80));
           if (!mounted) return;
           setState(() {
             _pressedButton = null;

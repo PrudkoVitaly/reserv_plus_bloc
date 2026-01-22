@@ -5,7 +5,7 @@ import '../bloc/document_event.dart';
 import '../bloc/document_state.dart';
 import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
 import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_review_page.dart';
-import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_received_page.dart';
+import 'package:reserv_plus/features/extended_data/presentation/pages/extended_data_request_page.dart';
 import 'package:reserv_plus/shared/utils/navigation_utils.dart';
 
 class DocumentModal extends StatefulWidget {
@@ -228,7 +228,7 @@ class _DocumentModalState extends State<DocumentModal> {
                               // Навигация к расширенным данным с анимацией
                               NavigationUtils.pushWithHorizontalAnimation(
                                 context: context,
-                                page: const ExtendedDataReceivedPage(),
+                                page: const ExtendedDataRequestPage(),
                               );
                             }
                           });

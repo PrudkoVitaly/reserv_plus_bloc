@@ -11,6 +11,7 @@ class ModalUtils {
         pageBuilder: (context, animation, secondaryAnimation) =>
             const DocumentModalDialog(),
         transitionDuration: const Duration(milliseconds: 300),
+        reverseTransitionDuration: const Duration(milliseconds: 150),
         opaque: false,
         barrierDismissible: true,
         barrierColor: Colors.black.withValues(alpha: 0.5),
@@ -34,7 +35,12 @@ class ModalUtils {
 
   // Показывает модальное окно для обновления документа
   static void showDocumentUpdateModal(BuildContext context) {
-    Navigator.of(context).push(
+    showDocumentUpdateModalWithNavigator(Navigator.of(context));
+  }
+
+  // Показывает модальное окно для обновления документа с переданным navigator
+  static void showDocumentUpdateModalWithNavigator(NavigatorState navigator) {
+    navigator.push(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
             const DocumentUpdateModal(),

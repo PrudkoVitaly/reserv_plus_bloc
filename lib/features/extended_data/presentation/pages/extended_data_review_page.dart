@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reserv_plus/features/extended_data/domain/entities/extended_data.dart';
 import 'package:reserv_plus/features/shared/presentation/widgets/app_header.dart';
+import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
 
 class ExtendedDataReviewPage extends StatelessWidget {
   final ExtendedData data;
@@ -18,9 +19,13 @@ class ExtendedDataReviewPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppHeader(
+            AppHeader(
               title: 'Уточнення\nконтактних даних',
               showHelpButton: true,
+              onBack: () {
+                BottomNavBarController().show();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
             ),
             const SizedBox(height: 20),
             Expanded(

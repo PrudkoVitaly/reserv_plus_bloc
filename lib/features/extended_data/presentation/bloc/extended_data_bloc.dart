@@ -8,7 +8,7 @@ class ExtendedDataBloc extends Bloc<ExtendedDataEvent, ExtendedDataState> {
 
   ExtendedDataBloc({required ExtendedDataRepository repository})
       : _repository = repository,
-        super(const ExtendedDataInitial()) {
+        super(const ExtendedDataRequestConfirmation()) {
     on<ExtendedDataInitialized>(_onInitialized);
     on<ExtendedDataConfirmRequest>(_onConfirmRequest);
     on<ExtendedDataProceedToReview>(_onProceedToReview);
@@ -29,8 +29,6 @@ class ExtendedDataBloc extends Bloc<ExtendedDataEvent, ExtendedDataState> {
     ExtendedDataConfirmRequest event,
     Emitter<ExtendedDataState> emit,
   ) async {
-    emit(const ExtendedDataRequestInProgress());
-
     try {
       // Отправляем запрос
       await _repository.requestExtendedData();
@@ -38,7 +36,7 @@ class ExtendedDataBloc extends Bloc<ExtendedDataEvent, ExtendedDataState> {
       // Получаем данные
       final data = await _repository.getExtendedData();
 
-      // Переходим к экрану проверки данных
+      // Переходим к экрану проверки данных (без loading экрана)
       emit(ExtendedDataReviewScreen(data: data));
     } catch (e) {
       emit(ExtendedDataFailure(error: e.toString()));

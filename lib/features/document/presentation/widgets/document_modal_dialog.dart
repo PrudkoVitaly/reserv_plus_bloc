@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:animations/animations.dart';
 import '../bloc/document_bloc.dart';
 import '../bloc/document_event.dart';
 import '../../../person_info/presentation/utils/person_info_utils.dart';
-import '../../../extended_data/presentation/pages/extended_data_received_page.dart';
+import '../../../extended_data/presentation/pages/extended_data_request_page.dart';
 import '../../../extended_data/presentation/pages/extended_data_review_page.dart';
 import '../../../extended_data/domain/entities/extended_data.dart';
 import '../pages/vlk_unavailable_page.dart';
 import '../utils/modal_utils.dart';
+import 'package:reserv_plus/features/shared/services/bottom_nav_bar_controller.dart';
 
 class DocumentModalDialog extends StatefulWidget {
   const DocumentModalDialog({super.key});
@@ -113,7 +113,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                                 Navigator.of(context, rootNavigator: true);
                             _closeModal();
                             // Ждём пока модал уедет вниз, потом показываем новый
-                            Future.delayed(const Duration(milliseconds: 300),
+                            Future.delayed(const Duration(milliseconds: 150),
                                 () {
                               PersonInfoUtils.showPersonInfoModalWithNavigator(
                                   navigatorState);
@@ -136,14 +136,15 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                           imagePath: 'images/document_modal_refresh_icon.png',
                           title: "Оновити документ",
                           onTap: () {
-                            // Закрываем текущий модал
+                            // Сохраняем navigator ДО закрытия модала
+                            final navigator =
+                                Navigator.of(context, rootNavigator: true);
                             _closeModal();
                             // Показываем новый модал с небольшой задержкой
-                            Future.delayed(const Duration(milliseconds: 200),
+                            Future.delayed(const Duration(milliseconds: 150),
                                 () {
-                              if (context.mounted) {
-                                ModalUtils.showDocumentUpdateModal(context);
-                              }
+                              ModalUtils.showDocumentUpdateModalWithNavigator(
+                                  navigator);
                             });
                           },
                         ),
@@ -156,7 +157,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                             final navigator =
                                 Navigator.of(context, rootNavigator: true);
                             _closeModal();
-                            Future.delayed(const Duration(milliseconds: 300),
+                            Future.delayed(const Duration(milliseconds: 150),
                                 () {
                               navigator.push(
                                 PageRouteBuilder(
@@ -165,7 +166,7 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                                       const Color.fromRGBO(226, 223, 204, 1),
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
-                                      const ExtendedDataReceivedPage(),
+                                      const ExtendedDataRequestPage(),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
                                     final slideIn = Tween<Offset>(
@@ -198,29 +199,35 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                                 Navigator.of(context, rootNavigator: true);
                             _closeModal();
 
-                            Future.delayed(const Duration(milliseconds: 300),
+                            Future.delayed(const Duration(milliseconds: 150),
                                 () {
+                              BottomNavBarController().hide();
                               navigator.push(
                                 PageRouteBuilder(
+                                  opaque: false,
+                                  barrierColor:
+                                      const Color.fromRGBO(226, 223, 204, 1),
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
                                       const VlkUnavailablePage(),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
-                                    return SharedAxisTransition(
-                                      animation: animation,
-                                      secondaryAnimation: secondaryAnimation,
-                                      transitionType:
-                                          SharedAxisTransitionType.horizontal,
-                                      fillColor: const Color.fromRGBO(
-                                          226, 223, 204, 1),
+                                    final slideIn = Tween<Offset>(
+                                      begin: const Offset(1.0, 0.0),
+                                      end: Offset.zero,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeInOut,
+                                    ));
+                                    return SlideTransition(
+                                      position: slideIn,
                                       child: child,
                                     );
                                   },
                                   transitionDuration:
-                                      const Duration(milliseconds: 350),
+                                      const Duration(milliseconds: 200),
                                   reverseTransitionDuration:
-                                      const Duration(milliseconds: 350),
+                                      const Duration(milliseconds: 200),
                                 ),
                               );
                             });
@@ -236,30 +243,36 @@ class _DocumentModalDialogState extends State<DocumentModalDialog> {
                             final extendedData = ExtendedData.fromUserData();
                             _closeModal();
 
-                            Future.delayed(const Duration(milliseconds: 300),
+                            Future.delayed(const Duration(milliseconds: 150),
                                 () {
+                              BottomNavBarController().hide();
                               navigator.push(
                                 PageRouteBuilder(
+                                  opaque: false,
+                                  barrierColor:
+                                      const Color.fromRGBO(226, 223, 204, 1),
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
                                       ExtendedDataReviewPage(
                                           data: extendedData),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
-                                    return SharedAxisTransition(
-                                      animation: animation,
-                                      secondaryAnimation: secondaryAnimation,
-                                      transitionType:
-                                          SharedAxisTransitionType.horizontal,
-                                      fillColor: const Color.fromRGBO(
-                                          226, 223, 204, 1),
+                                    final slideIn = Tween<Offset>(
+                                      begin: const Offset(1.0, 0.0),
+                                      end: Offset.zero,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeInOut,
+                                    ));
+                                    return SlideTransition(
+                                      position: slideIn,
                                       child: child,
                                     );
                                   },
                                   transitionDuration:
-                                      const Duration(milliseconds: 350),
+                                      const Duration(milliseconds: 200),
                                   reverseTransitionDuration:
-                                      const Duration(milliseconds: 350),
+                                      const Duration(milliseconds: 200),
                                 ),
                               );
                             });

@@ -18,7 +18,7 @@ class NavigationUtils {
   static Future<T?> pushWithHorizontalAnimation<T>({
     required BuildContext context,
     required Widget page,
-    Duration duration = const Duration(milliseconds: 300),
+    Duration duration = const Duration(milliseconds: 200),
     Color fillColor = _bgColor,
   }) {
     // Скрываем BottomNavigationBar
